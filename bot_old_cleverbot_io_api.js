@@ -1,16 +1,10 @@
+//rewrite debugging to be more effective and include color
+	//make sure to log authors and stuff
 //rewrite message system to work in attachments
 //rewrite command system
-
-//broken:
-//conversationContext is not generated in time to be used in first message of DMs
-
 console.log("Importing Packages");
-var fs = require('fs');
-	console.log("\tFS Imported");
 const Discord = require("discord.js");
-	console.log("\tDiscord.js Imported");
-const cleverbot_free = require('cleverbot-free');
-	console.log("\tCleverbot-Free Imported");
+var cleverbot = require('cleverbot.io');
 var colors = require('colors');
 	colors.setTheme({
 		system: ['cyan'],
@@ -18,7 +12,7 @@ var colors = require('colors');
 		error: ['red'],
 		info: ['green']
 	});
-	console.log("\tColors Imported".rainbow);
+var fs = require('fs');
 console.log("Packages Imported\n".system);
 
 console.log("Loading Authorization and Memory".system);
@@ -51,24 +45,16 @@ var auth = require(filePath + 'auth.json');
 var memory = JSON.parse(fs.readFileSync(filePath + 'memory.json'));
 console.log("Authorization and Memory Loaded\n".system);
 
-// Initialize Cleverbot AI
-console.log("Initializing Cleverbot AI".system);
-var cleverbot = cleverbot_free;
-console.log("Cleverbot AI Initialized\n".system);
-
 // Initialize Discord Bot
-console.log("Initializing Discord Client".system);
+console.log("Initializing Client".system);
 const client = new Discord.Client();
-console.log("Discord Client Initialized\n".system);
+console.log("Client Initialized\n".system);
 
-var alreadyThinking = {
-	//channelID: true/false
-};
-var conversationContext = {
-	//channelID: ["past", "messages"]
-};
+var ai;
+//var thinking = false;
+var alreadyThinking = {};
 
-var typingSpeed = 6; //characters per second
+var typingSpeed = 10;
 
 var connect = function() {
 	console.log("Logging in".system);
@@ -80,8 +66,14 @@ client.on('ready', () => {
     console.log("\tLogged in as:".system);
 	console.log("\t\tUsername: ".system + client.user.tag);
 	console.log("\t\tUserID:   ".system + client.user.id);
+
+	console.log("Initializing Cleverbot AI".system);
+	ai = new cleverbot("xw0cKXJ62UB5brkX", "tVP97UtY67KYZJLfElfo76xe8Sa5xHxq");
+	ai.setNick("Test")
+	ai.create(function (err, session) { } );
+	console.log("Cleverbot AI Initialized\n".system);
 	
-	client.user.setActivity("cleverbot-free");
+	client.user.setActivity("cleverbot.io");
 	
 	//GUILDS LIST
 	console.log("\tGuilds List".info);
@@ -120,19 +112,9 @@ client.on('ready', () => {
 			
 			console.log("\t\t" + channelName + " (".info + channelID + ")".info);
 			console.log("\t\t\t" + guildName + " (".info + guildID + ")".info);
-		
 		}
 	}
 	console.log("\tEnd of Whitelisted Channels List\n".info);
-	
-	//CONVERSATION CONTEXT
-	for (var i = 0; i < channelsArr.length; i++)
-	{
-		if (isWhitelisted(channelsArr[i].id))
-		{
-			createContextForChannel(channelsArr[i]);
-		}
-	}
 	
 	//SCANNING FOR UNREAD MESSAGES
 	console.log("Scanning Previous Messages".system);	
@@ -143,12 +125,8 @@ client.on('ready', () => {
 		{			
 			channelsArr[i].fetchMessages({ limit: 10 }).then(messages => {	
 				//make it so the bot goes through the messages and ignores ones that have commands or > in them			
-				var message, m = 0;
-				do {
-					message = messages.array()[m];
-					if (message === undefined || message.author.id === client.user.id) return;
-					m++;
-				} while ((isMarkedAsIgnore(message) || hasACommand(message)) && m < messages.array().length);
+				var message = messages.array()[0];
+				if (message === undefined || message.author.id === client.user.id) return;
 				
 				//debug info
 				var guildName;
@@ -177,8 +155,8 @@ client.on('ready', () => {
 				console.log("\t\tChannel: ".system + channelName + " (".system + channelID + ")".system);
 				console.log("\t\tMessage: ".system + message.cleanContent);
 				console.log("\tReferring to Response Generation".system);
-				//generateAndRespond(message);
-				onMessage(message);
+				generateAndRespond(message);
+				
 			}).catch(console.error);
 		}
 	}
@@ -200,9 +178,7 @@ client.on('error', error => {
 	console.log("Connection Error: ".error + error);
 });
 
-client.on('message', message => onMessage(message));
-
-var onMessage = function (message) {
+client.on('message', message => {
 	if (message.author.id === client.user.id) return;
 	if (message.content === "") return; //ignore media messages w/o text
 	
@@ -220,9 +196,12 @@ var onMessage = function (message) {
 	{
 		//console.log("Is a mention or DM");
 		
-		if (hasACommand(message)) //is a command
+		var cmd = removeMention(message.content);
+		cmd = cmd.toLowerCase();
+		cmd = cmd.trim();
+		if (cmd.charAt(0) === '!') //is a command
 		{
-			var cmd = removeMention(message.content).toLowerCase().trim().replace("!", "");
+			cmd = cmd.replace("!", "");
 			if (cmd === "whitelist" || cmd === "enable" || cmd == "allow") //WHITELIST
 			{
 				if (message.channel.type === 'dm')
@@ -342,12 +321,12 @@ var onMessage = function (message) {
 	
 	if (isWhitelisted(message.channel.id) || isAMention(message.content) || message.channel.type === 'dm') //can respond
 	{
-		if (!isMarkedAsIgnore(message)) //special ignore code
+		if (message.cleanContent.split(" ")[0] !== ">") //special ignore code
 		{
 			generateAndRespond(message);
 		}			
 	}
-}
+});
 
 var isAMention = function(message){
 	return (message.includes("<@!" + client.user.id + ">") || message.includes("<@" + client.user.id + ">"));
@@ -359,16 +338,6 @@ var removeMention = function(message) {
 	return message;
 }
 
-var hasACommand = function(message) {
-	var content = removeMention(message.content);
-	content = content.trim();
-	return (content.charAt(0) === '!');
-}
-
-var isMarkedAsIgnore = function(message) {
-	return (message.cleanContent.split(" ")[0] === ">");
-}
-
 var isWhitelisted = function(channel) {	
 	for (var i = 0; i < memory.whitelist.length; i++)
 	{
@@ -377,32 +346,7 @@ var isWhitelisted = function(channel) {
 	return false;
 }
 
-var createContextForChannel = function(channel) {
-
-	conversationContext[channel.id] = [];
-	channel.fetchMessages({ limit: 20 }).then(messages => {
-		var messagesArr = messages.array();
-		var lastOneFromMe = true;
-		for (var j = 0; j < messagesArr.length; j++)
-		{
-			//if prefixed with >, or is a command, or is empty, ignore
-			if (isMarkedAsIgnore(messagesArr[j]) || hasACommand(messagesArr[j]) || messagesArr[j].content === "") continue;
-			//if the latest message IS NOT from the bot, don't add to the context, because it'll be added by generateAndRespond() later
-			if (j == 0 && messagesArr[j].author.id !== client.user.id) continue;
-			
-			var thisOneFromMe = (messagesArr[j].author.id === client.user.id);
-			if (!lastOneFromMe && !thisOneFromMe) //if last message wasn't from bot and current message isn't either
-			{
-				conversationContext[channel.id].unshift(""); //add a placeholder
-			}
-			lastOneFromMe = thisOneFromMe;
-			
-			conversationContext[channel.id].unshift(formatDiscordToCleverbot(messagesArr[j].content));
-		}
-	}).catch(console.error);
-}
-
-var formatCleverbotToDiscord = function(response){
+var formatResponse = function(response){
 	response = response.replace(":)", ":slight_smile:");
 	response = response.replace("(:", ":upside_down:");
 	
@@ -430,39 +374,11 @@ var formatCleverbotToDiscord = function(response){
 	return response;
 }
 
-var formatDiscordToCleverbot = function(response){
-	response = response.replace(":slight_smile:", ":)");
-	response = response.replace(":upside_down:", "(:");
-	
-	response = response.replace(":wink:", ";)");
-	response = response.replace(":wink:", "(;");
-	
-	response = response.replace(":slight_frown:", "):");
-	//response = response.replace(":slight_frown:", ":(");
-	
-	response = response.replace(":open_mouth:", ":O");
-	
-	response = response.replace(":confused:", ":\\");
-	response = response.replace(":confused:", ":/");
-	
-	response = response.replace(":cry:", ":'(");
-	
-	response = response.replace(":confused:", ":$");
-	
-	response = response.replace(":stuck_out_tongue_closed_eyes:", "XD");
-	
-	response = response.replace(":heart:", "♥");
-	//response = response.replace(":heart:", "❤");
-	//response = response.replace(":heart:", "❥");
-	
-	return response;
-}
-
 var syncMemory = function() {
 	fs.writeFileSync(filePath + 'memory.json', JSON.stringify(memory)); 
 }
 
-var generateAndRespond = function(message) { 
+var generateAndRespond = function(message) {
 	//debug info
 	var guildName;
 	var guildID;
@@ -485,7 +401,7 @@ var generateAndRespond = function(message) {
 	}
 	
 	//already thinking
-	if (alreadyThinking[message.channel.id])
+	if (alreadyThinking[message.channel.id.toString()])
 	{
 		console.log("\n");
 		console.log("Message: ".system + message.cleanContent);
@@ -496,30 +412,35 @@ var generateAndRespond = function(message) {
 		console.log("Response: ".system + "[ignoring because already thinking]");
 		return;
 	}
-	alreadyThinking[message.channel.id] = true;
+	alreadyThinking[message.channel.id.toString()] = true;
 	
 	//generate response
-	var input = formatDiscordToCleverbot(message.cleanContent);
-	if (conversationContext[message.channel.id] === undefined)
-		createContextForChannel(message.channel);
-	var context = conversationContext[message.channel.id];
-	cleverbot(input, context).then(response => {
-		response = formatCleverbotToDiscord(response);
+	ai.setNick(message.channel.id.toString());
 				
-		console.log("\n");
-		console.log("Message: ".system + message.cleanContent);
-		console.log("\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
-		console.log("\tBot:     ".system + authorBot);
-		console.log("\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
-		console.log("\tChannel: ".system + channelName + " (".system + channelID + ")".system);
-		console.log("Response: ".system + response);
-				
-		sendMessage(message.channel, response, true);
-		conversationContext[message.channel.id].push(response);
+	ai.create(function (err, session) {
+		ai.ask(message.cleanContent, function (err, response) {
+			if (err) 
+			{
+				console.log("Error generating response: ".error + response);
+				console.log("Response canceled.".system);
+				return;
+			}
 			
-		alreadyThinking[message.channel.id] = false;
+			response = formatResponse(response);
+				
+			console.log("\n");
+			console.log("Message: ".system + message.cleanContent);
+			console.log("\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
+			console.log("\tBot:     ".system + authorBot);
+			console.log("\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
+			console.log("\tChannel: ".system + channelName + " (".system + channelID + ")".system);
+			console.log("Response: ".system + response);
+				
+			sendMessage(message.channel, response, true);
+			
+			alreadyThinking[message.channel.id.toString()] = false;
+		});	
 	});
-	conversationContext[message.channel.id].push(input);
 }
 
 var sendMessage = function(channel, content, simTyping) {
@@ -527,7 +448,7 @@ var sendMessage = function(channel, content, simTyping) {
 	
 	if (simTyping)
 	{
-		var timeTypeSec = content.length / typingSpeed;
+		var timeTypeSec = content.length / typingSpeed ;
 		
 		channel.startTyping();
 		setTimeout(
