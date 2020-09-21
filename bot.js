@@ -540,7 +540,7 @@ var generateAndRespond = function(message) {
 		sendMessage(message.channel, response, true);
 		conversationContext[message.channel.id].push(response);
 			
-		alreadyThinking[message.channel.id] = false;
+		//alreadyThinking[message.channel.id] = false;
 	});
 	conversationContext[message.channel.id].push(input);
 }
@@ -556,7 +556,8 @@ var sendMessage = function(channel, content, simTyping) {
 		setTimeout(
 			function() { 
 				channel.stopTyping(); 
-				channel.send(content).then(message => console.log("Sent message: ".system + message.content)).catch(sendingMessageError);;
+				channel.send(content).then(message => console.log("Sent message: ".system + message.content)).catch(sendingMessageError);
+				alreadyThinking[channel.id] = false;
 			}, 
 			timeTypeSec * 1000
 		);
