@@ -1,8 +1,20 @@
-//rewrite message system to work in attachments
-//rewrite command system
+/*
+TODO:
+- rewrite message system to work in attachments
+- rewrite command system
+*/
 
-//broken:
-//conversationContext is not generated in time to be used in first message of DMs
+/*
+BUGLIST:
+- conversationContext is not generated in time to be used in first message of DMs
+*/
+
+/*
+WHITELIST NOTE:
+The whitelist will only work normally if the user is a bot.
+If the user is not a bot, the whitelist will act as a list of channels that the user has had a conversation in before.
+The user will automatically continue the conversastion in these channels, like the bot would if the channel was whitelisted.
+*/
 
 console.log("Importing Packages");
 var fs = require('fs');
@@ -80,6 +92,7 @@ client.on('ready', () => {
     console.log("\tLogged in as:".system);
 	console.log("\t\tUsername: ".system + client.user.tag);
 	console.log("\t\tUserID:   ".system + client.user.id);
+	console.log("\t\tBotUser:  ".system + client.user.bot);
 	
 	client.user.setActivity("cleverbot-free");
 	
@@ -220,7 +233,7 @@ var onMessage = function (message) {
 	{
 		//console.log("Is a mention or DM");
 		
-		if (hasACommand(message)) //is a command
+		if (hasACommand(message) && client.user.bot) //is a command (only for bot users)
 		{
 			var cmd = removeMention(message.content).toLowerCase().trim().replace("!", "");
 			if (cmd === "whitelist" || cmd === "enable" || cmd == "allow") //WHITELIST
@@ -244,18 +257,8 @@ var onMessage = function (message) {
 				}
 				else
 				{
-					if (memory.whitelist.indexOf(channelID) === -1)
-					{
-						memory.whitelist.push(channelID);
-						syncMemory();
-					}
-					
-					console.log("This bot has been enabled for a new channel!".system);
-					console.log("\tGuild Name:   ".system + guildName);
-					console.log("\tChannel Name: ".system + channelName);
-					
-					//sendMessage(message.channel, "<@!" + client.user.id + "> is now enabled for " + message.channel, false); 
-					
+					whitelist(message.channel);
+										
 					var richEmbed = 
 					{
 					  "embed": {
@@ -299,20 +302,8 @@ var onMessage = function (message) {
 				}
 				else
 				{
-					var index = memory.whitelist.indexOf(message.channel.id);
-					if (index !== -1)
-					{
-						memory.whitelist.splice(index, 1);
-						syncMemory();
-					}
-					
-					console.log("\n");
-					console.log("This bot has been disabled on a channel.".system);
-					console.log("\tGuild Name:   ".system + guildName);
-					console.log("\tChannel Name: ".system + channelName);
-					
-					//sendMessage(message.channel, "<@!" + client.user.id + "> is now disabled for " + message.channel, false);
-				
+					unwhitelist(message.channel);
+									
 					var richEmbed = 
 					{
 					  "embed": {
@@ -340,7 +331,13 @@ var onMessage = function (message) {
 		}
 	}
 	
-	if (isWhitelisted(message.channel.id) || isAMention(message.content) || message.channel.type === 'dm') //can respond
+	//if the user is not a bot, than automatically whitelist any channel you get a message from, as long as it isn't muted
+	if (!isWhitelisted(channelID) && !client.user.bot && message.channel.type !== 'dm' && !message.channel.muted)
+	{
+		whitelist(message.channel);
+	}
+	
+	if (isWhitelisted(channelID) || isAMention(message.content) || message.channel.type === 'dm') //can respond
 	{
 		if (!isMarkedAsIgnore(message)) //special ignore code
 		{
@@ -369,12 +366,38 @@ var isMarkedAsIgnore = function(message) {
 	return (message.cleanContent.split(" ")[0] === ">");
 }
 
-var isWhitelisted = function(channel) {	
+var isWhitelisted = function(channelID) {	
 	for (var i = 0; i < memory.whitelist.length; i++)
 	{
-		if (memory.whitelist[i] === channel) return true;
+		if (memory.whitelist[i] === channelID) return true;
 	}
 	return false;
+}
+
+var whitelist = function(channel) {
+	if (memory.whitelist.indexOf(channel.id) === -1)
+	{
+		memory.whitelist.push(channel.id);
+		syncMemory();
+	}
+	
+	console.log("This bot has been enabled for a new channel!".system);
+	console.log("\tGuild Name:   ".system + channel.guild.name);
+	console.log("\tChannel Name: ".system + channel.name);
+}
+
+var unwhitelist = function(channel) {
+	var index = memory.whitelist.indexOf(channel.id);
+	if (index !== -1)
+	{
+		memory.whitelist.splice(index, 1);
+		syncMemory();
+	}
+					
+	console.log("\n");
+	console.log("This bot has been disabled on a channel.".system);
+	console.log("\tGuild Name:   ".system + channel.guild.name);
+	console.log("\tChannel Name: ".system + channel.name);
 }
 
 var createContextForChannel = function(channel) {
