@@ -332,9 +332,14 @@ var onMessage = function (message) {
 	}
 	
 	//if the user is not a bot, than automatically whitelist any channel you get a message from, as long as it isn't muted
-	if (!isWhitelisted(channelID) && !client.user.bot && message.channel.type !== 'dm' && !message.channel.muted)
+	if (!client.user.bot)
 	{
-		whitelist(message.channel);
+		if (!isWhitelisted(channelID) && message.channel.type !== 'dm')
+			if (!message.channel.muted && !message.guild.muted)
+				whitelist(message.channel);
+		//and unwhitelist ones that get muted	
+		if (isWhitelisted(channelID) && (message.channel.muted || message.guild.muted))
+			unwhitelist(message.channel);
 	}
 	
 	if (isWhitelisted(channelID) || isAMention(message.content) || message.channel.type === 'dm') //can respond
