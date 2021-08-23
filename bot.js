@@ -2,11 +2,18 @@
 TODO:
 - rewrite message system to work in attachments
 - rewrite command system
+- add help command that explains possible commands, how to use > to ignore messages
+- set playing status to be the help command
+- register commands as slash commands with discord.js
+- be able to handle all kinds of channels https://discord.js.org/#/docs/main/stable/typedef/ChannelType
+- if multiple messages sent before bot has chance to respond, use message.reply feature
 */
 
 /*
 BUGLIST:
 - conversationContext is not generated in time to be used in first message of DMs
+- if it takes too long for generated response to come back, it throws an error - deal with this and have it repeat until it gets a response
+- can't detect direct messages
 */
 
 /*
@@ -19,7 +26,7 @@ The user will automatically continue the conversastion in these channels, like t
 console.log("Importing Packages");
 var fs = require('fs');
 	console.log("\tFS Imported");
-const Discord = require("discord.js");
+const Discord = require('discord.js');
 	console.log("\tDiscord.js Imported");
 const cleverbot_free = require('cleverbot-free');
 	console.log("\tCleverbot-Free Imported");
@@ -34,7 +41,7 @@ var colors = require('colors');
 console.log("Packages Imported\n".system);
 
 console.log("Loading Authorization and Memory".system);
-if (process.argv[2] === undefined) {	
+if (process.argv[2] === undefined) {
 	console.log("\tAccount path not defined after process instantiation".warning);
 	console.log("Loading Authorization and Memory Failed".error);
 	console.log("Exiting Process".system);
@@ -70,7 +77,16 @@ console.log("Cleverbot AI Initialized\n".system);
 
 // Initialize Discord Bot
 console.log("Initializing Discord Client".system);
-const client = new Discord.Client();
+//const client = new Discord.Client();
+const client = new Discord.Client({ 
+	intents: [
+		Discord.Intents.FLAGS.GUILDS,
+		Discord.Intents.FLAGS.GUILD_MESSAGES,
+		Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+		Discord.Intents.FLAGS.DIRECT_MESSAGES,
+		Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+	]
+});
 console.log("Discord Client Initialized\n".system);
 
 var alreadyThinking = {
@@ -87,7 +103,7 @@ var connect = function() {
 	client.login(auth.token).catch(connectionError);
 }
 
-client.on('ready', () => {
+client.once('ready', () => {
 	console.log("Login Complete, Client Ready".system);
     console.log("\tLogged in as:".system);
 	console.log("\t\tUsername: ".system + client.user.tag);
@@ -98,15 +114,19 @@ client.on('ready', () => {
 	
 	//GUILDS LIST
 	console.log("\tGuilds List".info);
-	var guildsArr = client.guilds.array();	
+	/*
+	var guildsArr = client.guilds.array();
 	for (var i = 0; i < guildsArr.length; i++)
 	{
 		console.log("\t\t" + guildsArr[i].name + " (".info + guildsArr[i].id + ")".info);
 	}
+	*/
+	client.guilds.cache.each(guild => console.log("\t\t" + guild.name + " (".info + guild.id + ")".info));
 	console.log("\tEnd of Guilds List\n".info);
 	
 	//WHITELISTED CHANNELS LIST
 	console.log("\tWhitelisted Channels List".info);
+	/*
 	var channelsArr = client.channels.array();
 	for (var i = 0; i < channelsArr.length; i++)
 	{
@@ -136,9 +156,38 @@ client.on('ready', () => {
 		
 		}
 	}
+	*/
+	client.channels.cache.each(channel => {
+		if (isWhitelisted(channel.id))
+		{
+			var channelName;
+			var channelID;
+			var guildName;
+			var guildID;
+			if (channel.type === 'DM')
+			{
+				channelName = channel.recipient.tag;
+				channelID = channel.id;
+				guildName = "Direct Message";
+				guildID = "NA";
+			}
+			else if (channel.type === 'GUILD_TEXT')
+			{
+				channelName = channel.name;
+				channelID = channel.id;
+				guildName = channel.guild.name;
+				guildID = channel.guild.id;
+			}
+			
+			console.log("\t\t" + channelName + " (".info + channelID + ")".info);
+			console.log("\t\t\t" + guildName + " (".info + guildID + ")".info);
+		
+		}
+	});
 	console.log("\tEnd of Whitelisted Channels List\n".info);
 	
 	//CONVERSATION CONTEXT
+	/*
 	for (var i = 0; i < channelsArr.length; i++)
 	{
 		if (isWhitelisted(channelsArr[i].id))
@@ -146,9 +195,17 @@ client.on('ready', () => {
 			createContextForChannel(channelsArr[i]);
 		}
 	}
+	*/
+	client.channels.cache.each(channel => {
+		if (isWhitelisted(channel.id))
+		{
+			createContextForChannel(channel);
+		}
+	});
 	
 	//SCANNING FOR UNREAD MESSAGES
-	console.log("Scanning Previous Messages".system);	
+	console.log("Scanning Previous Messages".system);
+	/*
 	for (var i = 0; i < channelsArr.length; i++)
 	{					
 		//if on whitelisted channel, and not voice channel, and there is a last message
@@ -195,8 +252,68 @@ client.on('ready', () => {
 			}).catch(console.error);
 		}
 	}
+	*/
+	client.channels.cache.each(channel => {
+		//if on whitelisted channel, and not voice channel, and there is a last message
+		if (isWhitelisted(channel.id) && channel.type !== 'GUILD_VOICE')
+		{			
+			channel.messages.fetch({ limit: 10 }).then(messages => {	
+				//make it so the bot goes through the messages and ignores ones that have commands or > in them			
+				/*
+				var message, m = 0;
+				do {
+					message = messages.array()[m];
+					if (message === undefined || message.author.id === client.user.id) return;
+					m++;
+				} while ((isMarkedAsIgnore(message) || hasACommand(message)) && m < messages.array().length);
+				*/
+				var message;
+				var done = false
+				messages.each(msg => {
+					if (msg === undefined || msg.author.id === client.user.id)
+						done = true
+					
+					if (done || message !== undefined || isMarkedAsIgnore(msg) || hasACommand(msg))
+						return;
+					
+					message = msg;
+				});
+				
+				if (message === undefined) return;
+				
+				//debug info
+				var guildName;
+				var guildID;
+				var channelName;
+				var channelID = message.channel.id;
+				var authorTag = message.author.tag;;
+				var authorID = message.author.id;
+				var authorBot = message.author.bot;
+				if (message.channel.type === 'DM')
+				{
+					guildName = "Direct Message";
+					guildID = "NA";
+					channelName = message.channel.recipient.tag; 
+				}
+				else if (message.channel.type === 'GUILD_TEXT')
+				{
+					guildName = message.channel.guild.name;
+					guildID = message.channel.guild.id;
+					channelName = message.channel.name;
+				}					
+				console.log("\tFound New Unread Message".system);
+				console.log("\t\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
+				console.log("\t\tBot:     ".system + authorBot);
+				console.log("\t\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
+				console.log("\t\tChannel: ".system + channelName + " (".system + channelID + ")".system);
+				console.log("\t\tMessage: ".system + message.cleanContent);
+				console.log("\tReferring to Response Generation".system);
+				//generateAndRespond(message);
+				onMessage(message);
+			}).catch(console.error);
+		}
+	});
 	console.log("Done Scanning".system);
-
 });
 
 var connectionError = function() {
@@ -205,15 +322,18 @@ var connectionError = function() {
 	setTimeout(connect, 1000); //use connect() function in 1 second
 }
 
+/*
 client.on('reconnecting', () => {
 	console.log("Attempting to Reconnect...\n".error);
 });
+*/
 
 client.on('error', error => {
 	console.log("Connection Error: ".error + error);
 });
 
-client.on('message', message => onMessage(message));
+//client.on('message', message => onMessage(message));
+client.on('messageCreate', message => onMessage(message));
 
 var onMessage = function (message) {
 	if (message.author.id === client.user.id) return;
@@ -221,15 +341,15 @@ var onMessage = function (message) {
 	
 	//debug info
 	var guildName;
-		if (message.channel.type === 'dm') guildName = "Direct Message";
-		else if (message.channel.type === 'text') guildName = message.channel.guild.name;
+		if (message.channel.type === 'DM') guildName = "Direct Message";
+		else if (message.channel.type === 'GUILD_TEXT') guildName = message.channel.guild.name;
 	var channelName;
-		if (message.channel.type === 'dm') channelName = message.channel.recipient.tag;
-		else if (message.channel.type === 'text') channelName = message.channel.name;
+		if (message.channel.type === 'DM') channelName = message.channel.recipient.tag;
+		else if (message.channel.type === 'GUILD_TEXT') channelName = message.channel.name;
 	var channelID;
 		channelID = message.channel.id;
 		
-	if (isAMention(message.content) || message.channel.type === 'dm') //treat DMs as commands or always respond
+	if (isAMention(message.content) || message.channel.type === 'DM') //treat DMs as commands or always respond
 	{
 		//console.log("Is a mention or DM");
 		
@@ -238,19 +358,21 @@ var onMessage = function (message) {
 			var cmd = removeMention(message.content).toLowerCase().trim().replace("!", "");
 			if (cmd === "whitelist" || cmd === "enable" || cmd == "allow") //WHITELIST
 			{
-				if (message.channel.type === 'dm')
+				if (message.channel.type === 'DM')
 				{
 					var richEmbed = 
 					{
-					  "embed": {
-						"title": "Direct Message Channels",
-						"description": "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Enabling is not necessary.",
-						//"color": 65280, //green
-						"color": 13621503, //icy white
-						"thumbnail": {
-							"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-						}
-					  }
+					  embeds: [
+						  {
+							title: "Direct Message Channels",
+							description: "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Enabling is not necessary.",
+							//color: 65280, //green
+							color: 13621503, //icy white
+							thumbnail: {
+								"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
+							}
+						  }
+					  ]
 					}
 				
 					message.channel.send(richEmbed);
@@ -261,21 +383,23 @@ var onMessage = function (message) {
 										
 					var richEmbed = 
 					{
-					  "embed": {
-						"title": client.user.username + " Enabled for \"" + channelName + "\"",
-						"description": "You have enabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will respond to all future messages sent in <#" + channelID + ">.",
-						"color": 65280, //green
-						//"color": 13621503, //icy white
-						"thumbnail": {
-							"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-						},
-						"fields": [
+					  embeds: [
 						  {
-							"name": "Disabling",
-							"value": "If you wish for <@" + client.user.id + "> to stop responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !disable*\n*@" + client.user.tag + " !unwhitelist*\n*@" + client.user.tag + " !unallow*"
+							title: client.user.username + " Enabled for \"" + channelName + "\"",
+							description: "You have enabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will respond to all future messages sent in <#" + channelID + ">.",
+							color: 65280, //green
+							//color: 13621503, //icy white
+							thumbnail: {
+								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
+							},
+							fields: [
+							  {
+								name: "Disabling",
+								value: "If you wish for <@" + client.user.id + "> to stop responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !disable*\n*@" + client.user.tag + " !unwhitelist*\n*@" + client.user.tag + " !unallow*"
+							  }
+							]
 						  }
-						]
-					  }
+					  ]
 					}
 				
 					message.channel.send(richEmbed);
@@ -283,19 +407,21 @@ var onMessage = function (message) {
 			}
 			else if (cmd === "unwhitelist" || cmd === "disable" || cmd === "unallow") //UNWHITELIST
 			{
-				if (message.channel.type === 'dm')
+				if (message.channel.type === 'DM')
 				{
 					var richEmbed = 
 					{
-					  "embed": {
-						"title": "Direct Message Channels",
-						"description": "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Disabling is not possible.",
-						//"color": 65280, //green
-						"color": 13621503, //icy white
-						"thumbnail": {
-							"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-						}
-					  }
+					  embeds: [
+						  {
+							title: "Direct Message Channels",
+							description: "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Disabling is not possible.",
+							//color: 65280, //green
+							color: 13621503, //icy white
+							thumbnail: {
+								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
+							}
+						  }
+					  ]
 					}
 				
 					message.channel.send(richEmbed);
@@ -306,21 +432,23 @@ var onMessage = function (message) {
 									
 					var richEmbed = 
 					{
-					  "embed": {
-						"title": client.user.username + " Disabled for \"" + channelName + "\"",
-						"description": "You have disabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will no longer respond to future messages sent in <#" + channelID + ">.",
-						"color": 16711680, //red
-						//"color": 13621503, //icy white
-						"thumbnail": {
-							"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-						},
-						"fields": [
+					  embeds: [
 						  {
-							"name": "Enabling",
-							"value": "If you wish for <@" + client.user.id + "> to start responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !enable*\n*@" + client.user.tag + " !whitelist*\n*@" + client.user.tag + " !allow*"
+							title: client.user.username + " Disabled for \"" + channelName + "\"",
+							description: "You have disabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will no longer respond to future messages sent in <#" + channelID + ">.",
+							color: 16711680, //red
+							//color: 13621503, //icy white
+							thumbnail: {
+								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
+							},
+							fields: [
+							  {
+								name: "Enabling",
+								value: "If you wish for <@" + client.user.id + "> to start responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !enable*\n*@" + client.user.tag + " !whitelist*\n*@" + client.user.tag + " !allow*"
+							  }
+							]
 						  }
-						]
-					  }
+					  ]
 					}
 				
 					message.channel.send(richEmbed);
@@ -334,7 +462,7 @@ var onMessage = function (message) {
 	//if the user is not a bot, than automatically whitelist any channel you get a message from, as long as it isn't muted
 	if (!client.user.bot)
 	{
-		if (!isWhitelisted(channelID) && message.channel.type !== 'dm')
+		if (!isWhitelisted(channelID) && message.channel.type !== 'DM')
 			if (!message.channel.muted && !message.guild.muted)
 				whitelist(message.channel);
 		//and unwhitelist ones that get muted	
@@ -342,7 +470,7 @@ var onMessage = function (message) {
 			unwhitelist(message.channel);
 	}
 	
-	if (isWhitelisted(channelID) || isAMention(message.content) || message.channel.type === 'dm') //can respond
+	if (isWhitelisted(channelID) || isAMention(message.content) || message.channel.type === 'DM') //can respond
 	{
 		if (!isMarkedAsIgnore(message)) //special ignore code
 		{
@@ -356,8 +484,8 @@ var isAMention = function(message){
 }
 
 var removeMention = function(message) {
-	message = message.replace("<@!" + client.user.id + ">", "");
-	message = message.replace("<@" + client.user.id + ">", "");
+	message = message.replaceAll("<@!" + client.user.id + ">", "");
+	message = message.replaceAll("<@" + client.user.id + ">", "");
 	return message;
 }
 
@@ -406,9 +534,9 @@ var unwhitelist = function(channel) {
 }
 
 var createContextForChannel = function(channel) {
-
 	conversationContext[channel.id] = [];
-	channel.fetchMessages({ limit: 20 }).then(messages => {
+	channel.messages.fetch({ limit: 20 }).then(messages => {
+		/*
 		var messagesArr = messages.array();
 		var lastOneFromMe = true;
 		for (var j = 0; j < messagesArr.length; j++)
@@ -427,6 +555,23 @@ var createContextForChannel = function(channel) {
 			
 			conversationContext[channel.id].unshift(formatDiscordToCleverbot(messagesArr[j].content));
 		}
+		*/
+		var lastOneFromMe = true;
+		messages.each(message => {
+			//if prefixed with >, or is a command, or is empty, ignore
+			if (isMarkedAsIgnore(message) || hasACommand(message) || message.content === "") return;
+			//if the latest message IS NOT from the bot, don't add to the context, because it'll be added by generateAndRespond() later
+			//if (j == 0 && message.author.id !== client.user.id) return;
+			
+			var thisOneFromMe = (message.author.id === client.user.id);
+			if (!lastOneFromMe && !thisOneFromMe) //if last message wasn't from bot and current message isn't either
+			{
+				conversationContext[channel.id].unshift(""); //add a placeholder
+			}
+			lastOneFromMe = thisOneFromMe;
+			
+			conversationContext[channel.id].unshift(formatDiscordToCleverbot(message.content));
+		});
 	}).catch(console.error);
 }
 
@@ -499,13 +644,13 @@ var generateAndRespond = function(message) {
 	var authorTag = message.author.tag;;
 	var authorID = message.author.id;
 	var authorBot = message.author.bot;
-	if (message.channel.type === 'dm')
+	if (message.channel.type === 'DM')
 	{
 		guildName = "Direct Message";
 		guildID = "NA";
 		channelName = message.channel.recipient.tag; 
 	}
-	else if (message.channel.type === 'text')
+	else if (message.channel.type === 'GUILD_TEXT')
 	{
 		guildName = message.channel.guild.name;
 		guildID = message.channel.guild.id;
@@ -557,10 +702,11 @@ var sendMessage = function(channel, content, simTyping) {
 	{
 		var timeTypeSec = content.length / typingSpeed;
 		
-		channel.startTyping();
+		//channel.startTyping();
+		channel.sendTyping();
 		setTimeout(
 			function() { 
-				channel.stopTyping(); 
+				//channel.stopTyping(); 
 				channel.send(content).then(message => console.log("Sent message: ".system + message.content)).catch(sendingMessageError);
 				alreadyThinking[channel.id] = false;
 			}, 
@@ -570,6 +716,7 @@ var sendMessage = function(channel, content, simTyping) {
 	else
 	{
 		channel.send(content);
+		alreadyThinking[channel.id] = false;
 	}
 }
 
