@@ -12,7 +12,6 @@ TODO:
 /*
 BUGLIST:
 - conversationContext is not generated in time to be used in first message of DMs
-- if it takes too long for generated response to come back, it throws an error - deal with this and have it repeat until it gets a response
 - can't detect direct messages
 */
 
@@ -675,6 +674,7 @@ var generateAndRespond = function(message) {
 	var input = formatDiscordToCleverbot(message.cleanContent);
 	if (conversationContext[message.channel.id] === undefined)
 		createContextForChannel(message.channel);
+	conversationContext[message.channel.id].push(input);
 	var context = conversationContext[message.channel.id];
 	cleverbot(input, context).then(response => {
 		response = formatCleverbotToDiscord(response);
@@ -690,9 +690,14 @@ var generateAndRespond = function(message) {
 		sendMessage(message.channel, response, true);
 		conversationContext[message.channel.id].push(response);
 			
-		//alreadyThinking[message.channel.id] = false;
+		//alreadyThinking[message.channel.id] = false;	//moved to sendMessage()
+	}).catch(error => {
+		console.log();
+		console.error((error+"").error);
+		console.log("Trying again".error);
+		alreadyThinking[message.channel.id] = false;
+		generateAndRespond(message);
 	});
-	conversationContext[message.channel.id].push(input);
 }
 
 var sendMessage = function(channel, content, simTyping) {
