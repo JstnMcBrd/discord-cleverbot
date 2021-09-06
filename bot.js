@@ -1,83 +1,466 @@
 /*
-TODO:
-- rewrite message system to work in attachments
-- rewrite command system
-- add help command that explains possible commands, how to use > to ignore messages
-- set playing status to be the help command
-- register commands as slash commands with discord.js
-- be able to handle all kinds of channels https://discord.js.org/#/docs/main/stable/typedef/ChannelType
-- if multiple messages sent before bot has chance to respond, use message.reply feature
+TODO
 */
 
 /*
-BUGLIST:
-- conversationContext is not generated in time to be used in first message of DMs
-- can't detect direct messages
+BUGS
 */
 
-/*
-WHITELIST NOTE:
-The whitelist will only work normally if the user is a bot.
-If the user is not a bot, the whitelist will act as a list of channels that the user has had a conversation in before.
-The user will automatically continue the conversastion in these channels, like the bot would if the channel was whitelisted.
-*/
+/* GLOBAL MODIFIERS */
+var lastUpdated = new Date(2021, 8, 6, 1, 30); //month is 0-indexed
+var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
-console.log("Importing Packages");
-var fs = require('fs');
-	console.log("\tFS Imported");
-const Discord = require('discord.js');
-	console.log("\tDiscord.js Imported");
-const cleverbot_free = require('cleverbot-free');
-	console.log("\tCleverbot-Free Imported");
-var colors = require('colors');
-	colors.setTheme({
-		system: ['cyan'],
-		warning: ['yellow'],
-		error: ['red'],
-		info: ['green']
+/* LOG IN */
+var connect = function() {
+	console.log("Logging in".system);
+	client.login(auth.token).then(() => {
+		console.log("Logged in successfully".system);
+		console.log();
+	}).catch(error => {
+		var retryWait = 10; //seconds
+	
+		console.error("\t" + debugFormatError(error));
+		console.log("Retrying connection in ".warning + retryWait + " seconds...".warning);
+		console.log();
+		setTimeout(connect, retryWait*1000); //use connect() function again
 	});
-	console.log("\tColors Imported".rainbow);
-console.log("Packages Imported\n".system);
-
-console.log("Loading Authorization and Memory".system);
-if (process.argv[2] === undefined) {
-	console.log("\tAccount path not defined after process instantiation".warning);
-	console.log("Loading Authorization and Memory Failed".error);
-	console.log("Exiting Process".system);
-	process.exit();
 }
 
-var filePath = './' + process.argv[2] + '/';
-//if folder doesn't exist (like if they misspelled it)
-if (!fs.existsSync(filePath)) 
-{
-	console.log("\tThe specified account path does not exist".warning);
-	console.log("Loading Authorization and Memory Failed".error);
-	console.log("Exiting Process".system);
-	process.exit();
+/* EVENTS */
+var onceReady = async function() {
+	console.log("Client ready".system);
+	console.log();
+	
+	setUserActivity();
+	await registerSlashCommands();
+	resumeConversations();
 }
-//if one or both files don't exist (like if they set up the account files wrong)
-if (!fs.existsSync(filePath + 'auth.json') || !fs.existsSync(filePath + 'memory.json'))
-{
-	console.log("\tAccount path is missing essential files".warning);
-	console.log("Loading Authorization and Memory Failed".error);
-	console.log("Exiting Process".system);
-	process.exit();
+var setUserActivity = function() {
+	var repeatWait = 5*60; //seconds
+	
+	console.log("Setting user activity".system);
+	client.user.setActivity("/help", {
+		url: "https://www.cleverbot.com/",
+		type: 'LISTENING'
+	});
+	setTimeout(setUserActivity, repeatWait*1000); //set user activity at regular intervals
+	console.log("Set user activity successfully".system);
+	console.log("Setting again in ".system + repeatWait + " seconds".system);
+	console.log();
+}
+var registerSlashCommands = async function() {
+	console.log("Implementing commands".system);
+	
+	console.log("\tLoading command files".system);
+	client.commands = new Discord.Collection();
+	var commands = [];
+	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));	//collect command scripts
+	for (const file of commandFiles) {
+		const command = require("./commands/" + file);
+		client.commands.set(command.data.name, command);
+		commands.push(command.data.toJSON());
+	}
+	console.log("\tLoaded command files successfully".system);
+
+	console.log("\tRegistering slash commands".system);
+	const rest = new REST({ version: '9' }).setToken(auth.token);
+	await rest.put(
+		Routes.applicationCommands(client.user.id), //, "292111506819252227"),	//unnecessary server id
+		{ body: commands }
+	);
+	console.log("\tRegistered slash commands successfully".system);
+	
+	console.log("Implemented commands successfully".system);
+	console.log();
+}
+var resumeConversations = async function() {
+	var messageSearchDepth = 10;
+	
+	console.log("Searching for missed messages".system);
+	var toRespondTo = [];
+	var whitelist = getWhitelist();
+	for (c = 0; c < whitelist.length; c++) {
+		channelID = whitelist[c];
+		let channel = await client.channels.fetch(channelID).catch(error => {
+			if (error.message === "Unknown Channel" || error.message === "Missing Access") {	//clean up the whitelist
+				console.error("\tInvalid channel ID found in whitelist (".error + channelID + ")".error);
+				removeFromWhitelist(channelID);
+				console.log("\tInvalid channel ID removed from whitelist (".warning + channelID + ")".warning);
+			} else {
+				throw error;
+			}
+		});
+		if (channel === undefined) continue;	//only necessary because "unknown channel" error doesn't end iteration
+		
+		let messages = await channel.messages.fetch({ limit: messageSearchDepth });
+		
+		messages = messages.first(messages.size);	//convert map to array
+		for (m = 0; m < messages.length; m++) {
+			var message = messages[m];
+			if (isEmptyMessage(message) || isMarkedAsIgnore(message)) continue;
+			if (!isFromUser(message)) toRespondTo.push(message);
+			break;
+		}
+	}
+	if (toRespondTo.length !== 0)
+		console.log("\tFound ".system + toRespondTo.length + " missed messages".system);
+
+	console.log("Searched for missed messages successfully".system);
+	
+	if (toRespondTo.length !== 0) {
+		console.log("Forwarding to message handler".system);
+		console.log();
+		toRespondTo.forEach(message => onMessage(message));
+	} else {
+		console.log();
+	}
 }
 
-var auth = require(filePath + 'auth.json');
-var memory = JSON.parse(fs.readFileSync(filePath + 'memory.json'));
-console.log("Authorization and Memory Loaded\n".system);
+var onError = function(error) {
+	console.log();
+	console.error("Discord Client encountered error".warning);
+	console.error("\t", debugFormatError(error));
+	console.log();
+}
 
-// Initialize Cleverbot AI
-console.log("Initializing Cleverbot AI".system);
-var cleverbot = cleverbot_free;
-console.log("Cleverbot AI Initialized\n".system);
+var onInteraction = async function(interaction) {
+	if (!interaction.isCommand()) return;
+	console.log("Received command interaction".system);
+	console.log("\t" + debugInteraction(interaction));
+	if (!client.commands.has(interaction.commandName)) return;
+	console.log("Command recognized".system);
+	
+	interaction.extraInfo = {
+		lastUpdated: lastUpdated,
+		addToWhitelist: addToWhitelist,
+		removeFromWhitelist: removeFromWhitelist		
+	}
 
-// Initialize Discord Bot
-console.log("Initializing Discord Client".system);
-//const client = new Discord.Client();
-const client = new Discord.Client({ 
+	console.log("Executing command".system);
+	try {
+		await client.commands.get(interaction.commandName).execute(interaction);
+	} catch (error) {
+		console.error("\t" + debugFormatError(error));
+		console.error("Failed to execute command".warning);
+		console.log();
+		sendErrorMessage(interaction, error);
+		return;
+	}
+	console.log("Command executed successfully".system);
+	console.log();
+}
+
+var onMessage = async function(message) {
+											//ignore messages if they...
+	if (isFromUser(message)) return;		//are from the user
+	if (isEmptyMessage(message)) return;	//are empty (images, embeds, interactions)
+	if (isMarkedAsIgnore(message)) return;	//are marked as ignore
+	if (isThinking(message.channel)) return;//are in channel already responding to
+	if (!isWhitelisted(message.channel) &&	//are not whitelisted or forced reply
+		!isAMention(message))
+		return;
+		
+	console.log("Received new message".system);	
+	console.log(indent(debugMessage(message),1));
+	
+	//clean up message, also used in generateContext()
+	console.log("Cleaning up message".system);
+	var input = message.cleanContent;
+	if (isAMention(message))
+		input = replaceMentions(input);
+	input = replaceUnknownEmojis(input);
+	console.log(indent("Content: ".info + message.cleanContent, 1));
+	
+	//generate or update conversation context
+	if (!hasContext(message.channel)) {
+		console.log("Generating new channel context".system);
+		await generateContext(message.channel);
+	}
+	else {
+		addToContext(message.channel, input);
+	}
+	
+	//prevent bot from responding to anything else while it thinks
+	startThinking(message.channel);
+	
+	//actually generate response
+	console.log("Generating response".system);
+	cleverbot(input, getContext(message.channel)).then(response => {	
+		console.log("Generated response successfully".system);
+		console.log("\tResponse: ".info + response);
+	
+		var timeTypeSec = response.length / typingSpeed;
+		message.channel.sendTyping();		//will automatically stop typing when message sends
+		console.log("Sending message".system);
+		setTimeout(
+			function() {
+				message.channel.messages.fetch({limit: 1}).then(lastMessages => {
+					if (lastMessages.first().id === message.id)	//respond normally if no extra messages have been sent in the meantime
+						message.channel.send(response).then(() => {
+							console.log("Sent message successfully".system);
+							console.log();
+						}).catch(error => {
+							console.error("\t" + debugFormatError(error));
+							console.error("Failed to send message".warning);
+						});
+					else										//use reply to respond directly if extra messages are in the way
+						message.reply(response).then(() => {
+							console.log("Sent reply successfully".system);
+							console.log();
+						}).catch(error => {
+							console.error("\t" + debugFormatError(error));
+							console.error("Failed to send reply".warning);
+						});
+
+					addToContext(message.channel, response);	//update conversation context
+					stopThinking(message.channel);				//allow bot to think about new messages now
+				});
+			}, 
+			timeTypeSec * 1000	//milliseconds
+		);
+	}).catch(error => {
+		removeLastMessageFromContext(message.channel);		//undo adding to context
+		stopThinking(message.channel);						//stop thinking so bot can respond in future
+		console.error("\t" + debugFormatError(error));	//log the error
+		console.error("Failed to generate response".warning);
+		if (error.message === "Response timeout of 10000ms exceeded" ||
+		error === "Failed to get a response after 15 tries") {
+			console.log("Trying again".system);
+			console.log();
+			onMessage(message);								//if error is timeout, then try again
+		}
+		else {
+			console.log("Replying with error message".system);
+			console.log();
+			sendErrorMessage(message, error);				//if unknown error, then respond to message with error message
+		}
+	});
+}
+var replaceMentions = function(content) {
+	return content.replaceAll("@​"+client.user.username, "Cleverbot");
+	//there's a special character after the @, but it doesn't show up in any text editor
+	//don't delete it! Otherwise, the bot will fail to recognize mentions
+}
+var replaceUnknownEmojis = function(content) {
+	return content.replaceAll(/:.*:/g, "\0");
+	//previously, all known emojis were converted to their unicode equivalents with message.cleanContent
+	//this replaces any leftover unknown emojis with null characters
+}
+
+var sendErrorMessage = function(message, error) {
+	console.log("Sending error message".system);
+	var embed = {
+		title: "Error",
+		description: "I encountered an error while trying to respond. Please forward this to my developer.",
+		color: 16711680, //red
+		fields: [
+			{
+				name: "Message",
+				value: "``" + error + "``"
+			}
+		]
+	}
+	
+	message.reply({embeds: [embed]}).then(() => {
+		console.log("Error message sent successfully".system);
+		console.log();
+	}).catch(error => {
+		console.error("\t" + debugFormatError(error));
+		console.log("Failed to send error message".warning);
+		console.log();
+	});
+}
+
+/* MESSAGES */
+var isMarkedAsIgnore = function(message) {
+	return message.cleanContent.substring(0,2) === "> ";
+}
+
+var isFromUser = function(message) {
+	return message.author.id === client.user.id;
+}
+
+var isEmptyMessage = function(message) {
+	return message.cleanContent === "";
+}
+
+var isAMention = function(message) {
+	return message.mentions.has(client.user);
+}
+
+/* WHITELIST */
+var getWhitelist = function() {
+	return JSON.parse(fs.readFileSync(whitelistFilePath));
+}
+
+var setWhitelist = function(whitelist) {
+	fs.writeFileSync(whitelistFilePath, JSON.stringify(whitelist));
+}
+
+var addToWhitelist = function(channel) {
+	var channelID = channel.id;
+	if (channelID === undefined)
+		channelID = channel;
+	
+	if (!isWhitelisted(channelID)) {
+		whitelist = getWhitelist();
+		whitelist.push(channelID);
+		setWhitelist(whitelist);
+		return true;
+	}
+	return false;
+}
+
+var removeFromWhitelist = function(channel) {
+	var channelID = channel.id;
+	if (channelID === undefined)
+		channelID = channel;
+	
+	if (isWhitelisted(channelID)) {
+		whitelist = getWhitelist();
+		whitelist.splice(whitelist.indexOf(channelID), 1);
+		setWhitelist(whitelist);
+		return true;
+	}
+	return false;
+}
+
+var isWhitelisted = function(channel) {
+	var channelID = channel.id;
+	if (channelID === undefined)
+		channelID = channel;
+	
+	return getWhitelist().indexOf(channelID) !== -1;
+}
+
+/* THINKING */
+var thinking = {		//to keep track of whether the bot is already generating a response for each channel
+	//channelID: true/false
+};
+
+var isThinking = function(channel) {
+	return thinking[channel.id];
+}
+
+var startThinking = function(channel) {
+	thinking[channel.id] = true;
+}
+
+var stopThinking = function(channel) {
+	thinking[channel.id] = false;
+}
+
+/* CONTEXT */
+var context = {			//to keep track of the past conversation for each channel
+	//channelID: ["past","messages"]
+}
+var maxContextLength = 50;
+
+var getContext = function(channel) {
+	return context[channel.id];
+}
+
+var hasContext = function(channel) {
+	return context[channel.id] !== undefined;
+}
+
+var generateContext = async function(channel) {
+	context[channel.id] = [];
+	var repliedTo = undefined;
+	var lastMessageFromUser = false;
+	
+	let messages = await channel.messages.fetch({limit: maxContextLength});
+	messages.each(message => {
+		if (isMarkedAsIgnore(message) || message.cleanContent === "") return;	//skip ignored messages and empty messages
+		if (!isFromUser(message) && repliedTo !== undefined && message.id !== repliedTo) return; //skip messages that bot skipped in the past
+		
+		//clean up message, also used in onMessage()
+		var input = message.cleanContent;
+		if (isAMention(message))
+			input = replaceMentions(input);
+		input = replaceUnknownEmojis(input);
+		
+		//if there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
+		if (!isFromUser(message) && !lastMessageFromUser && context[channel.id][0] !== undefined)
+			context[channel.id][0] = input + "\n" + context[channel.id][0];
+		else
+			context[channel.id].unshift(input);
+		
+		//if the message is from self, and it replies to another message,
+		//record what that message is so we can skip all the ignored messages in between (see above)
+		if (message.id === repliedTo)
+			repliedTo = undefined;	//reset for the future
+		if (isFromUser(message) && message.reference !== null)
+			if (message.reference.messageId !== undefined)
+				repliedTo = message.reference.messageId;
+			
+		lastMessageFromUser = isFromUser(message);
+	});
+	
+	return context[channel.id];
+}
+
+var addToContext = function(channel, str) {
+	context[channel.id].push(str);
+	if (context[channel.id].length > maxContextLength)
+		context[channel.id].shift();
+}
+
+var removeLastMessageFromContext = function(channel) {
+	context[channel.id].pop();
+}
+
+/* DEBUG */
+var indent = function(str, numTabs) {	//this is for indenting strings that have more than one line
+	var tabs = "";
+	while (numTabs > 0) {
+		tabs += '\t';
+		numTabs--;
+	}
+	return (tabs + str).replaceAll('\n', '\n'+tabs);
+}
+
+var debugFormatError = function(error) {
+	if (error.name !== undefined)
+		error.name = error.name.error;
+	return error;
+}
+
+var debugMessage = function(message) {
+	str  = "MESSAGE".info;
+	str += "\nContent: ".info + message.cleanContent;
+	str += "\nAuthor:  ".info + message.author.tag + " (".info + message.author.id + ")".info;
+	str += "\nChannel: ".info + message.channel.name + " (".info + message.channel.id + ")".info;
+	str += "\nGuild:   ".info + message.guild.name + " (".info + message.guild.id + ")".info;
+	return str;
+}
+
+var debugInteraction = function(interaction) {
+	str  = "INTERACTION".info;
+	if (interaction.isCommand())
+		str += "\nCommand: ".info + interaction.commandName;
+	str += "\nUser:    ".info + interaction.user.tag + " (".info + interaction.user.id + ")".info;
+	str += "\nChannel: ".info + interaction.channel.name + " (".info + interaction.channel.id + ")".info;
+	str += "\nGuild:   ".info + interaction.guild.name + " (".info + interaction.guild.id + ")".info;
+	return str;
+}
+
+/* THE ACTION */
+//requires
+console.log("Importing packages");//.system);	//won't work yet because colors isn't imported
+var fs = require('fs');
+var colors = require('colors');
+colors.setTheme({
+	system: ['green'],
+	warning: ['yellow'],
+	error: ['red'],
+	info: ['gray']
+});
+var Discord = require('discord.js');
+var client = new Discord.Client({
+	partials: [
+		'CHANNEL'
+	],
 	intents: [
 		Discord.Intents.FLAGS.GUILDS,
 		Discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -86,647 +469,47 @@ const client = new Discord.Client({
 		Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
 	]
 });
-console.log("Discord Client Initialized\n".system);
-
-var alreadyThinking = {
-	//channelID: true/false
-};
-var conversationContext = {
-	//channelID: ["past", "messages"]
-};
-
-var typingSpeed = 6; //characters per second
-
-var connect = function() {
-	console.log("Logging in".system);
-	client.login(auth.token).catch(connectionError);
-}
-
-client.once('ready', () => {
-	console.log("Login Complete, Client Ready".system);
-    console.log("\tLogged in as:".system);
-	console.log("\t\tUsername: ".system + client.user.tag);
-	console.log("\t\tUserID:   ".system + client.user.id);
-	console.log("\t\tBotUser:  ".system + client.user.bot);
-	
-	client.user.setActivity("cleverbot-free");
-	
-	//GUILDS LIST
-	console.log("\tGuilds List".info);
-	/*
-	var guildsArr = client.guilds.array();
-	for (var i = 0; i < guildsArr.length; i++)
-	{
-		console.log("\t\t" + guildsArr[i].name + " (".info + guildsArr[i].id + ")".info);
-	}
-	*/
-	client.guilds.cache.each(guild => console.log("\t\t" + guild.name + " (".info + guild.id + ")".info));
-	console.log("\tEnd of Guilds List\n".info);
-	
-	//WHITELISTED CHANNELS LIST
-	console.log("\tWhitelisted Channels List".info);
-	/*
-	var channelsArr = client.channels.array();
-	for (var i = 0; i < channelsArr.length; i++)
-	{
-		if (isWhitelisted(channelsArr[i].id))
-		{
-			var channelName;
-			var channelID;
-			var guildName;
-			var guildID;
-			if (channelsArr[i].type === 'dm')
-			{
-				channelName = channelsArr[i].recipient.tag;
-				channelID = channelsArr[i].id;
-				guildName = "Direct Message";
-				guildID = "NA";
-			}
-			else if (channelsArr[i].type === 'text')
-			{
-				channelName = channelsArr[i].name;
-				channelID = channelsArr[i].id;
-				guildName = channelsArr[i].guild.name;
-				guildID = channelsArr[i].guild.id;
-			}
-			
-			console.log("\t\t" + channelName + " (".info + channelID + ")".info);
-			console.log("\t\t\t" + guildName + " (".info + guildID + ")".info);
-		
-		}
-	}
-	*/
-	client.channels.cache.each(channel => {
-		if (isWhitelisted(channel.id))
-		{
-			var channelName;
-			var channelID;
-			var guildName;
-			var guildID;
-			if (channel.type === 'DM')
-			{
-				channelName = channel.recipient.tag;
-				channelID = channel.id;
-				guildName = "Direct Message";
-				guildID = "NA";
-			}
-			else if (channel.type === 'GUILD_TEXT')
-			{
-				channelName = channel.name;
-				channelID = channel.id;
-				guildName = channel.guild.name;
-				guildID = channel.guild.id;
-			}
-			
-			console.log("\t\t" + channelName + " (".info + channelID + ")".info);
-			console.log("\t\t\t" + guildName + " (".info + guildID + ")".info);
-		
-		}
-	});
-	console.log("\tEnd of Whitelisted Channels List\n".info);
-	
-	//CONVERSATION CONTEXT
-	/*
-	for (var i = 0; i < channelsArr.length; i++)
-	{
-		if (isWhitelisted(channelsArr[i].id))
-		{
-			createContextForChannel(channelsArr[i]);
-		}
-	}
-	*/
-	client.channels.cache.each(channel => {
-		if (isWhitelisted(channel.id))
-		{
-			createContextForChannel(channel);
-		}
-	});
-	
-	//SCANNING FOR UNREAD MESSAGES
-	console.log("Scanning Previous Messages".system);
-	/*
-	for (var i = 0; i < channelsArr.length; i++)
-	{					
-		//if on whitelisted channel, and not voice channel, and there is a last message
-		if (isWhitelisted(channelsArr[i].id) && channelsArr[i].type !== "voice")
-		{			
-			channelsArr[i].fetchMessages({ limit: 10 }).then(messages => {	
-				//make it so the bot goes through the messages and ignores ones that have commands or > in them			
-				var message, m = 0;
-				do {
-					message = messages.array()[m];
-					if (message === undefined || message.author.id === client.user.id) return;
-					m++;
-				} while ((isMarkedAsIgnore(message) || hasACommand(message)) && m < messages.array().length);
-				
-				//debug info
-				var guildName;
-				var guildID;
-				var channelName;
-				var channelID = message.channel.id;
-				var authorTag = message.author.tag;;
-				var authorID = message.author.id;
-				var authorBot = message.author.bot;
-				if (message.channel.type === 'dm')
-				{
-					guildName = "Direct Message";
-					guildID = "NA";
-					channelName = message.channel.recipient.tag; 
-				}
-				else if (message.channel.type === 'text')
-				{
-					guildName = message.channel.guild.name;
-					guildID = message.channel.guild.id;
-					channelName = message.channel.name;
-				}					
-				console.log("\tFound New Unread Message".system);
-				console.log("\t\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
-				console.log("\t\tBot:     ".system + authorBot);
-				console.log("\t\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
-				console.log("\t\tChannel: ".system + channelName + " (".system + channelID + ")".system);
-				console.log("\t\tMessage: ".system + message.cleanContent);
-				console.log("\tReferring to Response Generation".system);
-				//generateAndRespond(message);
-				onMessage(message);
-			}).catch(console.error);
-		}
-	}
-	*/
-	client.channels.cache.each(channel => {
-		//if on whitelisted channel, and not voice channel, and there is a last message
-		if (isWhitelisted(channel.id) && channel.type !== 'GUILD_VOICE')
-		{			
-			channel.messages.fetch({ limit: 10 }).then(messages => {	
-				//make it so the bot goes through the messages and ignores ones that have commands or > in them			
-				/*
-				var message, m = 0;
-				do {
-					message = messages.array()[m];
-					if (message === undefined || message.author.id === client.user.id) return;
-					m++;
-				} while ((isMarkedAsIgnore(message) || hasACommand(message)) && m < messages.array().length);
-				*/
-				var message;
-				var done = false
-				messages.each(msg => {
-					if (msg === undefined || msg.author.id === client.user.id)
-						done = true
-					
-					if (done || message !== undefined || isMarkedAsIgnore(msg) || hasACommand(msg))
-						return;
-					
-					message = msg;
-				});
-				
-				if (message === undefined) return;
-				
-				//debug info
-				var guildName;
-				var guildID;
-				var channelName;
-				var channelID = message.channel.id;
-				var authorTag = message.author.tag;;
-				var authorID = message.author.id;
-				var authorBot = message.author.bot;
-				if (message.channel.type === 'DM')
-				{
-					guildName = "Direct Message";
-					guildID = "NA";
-					channelName = message.channel.recipient.tag; 
-				}
-				else if (message.channel.type === 'GUILD_TEXT')
-				{
-					guildName = message.channel.guild.name;
-					guildID = message.channel.guild.id;
-					channelName = message.channel.name;
-				}					
-				console.log("\tFound New Unread Message".system);
-				console.log("\t\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
-				console.log("\t\tBot:     ".system + authorBot);
-				console.log("\t\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
-				console.log("\t\tChannel: ".system + channelName + " (".system + channelID + ")".system);
-				console.log("\t\tMessage: ".system + message.cleanContent);
-				console.log("\tReferring to Response Generation".system);
-				//generateAndRespond(message);
-				onMessage(message);
-			}).catch(console.error);
-		}
-	});
-	console.log("Done Scanning".system);
-});
-
-var connectionError = function() {
-	console.log("Connection Error!".error);
-	console.log("Retrying connection in 1 second\n".error);
-	setTimeout(connect, 1000); //use connect() function in 1 second
-}
-
-/*
-client.on('reconnecting', () => {
-	console.log("Attempting to Reconnect...\n".error);
-});
-*/
-
-client.on('error', error => {
-	console.log("Connection Error: ".error + error);
-});
-
-//client.on('message', message => onMessage(message));
+client.on('error', error => onError(error));
+client.once('ready', onceReady);
+client.on('interactionCreate', interaction => onInteraction(interaction));
 client.on('messageCreate', message => onMessage(message));
+var cleverbot = require('cleverbot-free');
+var { REST } = require('@discordjs/rest');
+var { Routes } = require('discord-api-types/v9');
+console.log("Imported packages successfully".system);
+console.log();
 
-var onMessage = function (message) {
-	if (message.author.id === client.user.id) return;
-	if (message.content === "") return; //ignore media messages w/o text
-	
-	//debug info
-	var guildName;
-		if (message.channel.type === 'DM') guildName = "Direct Message";
-		else if (message.channel.type === 'GUILD_TEXT') guildName = message.channel.guild.name;
-	var channelName;
-		if (message.channel.type === 'DM') channelName = message.channel.recipient.tag;
-		else if (message.channel.type === 'GUILD_TEXT') channelName = message.channel.name;
-	var channelID;
-		channelID = message.channel.id;
-		
-	if (isAMention(message.content) || message.channel.type === 'DM') //treat DMs as commands or always respond
-	{
-		//console.log("Is a mention or DM");
-		
-		if (hasACommand(message) && client.user.bot) //is a command (only for bot users)
-		{
-			var cmd = removeMention(message.content).toLowerCase().trim().replace("!", "");
-			if (cmd === "whitelist" || cmd === "enable" || cmd == "allow") //WHITELIST
-			{
-				if (message.channel.type === 'DM')
-				{
-					var richEmbed = 
-					{
-					  embeds: [
-						  {
-							title: "Direct Message Channels",
-							description: "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Enabling is not necessary.",
-							//color: 65280, //green
-							color: 13621503, //icy white
-							thumbnail: {
-								"url": "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-							}
-						  }
-					  ]
-					}
-				
-					message.channel.send(richEmbed);
-				}
-				else
-				{
-					whitelist(message.channel);
-										
-					var richEmbed = 
-					{
-					  embeds: [
-						  {
-							title: client.user.username + " Enabled for \"" + channelName + "\"",
-							description: "You have enabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will respond to all future messages sent in <#" + channelID + ">.",
-							color: 65280, //green
-							//color: 13621503, //icy white
-							thumbnail: {
-								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-							},
-							fields: [
-							  {
-								name: "Disabling",
-								value: "If you wish for <@" + client.user.id + "> to stop responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !disable*\n*@" + client.user.tag + " !unwhitelist*\n*@" + client.user.tag + " !unallow*"
-							  }
-							]
-						  }
-					  ]
-					}
-				
-					message.channel.send(richEmbed);
-				}
-			}
-			else if (cmd === "unwhitelist" || cmd === "disable" || cmd === "unallow") //UNWHITELIST
-			{
-				if (message.channel.type === 'DM')
-				{
-					var richEmbed = 
-					{
-					  embeds: [
-						  {
-							title: "Direct Message Channels",
-							description: "<@" + client.user.id + "> is always enabled for direct message channels, and will respond to all messages by default. Disabling is not possible.",
-							//color: 65280, //green
-							color: 13621503, //icy white
-							thumbnail: {
-								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-							}
-						  }
-					  ]
-					}
-				
-					message.channel.send(richEmbed);
-				}
-				else
-				{
-					unwhitelist(message.channel);
-									
-					var richEmbed = 
-					{
-					  embeds: [
-						  {
-							title: client.user.username + " Disabled for \"" + channelName + "\"",
-							description: "You have disabled <@" + client.user.id + "> for <#" + channelID + ">. This means that <@" + client.user.id + "> will no longer respond to future messages sent in <#" + channelID + ">.",
-							color: 16711680, //red
-							//color: 13621503, //icy white
-							thumbnail: {
-								url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-							},
-							fields: [
-							  {
-								name: "Enabling",
-								value: "If you wish for <@" + client.user.id + "> to start responding to messages in <#" + channelID + "> in the future, send any one of these commands:\n*@" + client.user.tag + " !enable*\n*@" + client.user.tag + " !whitelist*\n*@" + client.user.tag + " !allow*"
-							  }
-							]
-						  }
-					  ]
-					}
-				
-					message.channel.send(richEmbed);
-				}
-			}
-			
-			return;
-		}
-	}
-	
-	//if the user is not a bot, than automatically whitelist any channel you get a message from, as long as it isn't muted
-	if (!client.user.bot)
-	{
-		if (!isWhitelisted(channelID) && message.channel.type !== 'DM')
-			if (!message.channel.muted && !message.guild.muted)
-				whitelist(message.channel);
-		//and unwhitelist ones that get muted	
-		if (isWhitelisted(channelID) && (message.channel.muted || message.guild.muted))
-			unwhitelist(message.channel);
-	}
-	
-	if (isWhitelisted(channelID) || isAMention(message.content) || message.channel.type === 'DM') //can respond
-	{
-		if (!isMarkedAsIgnore(message)) //special ignore code
-		{
-			generateAndRespond(message);
-		}			
-	}
+//load memory files
+console.log("Loading memory files".system);
+if (process.argv[2] === undefined) {										//was login info provided?
+	var error = new Error();
+	error.name = "Missing Console Argument";
+	error.message = "Account directory name not provided";
+	error.message += "\n\tPlease follow this usage:";
+	error.message += "\n\tnode " + process.argv[1] + " " + "[ACCOUNT DIRECTORY NAME]".underline;
+	throw debugFormatError(error);
 }
-
-var isAMention = function(message){
-	return (message.includes("<@!" + client.user.id + ">") || message.includes("<@" + client.user.id + ">"));
+var filePath = "./" + process.argv[2] + "/";
+var authFilePath = filePath + "auth.json";
+var whitelistFilePath = filePath + "whitelist.json";
+if (!fs.existsSync(filePath)) {												//does the necessary directory exist?
+	var error = new Error();
+	error.name = "Missing Account Directory".error;
+	error.message = "Account directory does not exist";
+	error.message += "\n\tPlease create a directory (" + filePath + ") to contain the account's memory files";
+	//var necessaryFilePath = process.argv[1].slice(0, process.argv[1].lastIndexOf('\\')+1) + process.argv[2] + "\\";
+	throw debugFormatError(error);
 }
-
-var removeMention = function(message) {
-	message = message.replaceAll("<@!" + client.user.id + ">", "");
-	message = message.replaceAll("<@" + client.user.id + ">", "");
-	return message;
+if (!fs.existsSync(authFilePath) || !fs.existsSync(whitelistFilePath)) {	//do the necessary files exist?
+	var error = new Error();
+	error.name = "Missing Memory Files".error;
+	error.message = "Account directory missing essential memory files";
+	error.message += "\n\tPlease create the necessary files (" + authFilePath + ") (" + whitelistFilePath + ")";
+	throw debugFormatError(error);
 }
+var auth = require(authFilePath);
+console.log("Loaded memory files successfully".system);
+console.log();
 
-var hasACommand = function(message) {
-	var content = removeMention(message.content);
-	content = content.trim();
-	return (content.charAt(0) === '!');
-}
-
-var isMarkedAsIgnore = function(message) {
-	return (message.cleanContent.split(" ")[0] === ">");
-}
-
-var isWhitelisted = function(channelID) {	
-	for (var i = 0; i < memory.whitelist.length; i++)
-	{
-		if (memory.whitelist[i] === channelID) return true;
-	}
-	return false;
-}
-
-var whitelist = function(channel) {
-	if (memory.whitelist.indexOf(channel.id) === -1)
-	{
-		memory.whitelist.push(channel.id);
-		syncMemory();
-	}
-	
-	console.log("This bot has been enabled for a new channel!".system);
-	console.log("\tGuild Name:   ".system + channel.guild.name);
-	console.log("\tChannel Name: ".system + channel.name);
-}
-
-var unwhitelist = function(channel) {
-	var index = memory.whitelist.indexOf(channel.id);
-	if (index !== -1)
-	{
-		memory.whitelist.splice(index, 1);
-		syncMemory();
-	}
-					
-	console.log("\n");
-	console.log("This bot has been disabled on a channel.".system);
-	console.log("\tGuild Name:   ".system + channel.guild.name);
-	console.log("\tChannel Name: ".system + channel.name);
-}
-
-var createContextForChannel = function(channel) {
-	conversationContext[channel.id] = [];
-	channel.messages.fetch({ limit: 20 }).then(messages => {
-		/*
-		var messagesArr = messages.array();
-		var lastOneFromMe = true;
-		for (var j = 0; j < messagesArr.length; j++)
-		{
-			//if prefixed with >, or is a command, or is empty, ignore
-			if (isMarkedAsIgnore(messagesArr[j]) || hasACommand(messagesArr[j]) || messagesArr[j].content === "") continue;
-			//if the latest message IS NOT from the bot, don't add to the context, because it'll be added by generateAndRespond() later
-			if (j == 0 && messagesArr[j].author.id !== client.user.id) continue;
-			
-			var thisOneFromMe = (messagesArr[j].author.id === client.user.id);
-			if (!lastOneFromMe && !thisOneFromMe) //if last message wasn't from bot and current message isn't either
-			{
-				conversationContext[channel.id].unshift(""); //add a placeholder
-			}
-			lastOneFromMe = thisOneFromMe;
-			
-			conversationContext[channel.id].unshift(formatDiscordToCleverbot(messagesArr[j].content));
-		}
-		*/
-		var lastOneFromMe = true;
-		messages.each(message => {
-			//if prefixed with >, or is a command, or is empty, ignore
-			if (isMarkedAsIgnore(message) || hasACommand(message) || message.content === "") return;
-			//if the latest message IS NOT from the bot, don't add to the context, because it'll be added by generateAndRespond() later
-			//if (j == 0 && message.author.id !== client.user.id) return;
-			
-			var thisOneFromMe = (message.author.id === client.user.id);
-			if (!lastOneFromMe && !thisOneFromMe) //if last message wasn't from bot and current message isn't either
-			{
-				conversationContext[channel.id].unshift(""); //add a placeholder
-			}
-			lastOneFromMe = thisOneFromMe;
-			
-			conversationContext[channel.id].unshift(formatDiscordToCleverbot(message.content));
-		});
-	}).catch(console.error);
-}
-
-var formatCleverbotToDiscord = function(response){
-	response = response.replace(":)", ":slight_smile:");
-	response = response.replace("(:", ":upside_down:");
-	
-	response = response.replace(";)", ":wink:");
-	response = response.replace("(;", ":wink:");
-	
-	response = response.replace("):", ":slight_frown:");
-	response = response.replace(":(", ":slight_frown:");
-	
-	response = response.replace(":O", ":open_mouth:");
-	
-	response = response.replace(":\\", ":confused:");
-	response = response.replace(":/", ":confused:");
-	
-	response = response.replace(":'(", ":cry:");
-	
-	response = response.replace(":$", ":confused:");
-	
-	response = response.replace("XD", ":stuck_out_tongue_closed_eyes:");
-	
-	response = response.replace("♥", ":heart:");
-	response = response.replace("❤", ":heart:");
-	response = response.replace("❥", ":heart:");
-	
-	return response;
-}
-
-var formatDiscordToCleverbot = function(response){
-	response = response.replace(":slight_smile:", ":)");
-	response = response.replace(":upside_down:", "(:");
-	
-	response = response.replace(":wink:", ";)");
-	response = response.replace(":wink:", "(;");
-	
-	response = response.replace(":slight_frown:", "):");
-	//response = response.replace(":slight_frown:", ":(");
-	
-	response = response.replace(":open_mouth:", ":O");
-	
-	response = response.replace(":confused:", ":\\");
-	response = response.replace(":confused:", ":/");
-	
-	response = response.replace(":cry:", ":'(");
-	
-	response = response.replace(":confused:", ":$");
-	
-	response = response.replace(":stuck_out_tongue_closed_eyes:", "XD");
-	
-	response = response.replace(":heart:", "♥");
-	//response = response.replace(":heart:", "❤");
-	//response = response.replace(":heart:", "❥");
-	
-	return response;
-}
-
-var syncMemory = function() {
-	fs.writeFileSync(filePath + 'memory.json', JSON.stringify(memory)); 
-}
-
-var generateAndRespond = function(message) { 
-	//debug info
-	var guildName;
-	var guildID;
-	var channelName;
-	var channelID = message.channel.id;
-	var authorTag = message.author.tag;;
-	var authorID = message.author.id;
-	var authorBot = message.author.bot;
-	if (message.channel.type === 'DM')
-	{
-		guildName = "Direct Message";
-		guildID = "NA";
-		channelName = message.channel.recipient.tag; 
-	}
-	else if (message.channel.type === 'GUILD_TEXT')
-	{
-		guildName = message.channel.guild.name;
-		guildID = message.channel.guild.id;
-		channelName = message.channel.name;
-	}
-	
-	//already thinking
-	if (alreadyThinking[message.channel.id])
-	{
-		console.log("\n");
-		console.log("Message: ".system + message.cleanContent);
-		console.log("\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
-		console.log("\tBot:     ".system + authorBot);
-		console.log("\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
-		console.log("\tChannel: ".system + channelName + " (".system + channelID + ")".system);
-		console.log("Response: ".system + "[ignoring because already thinking]");
-		return;
-	}
-	alreadyThinking[message.channel.id] = true;
-	
-	//generate response
-	var input = formatDiscordToCleverbot(message.cleanContent);
-	if (conversationContext[message.channel.id] === undefined)
-		createContextForChannel(message.channel);
-	conversationContext[message.channel.id].push(input);
-	var context = conversationContext[message.channel.id];
-	cleverbot(input, context).then(response => {
-		response = formatCleverbotToDiscord(response);
-				
-		console.log("\n");
-		console.log("Message: ".system + message.cleanContent);
-		console.log("\tAuthor:  ".system + authorTag + " (".system + authorID + ")".system);
-		console.log("\tBot:     ".system + authorBot);
-		console.log("\tGuild:   ".system + guildName + " (".system + guildID + ")".system);
-		console.log("\tChannel: ".system + channelName + " (".system + channelID + ")".system);
-		console.log("Response: ".system + response);
-				
-		sendMessage(message.channel, response, true);
-		conversationContext[message.channel.id].push(response);
-			
-		//alreadyThinking[message.channel.id] = false;	//moved to sendMessage()
-	}).catch(error => {
-		console.log();
-		console.error((error+"").error);
-		console.log("Trying again".error);
-		alreadyThinking[message.channel.id] = false;
-		generateAndRespond(message);
-	});
-}
-
-var sendMessage = function(channel, content, simTyping) {
-	if (simTyping === undefined) simTyping = false;
-	
-	if (simTyping)
-	{
-		var timeTypeSec = content.length / typingSpeed;
-		
-		//channel.startTyping();
-		channel.sendTyping();
-		setTimeout(
-			function() { 
-				//channel.stopTyping(); 
-				channel.send(content).then(message => console.log("Sent message: ".system + message.content)).catch(sendingMessageError);
-				alreadyThinking[channel.id] = false;
-			}, 
-			timeTypeSec * 1000
-		);
-	}
-	else
-	{
-		channel.send(content);
-		alreadyThinking[channel.id] = false;
-	}
-}
-
-var sendingMessageError = function(err, res) {
-	if (err != null) console.error('\tERROR: could not send message\n\terr = [' + err + '], res = [' + res + ']');
-}
-
+//let's begin
 connect();
