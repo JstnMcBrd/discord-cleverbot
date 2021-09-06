@@ -489,7 +489,7 @@ if (process.argv[2] === undefined) {										//was login info provided?
 	error.message += "\n\tnode " + process.argv[1] + " " + "[ACCOUNT DIRECTORY NAME]".underline;
 	throw debugFormatError(error);
 }
-var filePath = "./" + process.argv[2] + "/";
+var filePath = "./accounts/" + process.argv[2] + "/";
 var authFilePath = filePath + "auth.json";
 var whitelistFilePath = filePath + "whitelist.json";
 if (!fs.existsSync(filePath)) {												//does the necessary directory exist?
@@ -497,7 +497,6 @@ if (!fs.existsSync(filePath)) {												//does the necessary directory exist?
 	error.name = "Missing Account Directory".error;
 	error.message = "Account directory does not exist";
 	error.message += "\n\tPlease create a directory (" + filePath + ") to contain the account's memory files";
-	//var necessaryFilePath = process.argv[1].slice(0, process.argv[1].lastIndexOf('\\')+1) + process.argv[2] + "\\";
 	throw debugFormatError(error);
 }
 if (!fs.existsSync(authFilePath) || !fs.existsSync(whitelistFilePath)) {	//do the necessary files exist?

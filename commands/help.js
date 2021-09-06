@@ -12,9 +12,6 @@ module.exports = {
 			title: "User Guide",
 			description: "Hello! I am " + userMention + ", a chat bot for Discord. I respond to your messages using artifical intelligence from the [CleverBot](https://www.cleverbot.com/) API.",
 			color: 13621503, //icy white
-			thumbnail: {
-				url: "https://cdn.discordapp.com/attachments/398641708319113226/443818626156462114/embed_thumbnail.png"
-			},
 			fields: [
 				{
 					name: "Whitelisting",
