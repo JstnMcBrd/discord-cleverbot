@@ -1,13 +1,7 @@
-/*
-TODO
-*/
-
-/*
-BUGS
-*/
+#!/usr/bin/env node
 
 /* GLOBAL MODIFIERS */
-var lastUpdated = new Date(2021, 8, 6, 1, 30); //month is 0-indexed
+var lastUpdated = new Date(2021, 8, 15, 2, 30);	//month is 0-indexed
 var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
 /* LOG IN */
@@ -37,14 +31,29 @@ var onceReady = async function() {
 }
 var setUserActivity = function() {
 	var repeatWait = 5*60; //seconds
+	activityOptions = {
+		name: "/help",
+		type: 'LISTENING',
+		url: "https://www.cleverbot.com/"
+	}
 	
 	console.log("Setting user activity".system);
-	client.user.setActivity("/help", {
-		url: "https://www.cleverbot.com/",
-		type: 'LISTENING'
-	});
+	presence = client.user.setActivity(activityOptions);
+	
+	//double check
+	activity = presence.activities[0];
+	var correct = false;
+	if (activity !== undefined) {
+		correct = activity.name === activityOptions.name &&
+			activity.type === activityOptions.type &&
+			activity.url === activityOptions.url;
+	}
+	if (correct)
+		console.log("Set user activity successfully".system);
+	else
+		console.error("Failed to set user activity".warning);
+	
 	setTimeout(setUserActivity, repeatWait*1000); //set user activity at regular intervals
-	console.log("Set user activity successfully".system);
 	console.log("Setting again in ".system + repeatWait + " seconds".system);
 	console.log();
 }
@@ -65,7 +74,7 @@ var registerSlashCommands = async function() {
 	console.log("\tRegistering slash commands".system);
 	const rest = new REST({ version: '9' }).setToken(auth.token);
 	await rest.put(
-		Routes.applicationCommands(client.user.id), //, "292111506819252227"),	//unnecessary server id
+		Routes.applicationCommands(client.user.id),
 		{ body: commands }
 	);
 	console.log("\tRegistered slash commands successfully".system);
@@ -74,41 +83,50 @@ var registerSlashCommands = async function() {
 	console.log();
 }
 var resumeConversations = async function() {
+	var repeatWait = 30*60; //seconds
 	var messageSearchDepth = 10;
 	
 	console.log("Searching for missed messages".system);
 	var toRespondTo = [];
-	var whitelist = getWhitelist();
-	for (c = 0; c < whitelist.length; c++) {
-		channelID = whitelist[c];
-		let channel = await client.channels.fetch(channelID).catch(error => {
-			if (error.message === "Unknown Channel" || error.message === "Missing Access") {	//clean up the whitelist
-				console.error("\tInvalid channel ID found in whitelist (".error + channelID + ")".error);
-				removeFromWhitelist(channelID);
-				console.log("\tInvalid channel ID removed from whitelist (".warning + channelID + ")".warning);
-			} else {
-				throw error;
+	try {
+		var whitelist = getWhitelist();
+		for (c = 0; c < whitelist.length; c++) {
+			channelID = whitelist[c];
+			let channel = await client.channels.fetch(channelID).catch(error => {
+				if (error.message === "Unknown Channel" || error.message === "Missing Access") {	//clean up the whitelist
+					console.error("\tInvalid channel ID found in whitelist (".error + channelID + ")".error);
+					removeFromWhitelist(channelID);
+					console.log("\tInvalid channel ID removed from whitelist (".warning + channelID + ")".warning);
+				} else {
+					throw error;
+				}
+			});
+			if (channel === undefined) continue;	//only necessary because "unknown channel" error doesn't end iteration
+			
+			let messages = await channel.messages.fetch({ limit: messageSearchDepth });
+			
+			messages = messages.first(messages.size);	//convert map to array
+			for (m = 0; m < messages.length; m++) {
+				var message = messages[m];
+				if (isEmptyMessage(message) || isMarkedAsIgnore(message)) continue;
+				if (!isFromUser(message)) toRespondTo.push(message);
+				break;
 			}
-		});
-		if (channel === undefined) continue;	//only necessary because "unknown channel" error doesn't end iteration
-		
-		let messages = await channel.messages.fetch({ limit: messageSearchDepth });
-		
-		messages = messages.first(messages.size);	//convert map to array
-		for (m = 0; m < messages.length; m++) {
-			var message = messages[m];
-			if (isEmptyMessage(message) || isMarkedAsIgnore(message)) continue;
-			if (!isFromUser(message)) toRespondTo.push(message);
-			break;
 		}
-	}
-	if (toRespondTo.length !== 0)
-		console.log("\tFound ".system + toRespondTo.length + " missed messages".system);
+		if (toRespondTo.length !== 0)
+			console.log("\tFound ".system + toRespondTo.length + " missed messages".system);
 
-	console.log("Searched for missed messages successfully".system);
+		console.log("Searched for missed messages successfully".system);
+	}
+	catch (error) {
+		console.error("\t" + debugFormatError(error));	//log the error
+		console.log("Failed to search for missed messages".warning);
+	}
+	setTimeout(resumeConversations, repeatWait*1000); //check for missed messages at regular intervals
+	console.log("Searching again in ".system + repeatWait + " seconds".system);
 	
 	if (toRespondTo.length !== 0) {
-		console.log("Forwarding to message handler".system);
+		console.log("Forwarding messages to message handler".system);
 		console.log();
 		toRespondTo.forEach(message => onMessage(message));
 	} else {
@@ -242,9 +260,19 @@ var replaceMentions = function(content) {
 	//don't delete it! Otherwise, the bot will fail to recognize mentions
 }
 var replaceUnknownEmojis = function(content) {
-	return content.replaceAll(/:.*:/g, "\0");
-	//previously, all known emojis were converted to their unicode equivalents with message.cleanContent
-	//this replaces any leftover unknown emojis with null characters
+	//replaces all : emoji indicators with *
+	//problem: will replace all : regardless of whether it is an emoji
+	return content.replaceAll(':', '*');
+	
+	//replaces any unknown emojis with their id code as text
+	//problem: messes up if  multiple emojis included
+	//return content.replaceAll(/:.*:/g, match => {
+	//	return "*" + match.slice(1,match.length-1) + "*";	//cut off the : at each end, add * instead
+	// });
+	
+	//replaces any unknown emojis with null characters
+	//problem: deletes large chunks of text if multiple emojis included
+	//return content.replaceAll(/:.*:/g, "\0");
 }
 
 var sendErrorMessage = function(message, error) {
@@ -431,7 +459,8 @@ var debugMessage = function(message) {
 	str += "\nContent: ".info + message.cleanContent;
 	str += "\nAuthor:  ".info + message.author.tag + " (".info + message.author.id + ")".info;
 	str += "\nChannel: ".info + message.channel.name + " (".info + message.channel.id + ")".info;
-	str += "\nGuild:   ".info + message.guild.name + " (".info + message.guild.id + ")".info;
+	if (message.guild !== null)		//compensate for DMs
+		str += "\nGuild:   ".info + message.guild.name + " (".info + message.guild.id + ")".info;
 	return str;
 }
 
@@ -441,7 +470,8 @@ var debugInteraction = function(interaction) {
 		str += "\nCommand: ".info + interaction.commandName;
 	str += "\nUser:    ".info + interaction.user.tag + " (".info + interaction.user.id + ")".info;
 	str += "\nChannel: ".info + interaction.channel.name + " (".info + interaction.channel.id + ")".info;
-	str += "\nGuild:   ".info + interaction.guild.name + " (".info + interaction.guild.id + ")".info;
+	if (interaction.guild !== null)	//compensate for DMs
+		str += "\nGuild:   ".info + interaction.guild.name + " (".info + interaction.guild.id + ")".info;
 	return str;
 }
 
