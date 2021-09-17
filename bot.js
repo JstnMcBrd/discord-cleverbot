@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /* GLOBAL MODIFIERS */
-var lastUpdated = new Date(2021, 8, 15, 2, 30);	//month is 0-indexed
+var lastUpdated = new Date(2021, 8, 17, 13, 30);	//month is 0-indexed
 var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
 /* LOG IN */
@@ -187,7 +187,7 @@ var onMessage = async function(message) {
 	if (isAMention(message))
 		input = replaceMentions(input);
 	input = replaceUnknownEmojis(input);
-	console.log(indent("Content: ".info + message.cleanContent, 1));
+	console.log(indent("Content: ".info + input, 1));
 	
 	//generate or update conversation context
 	if (!hasContext(message.channel)) {
@@ -260,19 +260,17 @@ var replaceMentions = function(content) {
 	//don't delete it! Otherwise, the bot will fail to recognize mentions
 }
 var replaceUnknownEmojis = function(content) {
-	//replaces all : emoji indicators with *
-	//problem: will replace all : regardless of whether it is an emoji
-	return content.replaceAll(':', '*');
-	
-	//replaces any unknown emojis with their id code as text
-	//problem: messes up if  multiple emojis included
-	//return content.replaceAll(/:.*:/g, match => {
-	//	return "*" + match.slice(1,match.length-1) + "*";	//cut off the : at each end, add * instead
-	// });
-	
-	//replaces any unknown emojis with null characters
-	//problem: deletes large chunks of text if multiple emojis included
-	//return content.replaceAll(/:.*:/g, "\0");
+	//replaces all unknown emojis with their id as *emphasized* text
+	//start with custom emojis
+	content = content.replaceAll(/<:[\w\W][^:\s]+:\d+>/g, match => {
+		match = match.replace("<:", "");
+		match = match.replace(/:\d+>/g, "");
+		match = match.replace("_", " ");
+		return "*"+match+"*";
+	});
+	//now replace any unknown emojis that aren't custom
+	content = content.replaceAll(":", "*").replaceAll("_", " ");
+	return content;
 }
 
 var sendErrorMessage = function(message, error) {
