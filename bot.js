@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-
 /* GLOBAL MODIFIERS */
-var lastUpdated = new Date(2021, 8, 17, 13, 30);	//month is 0-indexed
+var lastUpdated = new Date(2021, 9, 18, 14, 00);	//month is 0-indexed
 var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
 /* LOG IN */

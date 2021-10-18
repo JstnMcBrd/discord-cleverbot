@@ -10,7 +10,7 @@ module.exports = {
 		
 		var embed = {
 			title: "User Guide",
-			description: "Hello! I am " + userMention + ", a chat bot for Discord. I respond to your messages using artifical intelligence from the [CleverBot](https://www.cleverbot.com/) API.",
+			description: "Hello! I am " + userMention + ", a chat bot for Discord. I respond to your messages using artifical intelligence from the [Cleverbot](https://www.cleverbot.com/) API.",
 			color: 13621503, //icy white
 			fields: [
 				{
