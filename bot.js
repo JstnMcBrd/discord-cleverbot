@@ -1,5 +1,5 @@
 /* GLOBAL MODIFIERS */
-var lastUpdated = new Date(2021, 9, 18, 14, 00);	//month is 0-indexed
+var lastUpdated = new Date(2021, 9, 28, 17, 30);	//month is 0-indexed
 var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
 /* LOG IN */
@@ -445,9 +445,11 @@ var indent = function(str, numTabs) {	//this is for indenting strings that have 
 }
 
 var debugFormatError = function(error) {
+	var e = new Error();
 	if (error.name !== undefined)
-		error.name = error.name.error;
-	return error;
+		e.name = error.name.error;
+	e.message = error.message;
+	return e;
 }
 
 var debugMessage = function(message) {
