@@ -1,5 +1,5 @@
 /* GLOBAL MODIFIERS */
-var lastUpdated = new Date(2021, 9, 28, 17, 30);	//month is 0-indexed
+var lastUpdated = new Date(2022, 0, 6, 23, 00);	//month is 0-indexed
 var typingSpeed = 6;	//how fast the bot sends messages (characters per second)
 
 /* LOG IN */
@@ -201,7 +201,14 @@ var onMessage = async function(message) {
 	
 	//actually generate response
 	console.log("Generating response".system);
-	cleverbot(input, getContext(message.channel)).then(response => {	
+	cleverbot(input, getContext(message.channel)).then(response => {
+		if (response === "") {
+			var error = new Error();
+			error.name = "Invalid Cleverbot Response";
+			error.message = "Response is an empty string";
+			throw error;
+		}
+		
 		console.log("Generated response successfully".system);
 		console.log("\tResponse: ".info + response);
 	
@@ -240,7 +247,8 @@ var onMessage = async function(message) {
 		console.error("\t" + debugFormatError(error));	//log the error
 		console.error("Failed to generate response".warning);
 		if (error.message === "Response timeout of 10000ms exceeded" ||
-		error === "Failed to get a response after 15 tries") {
+		error === "Failed to get a response after 15 tries" ||
+		error.message === "Response is an empty string") {
 			console.log("Trying again".system);
 			console.log();
 			onMessage(message);								//if error is timeout, then try again
