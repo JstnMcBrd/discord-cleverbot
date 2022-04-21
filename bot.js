@@ -221,8 +221,8 @@ var onMessage = async function(message) {
 	if (!isWhitelisted(message.channel) &&	//not whitelisted or forced reply
 		!isAMention(message))
 		return;
-		
-	console.log("Received new message".system);	
+	
+	console.log("Received new message".system);
 	console.log(indent(debugMessage(message),1));
 	
 	//clean up message, also used in generateContext()
@@ -258,7 +258,7 @@ var onMessage = async function(message) {
 		
 		console.log("Generated response successfully".system);
 		console.log("\tResponse: ".info + response);
-	
+		
 		//determine how long to show the typing indicator before sending the message
 		var timeTypeSec = response.length / typingSpeed; //seconds
 		message.channel.sendTyping(); //will automatically stop typing when message sends
@@ -277,7 +277,7 @@ var onMessage = async function(message) {
 						console.error("Failed to send message".warning);
 					});
 				//use reply to respond directly if extra messages are in the way
-				else									
+				else
 					message.reply(response).then(() => {
 						console.log("Sent reply successfully".system);
 						console.log();
@@ -302,7 +302,7 @@ var onMessage = async function(message) {
 		stopThinking(message.channel);
 		
 		//log the error
-		console.error("\t" + debugFormatError(error));		
+		console.error("\t" + debugFormatError(error));
 		console.error("Failed to generate response".warning);
 		
 		//if error is timeout, then try again
@@ -311,13 +311,13 @@ var onMessage = async function(message) {
 		error.message === "Response is an empty string") {
 			console.log("Trying again".system);
 			console.log();
-			onMessage(message);								
+			onMessage(message);
 		}
 		//if unknown error, then respond to message with error message
 		else {
 			console.log("Replying with error message".system);
 			console.log();
-			sendErrorMessage(message, error);					
+			sendErrorMessage(message, error);
 		}
 	});
 }
@@ -517,7 +517,7 @@ var generateContext = async function(channel) {
 		if (isFromUser(message) && message.reference !== null)
 			if (message.reference.messageId !== undefined)
 				repliedTo = message.reference.messageId;
-			
+		
 		lastMessageFromUser = isFromUser(message);
 	});
 	
