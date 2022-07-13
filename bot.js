@@ -1,6 +1,6 @@
 /* GLOBAL MODIFIERS */
 //when this code was last changed
-var lastUpdated = new Date(2022, 2, 7, 14, 00);	//month is 0-indexed
+var lastUpdated = new Date(2022, 6, 13, 2, 00);	//month is 0-indexed
 //how fast the bot sends messages (characters per second)
 var typingSpeed = 6;
 //the colors that the console output should use
@@ -588,7 +588,7 @@ console.log("Importing packages");//.system);	//won't work yet because colors is
 
 //load in all the required packages
 var fs = require('fs');
-var colors = require('colors');
+var colors = require('@colors/colors');
 var Discord = require('discord.js');
 var cleverbot = require('cleverbot-free');
 var { REST } = require('@discordjs/rest');
