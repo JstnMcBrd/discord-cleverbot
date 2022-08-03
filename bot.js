@@ -1,6 +1,6 @@
 /* GLOBAL MODIFIERS */
 //when this code was last changed
-var lastUpdated = new Date(2022, 6, 13, 2, 00);	//month is 0-indexed
+var lastUpdated = new Date(2022, 6, 26, 19, 00);	//month is 0-indexed
 //how fast the bot sends messages (characters per second)
 var typingSpeed = 6;
 //the colors that the console output should use
@@ -181,7 +181,7 @@ var onError = function(error) {
 //usually means a slash command
 var onInteraction = async function(interaction) {
 	//ignore any interactions that are not commands
-	if (!interaction.isCommand()) return;
+	if (!interaction.isChatInputCommand()) return;
 	console.log("Received command interaction".system);
 	console.log("\t" + debugInteraction(interaction));
 	
@@ -573,7 +573,7 @@ var debugMessage = function(message) {
 //this method logs important information about an interaction to the console
 var debugInteraction = function(interaction) {
 	str  = "INTERACTION".info;
-	if (interaction.isCommand())
+	if (interaction.isChatInputCommand())
 		str += "\nCommand: ".info + interaction.commandName;
 	str += "\nUser:    ".info + interaction.user.tag + " (".info + interaction.user.id + ")".info;
 	str += "\nChannel: ".info + interaction.channel.name + " (".info + interaction.channel.id + ")".info;
@@ -600,14 +600,15 @@ colors.setTheme(debugTheme);
 //create a discord client and give it the callback methods
 var client = new Discord.Client({
 	partials: [
-		'CHANNEL'
+		Discord.Partials.Channel //necessary to receive DMs
 	],
 	intents: [
-		Discord.Intents.FLAGS.GUILDS,
-		Discord.Intents.FLAGS.GUILD_MESSAGES,
-		Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-		Discord.Intents.FLAGS.DIRECT_MESSAGES,
-		Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+		Discord.GatewayIntentBits.Guilds,
+		Discord.GatewayIntentBits.GuildMessages,
+		Discord.GatewayIntentBits.GuildMessageTyping,
+		Discord.GatewayIntentBits.DirectMessages,
+		Discord.GatewayIntentBits.DirectMessageTyping,
+		Discord.GatewayIntentBits.MessageContent
 	]
 });
 client.on('error', error => onError(error));
