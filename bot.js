@@ -43,6 +43,18 @@ var onceReady = async function() {
 //this method sets the acitivity of the bot to be "Listening to /help"
 var setUserActivity = function() {
 	var repeatWait = 5*60; //seconds
+	
+	//wait until Discord supports custom statuses for bots
+	/*activityOptions = {
+		name: "Use /help",
+		details: "Use /help",
+		emoji: {
+			name: "robot"
+		},
+		type: Discord.ActivityType.Custom,
+		url: "https://www.cleverbot.com/"
+	}*/
+	//use this in the meantime
 	activityOptions = {
 		name: "/help",
 		type: Discord.ActivityType.Listening,
