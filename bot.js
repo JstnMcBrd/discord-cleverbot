@@ -1,6 +1,6 @@
 /* GLOBAL MODIFIERS */
 //when this code was last changed
-var lastUpdated = new Date(2022, 6, 26, 19, 00);	//month is 0-indexed
+var lastUpdated = new Date(2022, 7, 15, 21, 30);	//month is 0-indexed
 //how fast the bot sends messages (characters per second)
 var typingSpeed = 6;
 //the colors that the console output should use
@@ -45,7 +45,7 @@ var setUserActivity = function() {
 	var repeatWait = 5*60; //seconds
 	activityOptions = {
 		name: "/help",
-		type: 'LISTENING',
+		type: Discord.ActivityType.Listening,
 		url: "https://www.cleverbot.com/"
 	}
 	
