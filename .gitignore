@@ -1,4 +1,4 @@
 node_modules
 .outdated/
-accounts/CleverBoi/
-accounts/DumbBoi/
+accounts/
+!accounts/ExampleUsername
