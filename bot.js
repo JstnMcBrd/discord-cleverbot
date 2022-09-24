@@ -1,6 +1,6 @@
 /* GLOBAL MODIFIERS */
 //when this code was last changed
-var lastUpdated = new Date(2022, 7, 15, 21, 30);	//month is 0-indexed
+var lastUpdated = new Date(2022, 8, 24, 05, 00);	//month is 0-indexed
 //how fast the bot sends messages (characters per second)
 var typingSpeed = 6;
 //the colors that the console output should use
@@ -36,7 +36,7 @@ var onceReady = async function() {
 	console.log();
 	
 	setUserActivity();
-	await registerSlashCommands();
+	await retrieveSlashCommands();
 	resumeConversations();
 }
 
@@ -85,36 +85,24 @@ var setUserActivity = function() {
 	console.log();
 }
 
-//this method registers commands with discord's new slash command API
-var registerSlashCommands = async function() {
-	console.log("Implementing commands".system);
+//this method retrieves the command names and files
+var retrieveSlashCommands = async function() {
+	console.log("Retrieving commands".system);
 	
-	console.log("\tLoading command files".system);
-	
-	//collect command scripts
-	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-	
-	//add command scripts to list of commands
+	//gather all the command files
 	client.commands = new Discord.Collection();
-	var commands = [];
+	const commandsPath = path.join(__dirname, 'commands');
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+	//extract the name and executables of the command files
 	for (const file of commandFiles) {
-		const command = require("./commands/" + file);
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
 		client.commands.set(command.data.name, command);
-		commands.push(command.data.toJSON());
+		console.log("\tRetrieved /" + command.data.name);
 	}
 	
-	console.log("\tLoaded command files successfully".system);
-
-	//register commands with discord REST service
-	console.log("\tRegistering slash commands".system);
-	const rest = new REST({ version: '10' }).setToken(auth.token);
-	await rest.put(
-		Routes.applicationCommands(client.user.id),
-		{ body: commands }
-	);
-	console.log("\tRegistered slash commands successfully".system);
-	
-	console.log("Implemented commands successfully".system);
+	console.log("Retrieved commands successfully".system);
 	console.log();
 }
 
@@ -198,7 +186,8 @@ var onInteraction = async function(interaction) {
 	console.log("\t" + debugInteraction(interaction));
 	
 	//ignore any commands that are not recognized
-	if (!client.commands.has(interaction.commandName)) return;
+	const command = client.commands.get(interaction.commandName);
+	if (!command) return;
 	console.log("Command recognized".system);
 	
 	//give additional information to the interaction to be passed to the command script
@@ -211,7 +200,7 @@ var onInteraction = async function(interaction) {
 	//execute the command script
 	console.log("Executing command".system);
 	try {
-		await client.commands.get(interaction.commandName).execute(interaction);
+		await command.execute(interaction);
 	} catch (error) {
 		console.error("\t" + debugFormatError(error));
 		console.error("Failed to execute command".warning);
@@ -336,9 +325,7 @@ var onMessage = async function(message) {
 
 //this method replaces @ mentions of the user with "Cleverbot" to avoid confusing the Cleverbot AI
 var replaceMentions = function(content) {
-	return content.replaceAll("@​"+client.user.username, "Cleverbot");
-	//there's a special character after the @, but it doesn't show up in any text editor
-	//don't delete it! Otherwise, the bot will fail to recognize mentions
+	return content.replaceAll("@"+client.user.username, "Cleverbot");
 }
 
 //this method replaces unknown discord emojis with the name of the emoji as *emphasized* text to avoid confusing the Cleverbot AI
@@ -599,12 +586,11 @@ var debugInteraction = function(interaction) {
 console.log("Importing packages");//.system);	//won't work yet because colors isn't imported
 
 //load in all the required packages
-var fs = require('fs');
-var colors = require('@colors/colors');
-var Discord = require('discord.js');
-var cleverbot = require('cleverbot-free');
-var { REST } = require('@discordjs/rest');
-var { Routes } = require('discord-api-types/v10');
+const fs = require('node:fs');
+const path = require('node:path');
+const colors = require('@colors/colors');
+const Discord = require('discord.js');
+const cleverbot = require('cleverbot-free');
 
 //set the console debug colors
 colors.setTheme(debugTheme);

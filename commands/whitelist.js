@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const fs = require('node:fs');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
