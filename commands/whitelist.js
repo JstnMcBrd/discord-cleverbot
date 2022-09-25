@@ -29,10 +29,10 @@ module.exports = {
 		};
 
 		if (interaction.extraInfo.addToWhitelist(interaction.channel)) {
-			interaction.reply({ embeds: [successEmbed] });
+			await interaction.reply({ embeds: [successEmbed] });
 		}
 		else {
-			interaction.reply({ embeds: [redundantEmbed] });
+			await interaction.reply({ embeds: [redundantEmbed] });
 		}
 	},
 };
