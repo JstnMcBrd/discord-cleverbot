@@ -121,7 +121,7 @@ const onMessage = async function(client, message) {
 		error.message === 'Response is an empty string') {
 			console.log('Trying again'.system);
 			console.log();
-			onMessage(message);
+			client.executeEvent('messageCreate', message);
 		}
 		// If unknown error, then respond to message with error message
 		else {

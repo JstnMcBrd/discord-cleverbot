@@ -22,24 +22,24 @@ console.log('Importing packages');
 const fs = require('node:fs');
 const path = require('node:path');
 const colors = require('@colors/colors');
-const Discord = require('discord.js');
+const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 
 // Set the console debug colors
 colors.setTheme(debugTheme);
 
 // Create a discord client and give it helper functions and values
-const client = new Discord.Client({
+const client = new Client({
 	partials: [
 		// Necessary to receive DMs
-		Discord.Partials.Channel,
+		Partials.Channel,
 	],
 	intents: [
-		Discord.GatewayIntentBits.Guilds,
-		Discord.GatewayIntentBits.GuildMessages,
-		Discord.GatewayIntentBits.GuildMessageTyping,
-		Discord.GatewayIntentBits.DirectMessages,
-		Discord.GatewayIntentBits.DirectMessageTyping,
-		Discord.GatewayIntentBits.MessageContent,
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildMessageTyping,
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.DirectMessageTyping,
+		GatewayIntentBits.MessageContent,
 	],
 });
 
@@ -82,18 +82,14 @@ client.sendErrorMessage = function(message, internalError) {
 	const hexRed = 0xFF0000;
 
 	// Format the message as an embed
-	const embed = {
-		title: 'Error',
-		description: 'I encountered an error while trying to respond. Please forward this to my developer.',
-		// Red
-		color: hexRed,
-		fields: [
-			{
-				name: 'Message',
-				value: '``' + internalError + '``',
-			},
-		],
-	};
+
+	const embed = EmbedBuilder()
+		.setColor(hexRed)
+		.setTitle('Error')
+		.setDescription('I encountered an error while trying to respond. Please forward this to my developer.')
+		.setFields(
+			{ name: 'Message', value: '``' + internalError + '``' },
+		);
 
 	// Send the error message as a reply
 	console.log('Sending error message'.system);
@@ -190,7 +186,7 @@ const retrieveSlashCommands = function() {
 	console.log('Retrieving commands'.system);
 
 	// Gather all the command files
-	client.commands = new Discord.Collection();
+	client.commands = new Collection();
 	const commandsPath = path.join(__dirname, 'commands');
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
@@ -211,7 +207,7 @@ const retrieveEvents = function() {
 	console.log('Retrieving events'.system);
 
 	// Gather all the event files
-	client.events = new Discord.Collection();
+	client.events = new Collection();
 	const eventsPath = path.join(__dirname, 'events');
 	const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 

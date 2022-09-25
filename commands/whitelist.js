@@ -1,4 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const hexIcyWhite = 0xCFD8FF;
+const hexGreen = 0x00FF00;
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,25 +10,19 @@ module.exports = {
 	async execute(interaction) {
 		// const userMention = '<@' + interaction.client.user.id + '>';
 		const channelMention = '<#' + interaction.channel.id + '>';
-		const hexIcyWhite = 0xCFD8FF;
-		const hexGreen = 0x00FF00;
 
-		const successEmbed = {
-			title: 'Whitelisted',
-			description: 'You have enabled me for ' + channelMention + '. This means that I will respond to all future messages sent in ' + channelMention + '.',
-			color: hexGreen,
-			fields: [
-				{
-					name: 'Disabling',
-					value: 'If you wish for me to stop responding to messages in ' + channelMention + ' in the future, use the **/unwhitelist** command.',
-				},
-			],
-		};
-		const redundantEmbed = {
-			title: 'Already Whitelisted',
-			description: 'You have already enabled me for ' + channelMention + '.',
-			color: hexIcyWhite,
-		};
+		const successEmbed = new EmbedBuilder()
+			.setColor(hexGreen)
+			.setTitle('Whitelisted')
+			.setDescription('You have enabled me for ' + channelMention + '. This means that I will respond to all future messages sent in ' + channelMention + '.')
+			.addFields(
+				{ name: 'Disabling', value: 'If you wish for me to stop responding to messages in ' + channelMention + ' in the future, use the **/unwhitelist** command.' },
+			);
+
+		const redundantEmbed = new EmbedBuilder()
+			.setColor(hexIcyWhite)
+			.setTitle('Already Whitelisted')
+			.setDescription('You have already enabled me for ' + channelMention + '.');
 
 		if (interaction.extraInfo.addToWhitelist(interaction.channel)) {
 			await interaction.reply({ embeds: [successEmbed] });
