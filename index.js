@@ -49,7 +49,7 @@ client.typingSpeed = typingSpeed;
 // Executes the code for a particular handler without needing to receive the event
 client.executeEvent = async function(eventName, ...args) {
 	const event = client.events.get(eventName);
-	if (!event) throw new Error('Could not find handler for event \'' + eventName + '\'');
+	if (!event) throw new Error(`Could not find handler for event '${eventName}'`);
 
 	return await event.execute(client, ...args);
 };
@@ -57,7 +57,7 @@ client.executeEvent = async function(eventName, ...args) {
 // Reports an error from an event handler
 client.eventError = function(eventName, error) {
 	error = client.debugFormatError(error);
-	console.error('Error in event \'%s\'', eventName);
+	console.error(`Error in event '${eventName}'`);
 	console.error(error);
 };
 
@@ -88,7 +88,7 @@ client.sendErrorMessage = function(message, internalError) {
 		.setTitle('Error')
 		.setDescription('I encountered an error while trying to respond. Please forward this to my developer.')
 		.setFields(
-			{ name: 'Message', value: '``' + internalError + '``' },
+			{ name: 'Message', value: `\`\`${internalError}\`\`` },
 		);
 
 	// Send the error message as a reply
@@ -97,7 +97,7 @@ client.sendErrorMessage = function(message, internalError) {
 		console.log('Error message sent successfully'.system);
 		console.log();
 	}).catch(error => {
-		console.error('\t' + client.debugFormatError(error));
+		console.error('\t', client.debugFormatError(error));
 		console.log('Failed to send error message'.warning);
 		console.log();
 	});
@@ -195,7 +195,7 @@ const retrieveSlashCommands = function() {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 		client.commands.set(command.data.name, command);
-		console.log('\tRetrieved /' + command.data.name);
+		console.log('\tRetrieved'.system, `/${command.data.name}`);
 	}
 
 	console.log('Retrieved commands successfully'.system);
@@ -223,7 +223,7 @@ const retrieveEvents = function() {
 		else {
 			client.on(event.name, (...args) => event.execute(client, ...args));
 		}
-		console.log('\tRetrieved \'%s\'', event.name);
+		console.log('\tRetrieved'.system, `'${event.name}'`);
 	}
 
 	console.log('Retrieved events successfully'.system);
@@ -239,19 +239,19 @@ if (process.argv[2] === undefined) {
 	error.name = 'Missing Console Argument';
 	error.message = 'Account directory name not provided';
 	error.message += '\n\tPlease follow this usage:';
-	error.message += '\n\tnode ' + process.argv[1] + ' ' + '[ACCOUNT DIRECTORY NAME]'.underline;
+	error.message += '\n\tnode index.js ' + '[ACCOUNT DIRECTORY NAME]'.underline;
 	throw client.debugFormatError(error);
 }
-const filePath = './accounts/' + process.argv[2] + '/';
-const configFilePath = filePath + 'config.json';
-const whitelistFilePath = filePath + 'whitelist.json';
+const filePath = `./accounts/${process.argv[2]}`;
+const configFilePath = `${filePath}/config.json`;
+const whitelistFilePath = `${filePath}/whitelist.json`;
 
 // Does the necessary directory exist?
 if (!fs.existsSync(filePath)) {
 	const error = new Error();
 	error.name = 'Missing Account Directory';
 	error.message = 'Account directory does not exist';
-	error.message += '\n\tPlease create a directory (' + filePath + ') to contain the account\'s memory files';
+	error.message += `\n\tPlease create a directory (${filePath}) to contain the account's memory files`;
 	throw client.debugFormatError(error);
 }
 
@@ -260,7 +260,7 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 	const error = new Error();
 	error.name = 'Missing Memory Files';
 	error.message = 'Account directory missing essential memory files';
-	error.message += '\n\tPlease create the necessary files (' + configFilePath + ') (' + whitelistFilePath + ')';
+	error.message += `\n\tPlease create the necessary files (${configFilePath}) (${whitelistFilePath})`;
 	throw client.debugFormatError(error);
 }
 const { token } = require(configFilePath);
@@ -280,7 +280,7 @@ const connect = function() {
 		console.log();
 	}).catch(error => {
 		console.error('\t' + client.debugFormatError(error));
-		console.log('Retrying connection in '.warning + retryWait + ' seconds...'.warning);
+		console.log('Retrying connection in'.warning, retryWait, 'seconds...'.warning);
 		console.log();
 		// Use connect() function again
 		setTimeout(connect, retryWait * 1000);

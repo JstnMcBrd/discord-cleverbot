@@ -64,7 +64,7 @@ const setUserActivity = function(client) {
 
 	// Set user activity at regular intervals
 	setTimeout(setUserActivity, repeatWait * 1000);
-	console.log('Setting again in '.system + repeatWait + ' seconds'.system);
+	console.log('Setting again in'.system, repeatWait, 'seconds'.system);
 	console.log();
 };
 
@@ -84,9 +84,9 @@ const resumeConversations = async function(client) {
 		const channel = await client.channels.fetch(channelID).catch(error => {
 			// If the channel doesn't exist, remove it from the whitelist
 			if (error.message === 'Unknown Channel' || error.message === 'Missing Access') {
-				console.error('\tInvalid channel ID found in whitelist ('.error + channelID + ')'.error);
+				console.error('\tInvalid channel ID found in whitelist:'.error, channelID);
 				client.whitelist.removeChannel(channelID);
-				console.log('\tInvalid channel ID removed from whitelist ('.warning + channelID + ')'.warning);
+				console.log('\tInvalid channel ID removed from whitelist:'.warning, channelID);
 			}
 			else {
 				throw error;
@@ -110,13 +110,13 @@ const resumeConversations = async function(client) {
 		}
 	}
 	if (toRespondTo.length !== 0) {
-		console.log('\tFound '.system + toRespondTo.length + ' missed messages'.system);
+		console.log('\tFound'.system, toRespondTo.length, 'missed messages'.system);
 	}
 	console.log('Searched for missed messages successfully'.system);
 
 	// Check for missed messages at regular intervals
 	setTimeout(resumeConversations, repeatWait * 1000);
-	console.log('Searching again in '.system + repeatWait + ' seconds'.system);
+	console.log('Searching again in'.system, repeatWait, 'seconds'.system);
 
 	// Respond to missed messages
 	if (toRespondTo.length !== 0) {

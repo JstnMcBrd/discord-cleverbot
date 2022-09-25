@@ -64,7 +64,7 @@ const onMessage = async function(client, message) {
 		}
 
 		console.log('Generated response successfully'.system);
-		console.log('\tResponse: '.info + response);
+		console.log('\tResponse:'.info, response);
 
 		// Determine how long to show the typing indicator before sending the message (seconds)
 		const timeTypeSec = response.length / client.typingSpeed;

@@ -18,7 +18,7 @@ const reset = (process.argv[3] === '--reset');
 const fs = require('node:fs');
 const path = require('node:path');
 const { REST, Routes } = require('discord.js');
-const authFilePath = './accounts/' + account + '/' + 'config.json';
+const authFilePath = `./accounts/${account}/config.json`;
 const { clientId, token } = require(authFilePath);
 
 // Gather all the command files
@@ -31,7 +31,7 @@ for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
 	const command = require(filePath);
 	commands.push(command.data.toJSON());
-	console.log('Retrieved /' + command.data.name);
+	console.log(`Retrieved /${command.data.name}`);
 }
 
 // Register the commands with Discord
