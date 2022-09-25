@@ -40,13 +40,19 @@ const onMessage = async function(client, message) {
 	input = input.trim();
 	console.log(indent('Content: '.info + input, 1));
 
-	// Generate or update conversation context
-	if (!hasContext(message.channel)) {
-		console.log('Generating new channel context'.system);
-		await generateContext(client, message.channel);
+	// Generate or update conversation context (but only for whitelisted channels)
+	if (client.whitelist.has(message.channel)) {
+		if (!hasContext(message.channel)) {
+			console.log('Generating new channel context'.system);
+			await generateContext(client, message.channel);
+		}
+		else {
+			console.log('Updating channel context'.system);
+			addToContext(message.channel, input);
+		}
 	}
 	else {
-		addToContext(message.channel, input);
+		console.log('Skipping channel context generation'.system);
 	}
 
 	// Prevent bot from responding to anything else while it thinks
@@ -96,8 +102,10 @@ const onMessage = async function(client, message) {
 					});
 				}
 
-				// Update conversation context
-				addToContext(message.channel, response);
+				// Update conversation context (but only for whitelisted channels)
+				if (client.whitelist.has(message.channel)) {
+					addToContext(message.channel, response);
+				}
 
 				// Allow bot to think about new messages now
 				stopThinking(message.channel);
@@ -105,8 +113,10 @@ const onMessage = async function(client, message) {
 			timeTypeSec * 1000,
 		);
 	}).catch(error => {
-		// Undo adding to context
-		removeLastMessageFromContext(message.channel);
+		// Undo adding to context (but only for whitelisted channels)
+		if (client.whitelist.has(message.channel)) {
+			removeLastMessageFromContext(message.channel);
+		}
 
 		// Stop thinking so bot can respond in future
 		stopThinking(message.channel);
@@ -241,6 +251,7 @@ const generateContext = async function(client, channel) {
 
 // Adds a message to the recorded past messages of a channel
 const addToContext = function(channel, str) {
+	if (!hasContext(channel)) return;
 	context[channel.id].push(str);
 	// Make sure context doesn't go over the max length
 	if (context[channel.id].length > maxContextLength) {
@@ -250,6 +261,7 @@ const addToContext = function(channel, str) {
 
 // Removes the most recent message from the recorded past messages of a channel
 const removeLastMessageFromContext = function(channel) {
+	if (!hasContext(channel)) return;
 	context[channel.id].pop();
 };
 
