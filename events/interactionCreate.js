@@ -23,13 +23,6 @@ const onInteraction = async function(client, interaction) {
 	if (!command) return;
 	console.log('Command recognized'.system);
 
-	// Give additional information to the interaction to be passed to the command script
-	interaction.extraInfo = {
-		lastUpdated: client.lastUpdated,
-		addToWhitelist: client.whitelist.addChannel,
-		removeFromWhitelist: client.whitelist.removeChannel,
-	};
-
 	// Execute the command script
 	console.log('Executing command'.system);
 	try {

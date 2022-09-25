@@ -1,20 +1,5 @@
 /* Discord-Cleverbot */
 
-// When this code was last changed
-// year, month (0-11), day of month, hour (0-23), minutes
-const lastUpdated = new Date(2022, 8, 25, 7, 30);
-// How fast the bot sends messages (characters per second)
-const typingSpeed = 6;
-// The colors that the console output should use
-const debugTheme = {
-	system: ['green'],
-	warning: ['yellow'],
-	error: ['red'],
-	info: ['gray'],
-};
-
-// Action!
-
 console.log('Importing packages');
 // .system);	// Won't work yet because colors isn't imported
 
@@ -22,6 +7,7 @@ console.log('Importing packages');
 const fs = require('node:fs');
 const path = require('node:path');
 const colors = require('@colors/colors');
+const { debugTheme, embedColors } = require('./parameters.js');
 const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 
 // Set the console debug colors
@@ -42,9 +28,6 @@ const client = new Client({
 		GatewayIntentBits.MessageContent,
 	],
 });
-
-client.lastUpdated = lastUpdated;
-client.typingSpeed = typingSpeed;
 
 // Executes the code for a particular handler without needing to receive the event
 client.executeEvent = async function(eventName, ...args) {
@@ -79,12 +62,9 @@ client.debugFormatError = function(error) {
 
 // Responds to a message with an error message
 client.sendErrorMessage = function(message, internalError) {
-	const hexRed = 0xFF0000;
-
 	// Format the message as an embed
-
-	const embed = EmbedBuilder()
-		.setColor(hexRed)
+	const embed = new EmbedBuilder()
+		.setColor(embedColors.error)
 		.setTitle('Error')
 		.setDescription('I encountered an error while trying to respond. Please forward this to my developer.')
 		.setFields(

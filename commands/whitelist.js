@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const hexIcyWhite = 0xCFD8FF;
-const hexGreen = 0x00FF00;
+
+const { embedColors } = require('../parameters.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -12,7 +12,7 @@ module.exports = {
 		const channelMention = `<#${interaction.channel.id}>`;
 
 		const successEmbed = new EmbedBuilder()
-			.setColor(hexGreen)
+			.setColor(embedColors.whitelist)
 			.setTitle('Whitelisted')
 			.setDescription(`You have enabled me for ${channelMention}. This means that I will respond to all future messages sent in ${channelMention}.`)
 			.addFields(
@@ -20,11 +20,11 @@ module.exports = {
 			);
 
 		const redundantEmbed = new EmbedBuilder()
-			.setColor(hexIcyWhite)
+			.setColor(embedColors.info)
 			.setTitle('Already Whitelisted')
 			.setDescription(`You have already enabled me for ${channelMention}.`);
 
-		if (interaction.extraInfo.addToWhitelist(interaction.channel)) {
+		if (interaction.client.whitelist.addChannel(interaction.channel)) {
 			await interaction.reply({ embeds: [successEmbed] });
 		}
 		else {

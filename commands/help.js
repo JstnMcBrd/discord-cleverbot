@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
+const { lastUpdated, embedColors } = require('../parameters.js');
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('help')
@@ -7,10 +9,9 @@ module.exports = {
 
 	async execute(interaction) {
 		const userMention = `<@${interaction.client.user.id}>`;
-		const hexIcyWhite = 0xCFD8FF;
 
 		const embed = new EmbedBuilder()
-			.setColor(hexIcyWhite)
+			.setColor(embedColors.info)
 			.setTitle('User Guide')
 			.setDescription(`Hello! I am ${userMention}, a chat bot for Discord. I respond to your messages using artifical intelligence from the [Cleverbot](https://www.cleverbot.com/) API.`)
 			.setFields(
@@ -24,7 +25,7 @@ module.exports = {
 				text: 'Last Updated',
 				iconUrl: interaction.client.user.avatarURL(),
 			})
-			.setTimestamp(interaction.extraInfo.lastUpdated);
+			.setTimestamp(lastUpdated);
 
 		await interaction.reply({ embeds: [embed] });
 	},

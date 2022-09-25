@@ -12,6 +12,7 @@ module.exports = {
 };
 
 const cleverbot = require('cleverbot-free');
+const { typingSpeed } = require('../parameters.js');
 
 // Called whenever the discord.js client observes a new message
 const onMessage = async function(client, message) {
@@ -73,7 +74,7 @@ const onMessage = async function(client, message) {
 		console.log('\tResponse:'.info, response);
 
 		// Determine how long to show the typing indicator before sending the message (seconds)
-		const timeTypeSec = response.length / client.typingSpeed;
+		const timeTypeSec = response.length / typingSpeed;
 		message.channel.sendTyping();
 		// Will automatically stop typing when message sends
 
