@@ -13,6 +13,7 @@ module.exports = {
 
 const cleverbot = require('cleverbot-free');
 const { typingSpeed } = require('../parameters.js');
+const { isWhitelisted } = require('../whitelist-manager.js');
 
 // Called whenever the discord.js client observes a new message
 const onMessage = async function(client, message) {
@@ -26,7 +27,7 @@ const onMessage = async function(client, message) {
 	// ... in a channel already responding to
 	if (isThinking(message.channel)) return;
 	// ... not whitelisted or forced reply
-	if (!client.whitelist.has(message.channel) && !client.messages.isAMention(message)) return;
+	if (!isWhitelisted(message.channel) && !client.messages.isAMention(message)) return;
 
 	console.log('Received new message'.system);
 	console.log(indent(debugMessage(message), 1));
@@ -42,7 +43,7 @@ const onMessage = async function(client, message) {
 	console.log(indent('Content: '.info + input, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
-	if (client.whitelist.has(message.channel)) {
+	if (isWhitelisted(message.channel)) {
 		if (!hasContext(message.channel)) {
 			console.log('Generating new channel context'.system);
 			await generateContext(client, message.channel);
@@ -104,7 +105,7 @@ const onMessage = async function(client, message) {
 				}
 
 				// Update conversation context (but only for whitelisted channels)
-				if (client.whitelist.has(message.channel)) {
+				if (isWhitelisted(message.channel)) {
 					addToContext(message.channel, response);
 				}
 
@@ -115,7 +116,7 @@ const onMessage = async function(client, message) {
 		);
 	}).catch(error => {
 		// Undo adding to context (but only for whitelisted channels)
-		if (client.whitelist.has(message.channel)) {
+		if (isWhitelisted(message.channel)) {
 			removeLastMessageFromContext(message.channel);
 		}
 

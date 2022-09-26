@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { embedColors } = require('../parameters.js');
+const { unwhitelistChannel } = require('../whitelist-manager.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,7 +25,7 @@ module.exports = {
 			.setTitle('Already Unwhitelisted')
 			.setDescription(`You have already disabled me for ${channelMention}.`);
 
-		if (interaction.client.whitelist.removeChannel(interaction.channel)) {
+		if (unwhitelistChannel(interaction.channel)) {
 			await interaction.reply({ embeds: [successEmbed] });
 		}
 		else {

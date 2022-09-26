@@ -12,6 +12,7 @@ module.exports = {
 };
 
 const { ActivityType } = require('discord.js');
+const { verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
 
 // Called once the client successfully logs in
 const onceReady = async function(client) {
@@ -19,6 +20,10 @@ const onceReady = async function(client) {
 	console.log();
 
 	setUserActivity(client);
+
+	// Unlike setUserActivity and resumeConversations, verifyWhitelist will not repeat after startup
+	await verifyWhitelist(client);
+
 	await resumeConversations(client);
 };
 
@@ -74,26 +79,16 @@ const resumeConversations = async function(client) {
 	const repeatWait = 30 * 60;
 	const messageSearchDepth = 10;
 
+	// Verify the whitelist first every time
+	// TODO This is a temporary solution
+	await verifyWhitelist(client);
+
 	console.log('Searching for missed messages'.system);
 	const toRespondTo = [];
-	const whitelist = client.whitelist.get();
-	for (let c = 0; c < whitelist.length; c++) {
-		const channelID = whitelist[c];
+	for (const channelID of getWhitelist()) {
 
 		// Fetch the channel
-		const channel = await client.channels.fetch(channelID).catch(error => {
-			// If the channel doesn't exist, remove it from the whitelist
-			if (error.message === 'Unknown Channel' || error.message === 'Missing Access') {
-				console.error('\tInvalid channel ID found in whitelist:'.error, channelID);
-				client.whitelist.removeChannel(channelID);
-				console.log('\tInvalid channel ID removed from whitelist:'.warning, channelID);
-			}
-			else {
-				throw error;
-			}
-		});
-		// End this iteration if the 'Unknown Channel' error was caught above
-		if (channel === undefined) continue;
+		const channel = await client.channels.fetch(channelID);
 
 		// Request the most recent messages of the channel
 		let messages = await channel.messages.fetch({ limit: messageSearchDepth });
@@ -102,8 +97,7 @@ const resumeConversations = async function(client) {
 		messages = messages.first(messages.size);
 
 		// Search for messages that haven't been replied to
-		for (let m = 0; m < messages.length; m++) {
-			const message = messages[m];
+		for (const message of messages) {
 			if (client.messages.isEmpty(message) || client.messages.isMarkedAsIgnore(message)) continue;
 			if (!client.messages.isFromUser(message)) toRespondTo.push(message);
 			break;

@@ -7,8 +7,10 @@ console.log('Importing packages');
 const fs = require('node:fs');
 const path = require('node:path');
 const colors = require('@colors/colors');
-const { debugTheme, embedColors } = require('./parameters.js');
 const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
+
+const { debugTheme, embedColors } = require('./parameters.js');
+const { setWhitelistAccount } = require('./whitelist-manager.js');
 
 // Set the console debug colors
 colors.setTheme(debugTheme);
@@ -105,59 +107,6 @@ client.messages.isAMention = function(message) {
 	return message.mentions.has(client.user);
 };
 
-client.whitelist = {};
-
-// Reads the whitelist from memory
-client.whitelist.get = function() {
-	return JSON.parse(fs.readFileSync(whitelistFilePath));
-};
-
-// Writes the whitelist to memory
-client.whitelist.set = function(whitelist) {
-	fs.writeFileSync(whitelistFilePath, JSON.stringify(whitelist));
-};
-
-// Adds a channel to the whitelist and updates memory
-client.whitelist.addChannel = function(channel) {
-	// Will work with a channel object or just a channel ID
-	let channelID = channel.id;
-	if (channelID === undefined) channelID = channel;
-
-	// If the channel is not already in the whitelist, add it
-	if (!client.whitelist.has(channelID)) {
-		const whitelist = client.whitelist.get();
-		whitelist.push(channelID);
-		client.whitelist.set(whitelist);
-		return true;
-	}
-	return false;
-};
-
-// Removes a channel from the whitelist and updates memory
-client.whitelist.removeChannel = function(channel) {
-	// Will work with a channel object or just a channel ID
-	let channelID = channel.id;
-	if (channelID === undefined) channelID = channel;
-
-	// If the channel is in the whitelist, remove it
-	if (client.whitelist.has(channelID)) {
-		const whitelist = client.whitelist.get();
-		whitelist.splice(whitelist.indexOf(channelID), 1);
-		client.whitelist.set(whitelist);
-		return true;
-	}
-	return false;
-};
-
-// Checks if a channel is in the whitelist
-client.whitelist.has = function(channel) {
-	// Will work with a channel object or just a channel ID
-	let channelID = channel.id;
-	if (channelID === undefined) channelID = channel;
-
-	return client.whitelist.get().indexOf(channelID) !== -1;
-};
-
 console.log('Imported packages successfully'.system);
 console.log();
 
@@ -243,7 +192,9 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 	error.message += `\n\tPlease create the necessary files (${configFilePath}) (${whitelistFilePath})`;
 	throw client.debugFormatError(error);
 }
+
 const { token } = require(configFilePath);
+setWhitelistAccount(process.argv[2]);
 
 console.log('Loaded memory files successfully'.system);
 console.log();

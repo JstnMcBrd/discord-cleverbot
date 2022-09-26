@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { embedColors } = require('../parameters.js');
+const { whitelistChannel } = require('../whitelist-manager.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,7 +25,7 @@ module.exports = {
 			.setTitle('Already Whitelisted')
 			.setDescription(`You have already enabled me for ${channelMention}.`);
 
-		if (interaction.client.whitelist.addChannel(interaction.channel)) {
+		if (whitelistChannel(interaction.channel)) {
 			await interaction.reply({ embeds: [successEmbed] });
 		}
 		else {
