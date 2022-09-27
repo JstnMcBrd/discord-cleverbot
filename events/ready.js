@@ -68,7 +68,7 @@ const setUserActivity = function(client) {
 	else 			console.error('Failed to set user activity'.warning);
 
 	// Set user activity at regular intervals
-	setTimeout(setUserActivity, repeatWait * 1000);
+	setTimeout(setUserActivity, repeatWait * 1000, client);
 	console.log('Setting again in'.system, repeatWait, 'seconds'.system);
 	console.log();
 };
@@ -109,7 +109,7 @@ const resumeConversations = async function(client) {
 	console.log('Searched for missed messages successfully'.system);
 
 	// Check for missed messages at regular intervals
-	setTimeout(resumeConversations, repeatWait * 1000);
+	setTimeout(resumeConversations, repeatWait * 1000, client);
 	console.log('Searching again in'.system, repeatWait, 'seconds'.system);
 
 	// Respond to missed messages
