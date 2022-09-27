@@ -3,33 +3,42 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { embedColors } = require('../parameters.js');
 const { unwhitelistChannel } = require('../whitelist-manager.js');
 
+const channelMention = function(channelID) {
+	return `<#${channelID}>`;
+};
+
+const createSuccessEmbed = function(channelID) {
+	const mention = channelMention(channelID);
+	return new EmbedBuilder()
+		.setColor(embedColors.unwhitelist)
+		.setTitle('Unwhitelisted')
+		.setDescription(`You have disabled me for ${mention}. This means that I will no longer respond to future messages sent in ${mention}.`)
+		.addFields(
+			{ name: 'Enabling', value: `If you wish for me to start responding to messages in ${mention} in the future, use the **/whitelist** command.` },
+		);
+};
+
+const createRedundantEmbed = function(channelID) {
+	const mention = channelMention(channelID);
+	return new EmbedBuilder()
+		.setColor(embedColors.info)
+		.setTitle('Already Unwhitelisted')
+		.setDescription(`You have already disabled me for ${mention}.`);
+};
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('unwhitelist')
 		.setDescription('Disallows me from responding to messages in this channel'),
 
 	async execute(interaction) {
-		// const userMention = `<@${interaction.client.user.id}>`;
-		const channelMention = `<#${interaction.channel.id}>`;
-
-		const successEmbed = new EmbedBuilder()
-			.setColor(embedColors.unwhitelist)
-			.setTitle('Unwhitelisted')
-			.setDescription(`You have disabled me for ${channelMention}. This means that I will no longer respond to future messages sent in ${channelMention}.`)
-			.addFields(
-				{ name: 'Enabling', value: `If you wish for me to start responding to messages in ${channelMention} in the future, use the **/whitelist** command.` },
-			);
-
-		const redundantEmbed = new EmbedBuilder()
-			.setColor(embedColors.info)
-			.setTitle('Already Unwhitelisted')
-			.setDescription(`You have already disabled me for ${channelMention}.`);
-
+		let embed = {};
 		if (unwhitelistChannel(interaction.channel)) {
-			await interaction.reply({ embeds: [successEmbed] });
+			embed = createSuccessEmbed(interaction.channel.id);
 		}
 		else {
-			await interaction.reply({ embeds: [redundantEmbed] });
+			embed = createRedundantEmbed(interaction.channel.id);
 		}
+		await interaction.reply({ embeds: [embed] });
 	},
 };
