@@ -14,20 +14,21 @@ module.exports = {
 const cleverbot = require('cleverbot-free');
 const { typingSpeed } = require('../parameters.js');
 const { isWhitelisted } = require('../whitelist-manager.js');
+const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../message-analyzer.js');
 
 // Called whenever the discord.js client observes a new message
 const onMessage = async function(client, message) {
 	// Ignore messages if they are...
 	// ... from the user
-	if (client.messages.isFromUser(message)) return;
+	if (isFromUser(message, client.user)) return;
 	// ... empty (images, embeds, interactions)
-	if (client.messages.isEmpty(message)) return;
+	if (isEmpty(message)) return;
 	// ... marked as ignore
-	if (client.messages.isMarkedAsIgnore(message)) return;
+	if (isMarkedAsIgnore(message)) return;
 	// ... in a channel already responding to
 	if (isThinking(message.channel)) return;
 	// ... not whitelisted or forced reply
-	if (!isWhitelisted(message.channel) && !client.messages.isAMention(message)) return;
+	if (!isWhitelisted(message.channel) && !isAMention(message, client.user)) return;
 
 	console.log('Received new message'.system);
 	console.log(indent(debugMessage(message), 1));
@@ -35,7 +36,7 @@ const onMessage = async function(client, message) {
 	// Clean up message, also used in generateContext()
 	console.log('Cleaning up message'.system);
 	let input = message.cleanContent;
-	if (client.messages.isAMention(message)) {
+	if (isAMention(message, client.user)) {
 		input = replaceMentions(client.user.username, input);
 	}
 	input = replaceUnknownEmojis(input);
@@ -216,17 +217,17 @@ const generateContext = async function(client, channel) {
 	const messages = await channel.messages.fetch({ limit: maxContextLength });
 	messages.each(message => {
 		// Skip ignored messages and empty messages
-		if (client.messages.isMarkedAsIgnore(message) || message.cleanContent === '') return;
+		if (isMarkedAsIgnore(message) || isEmpty(message)) return;
 		// Skip messages that bot skipped in the past
-		if (!client.messages.isFromUser(message) && repliedTo !== undefined && message.id !== repliedTo) return;
+		if (!isFromUser(message, client.user) && repliedTo !== undefined && message.id !== repliedTo) return;
 
 		// Clean up message, also used in onMessage()
 		let input = message.cleanContent;
-		if (client.messages.isAMention(message)) input = replaceMentions(client.user.username, input);
+		if (isAMention(message, client.user)) input = replaceMentions(client.user.username, input);
 		input = replaceUnknownEmojis(input);
 
 		// If there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
-		if (!client.messages.isFromUser(message) && !lastMessageFromUser && context[channel.id][0] !== undefined) {
+		if (!isFromUser(message, client.user) && !lastMessageFromUser && context[channel.id][0] !== undefined) {
 			context[channel.id][0] = input + '\n' + context[channel.id][0];
 		}
 		else {
@@ -239,13 +240,13 @@ const generateContext = async function(client, channel) {
 			// Reset for the future
 			repliedTo = undefined;
 		}
-		if (client.messages.isFromUser(message) && message.reference !== null) {
+		if (isFromUser(message, client.user) && message.reference !== null) {
 			if (message.reference.messageId !== undefined) {
 				repliedTo = message.reference.messageId;
 			}
 		}
 
-		lastMessageFromUser = client.messages.isFromUser(message);
+		lastMessageFromUser = isFromUser(message, client.user);
 	});
 
 	return context[channel.id];

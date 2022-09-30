@@ -13,6 +13,7 @@ module.exports = {
 
 const { ActivityType } = require('discord.js');
 const { verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
+const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../message-analyzer.js');
 
 // Called once the client successfully logs in
 const onceReady = async function(client) {
@@ -98,8 +99,8 @@ const resumeConversations = async function(client) {
 
 		// Search for messages that haven't been replied to
 		for (const message of messages) {
-			if (client.messages.isEmpty(message) || client.messages.isMarkedAsIgnore(message)) continue;
-			if (!client.messages.isFromUser(message)) toRespondTo.push(message);
+			if (isEmpty(message) || isMarkedAsIgnore(message)) continue;
+			if (!isFromUser(message, client.user)) toRespondTo.push(message);
 			break;
 		}
 	}

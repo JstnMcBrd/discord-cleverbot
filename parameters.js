@@ -2,7 +2,7 @@ module.exports = {
 
 	// When this code was last changed
 	// year, month (0-11), day of month, hour (0-23), minutes
-	lastUpdated: new Date(2022, 8, 26, 18, 0),
+	lastUpdated: new Date(2022, 8, 30, 3, 30),
 
 	// How fast the bot sends messages (characters per second)
 	typingSpeed: 6,

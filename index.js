@@ -85,28 +85,6 @@ client.sendErrorMessage = function(message, internalError) {
 	});
 };
 
-client.messages = {};
-
-// Recognizes when a message is prepended with '> ', which tells the bot not to respond
-client.messages.isMarkedAsIgnore = function(message) {
-	return message.cleanContent.substring(0, 2) === '> ';
-};
-
-// Recognizes when a message is from the current user
-client.messages.isFromUser = function(message) {
-	return message.author.id === client.user.id;
-};
-
-// Recognizes when a message is empty (mostly likely an image)
-client.messages.isEmpty = function(message) {
-	return message.cleanContent === '';
-};
-
-// Recognizes when a message @ mentions the current user
-client.messages.isAMention = function(message) {
-	return message.mentions.has(client.user);
-};
-
 console.log('Imported packages successfully'.system);
 console.log();
 
