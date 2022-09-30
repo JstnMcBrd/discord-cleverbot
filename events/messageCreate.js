@@ -1,23 +1,26 @@
 module.exports = {
 	name: 'messageCreate',
 	once: false,
-	async execute(client, message) {
+	async execute(message) {
 		try {
-			await onMessage(client, message);
+			await onMessage(message);
 		}
 		catch (error) {
-			client.eventError('messageCreate', error);
+			eventError('messageCreate', error);
 		}
 	},
 };
 
 const cleverbot = require('cleverbot-free');
 const { typingSpeed } = require('../parameters.js');
+const { executeEvent, eventError } = require('./');
 const { isWhitelisted } = require('../whitelist-manager.js');
 const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../message-analyzer.js');
 
 // Called whenever the discord.js client observes a new message
-const onMessage = async function(client, message) {
+const onMessage = async function(message) {
+	const client = message.client;
+
 	// Ignore messages if they are...
 	// ... from the user
 	if (isFromUser(message, client.user)) return;
@@ -134,7 +137,7 @@ const onMessage = async function(client, message) {
 		error.message === 'Response is an empty string') {
 			console.log('Trying again'.system);
 			console.log();
-			client.executeEvent('messageCreate', message);
+			executeEvent('messageCreate', message);
 		}
 		// If unknown error, then respond to message with error message
 		else {

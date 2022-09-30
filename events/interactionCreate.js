@@ -1,18 +1,22 @@
 module.exports = {
 	name: 'interactionCreate',
 	once: false,
-	async execute(client, interaction) {
+	async execute(interaction) {
 		try {
-			await onInteraction(client, interaction);
+			await onInteraction(interaction);
 		}
 		catch (error) {
-			client.eventError('interactionCreate', error);
+			eventError('interactionCreate', error);
 		}
 	},
 };
 
+const { eventError } = require('./');
+
 // Called whenever the discord.js client receives an interaction (usually means a slash command)
-const onInteraction = async function(client, interaction) {
+const onInteraction = async function(interaction) {
+	const client = interaction.client;
+
 	// Ignore any interactions that are not commands
 	if (!interaction.isChatInputCommand()) return;
 	console.log('Received command interaction'.system);

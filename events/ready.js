@@ -6,12 +6,13 @@ module.exports = {
 			await onceReady(client);
 		}
 		catch (error) {
-			client.eventError('ready', error);
+			eventError('ready', error);
 		}
 	},
 };
 
 const { ActivityType } = require('discord.js');
+const { executeEvent, eventError } = require('./');
 const { verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
 const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../message-analyzer.js');
 
@@ -117,7 +118,7 @@ const resumeConversations = async function(client) {
 	if (toRespondTo.length !== 0) {
 		console.log('Forwarding messages to message handler'.system);
 		console.log();
-		toRespondTo.forEach(message => client.executeEvent('messageCreate', message));
+		toRespondTo.forEach(message => executeEvent('messageCreate', message));
 	}
 	else {
 		console.log();

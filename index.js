@@ -10,6 +10,7 @@ const colors = require('@colors/colors');
 const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 
 const { debugTheme, embedColors } = require('./parameters.js');
+const { setEventHandlers } = require('./events');
 const { setWhitelistAccount } = require('./whitelist-manager.js');
 
 // Set the console debug colors
@@ -37,13 +38,6 @@ client.executeEvent = async function(eventName, ...args) {
 	if (!event) throw new Error(`Could not find handler for event '${eventName}'`);
 
 	return await event.execute(client, ...args);
-};
-
-// Reports an error from an event handler
-client.eventError = function(eventName, error) {
-	error = client.debugFormatError(error);
-	console.error(`Error in event '${eventName}'`);
-	console.error(error);
 };
 
 // Takes either a string or an Error and gives them the error color for the console
@@ -109,33 +103,8 @@ const retrieveSlashCommands = function() {
 	console.log();
 }; retrieveSlashCommands();
 
-// Retrieves the event names and files
-const retrieveEvents = function() {
-	console.log('Retrieving events'.system);
-
-	// Gather all the event files
-	client.events = new Collection();
-	const eventsPath = path.join(__dirname, 'events');
-	const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-
-	// Extract the name and executables of the event files
-	// and give them to the client's event handlers
-	for (const file of eventFiles) {
-		const filePath = path.join(eventsPath, file);
-		const event = require(filePath);
-		client.events.set(event.name, event);
-		if (event.once) {
-			client.once(event.name, (...args) => event.execute(client, ...args));
-		}
-		else {
-			client.on(event.name, (...args) => event.execute(client, ...args));
-		}
-		console.log('\tRetrieved'.system, `'${event.name}'`);
-	}
-
-	console.log('Retrieved events successfully'.system);
-	console.log();
-}; retrieveEvents();
+// Retrieve the event handler files and give them to the client
+setEventHandlers(client);
 
 // Load memory files
 console.log('Loading memory files'.system);
