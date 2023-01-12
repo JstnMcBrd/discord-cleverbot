@@ -4,10 +4,12 @@
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
 	"private": true,
-	"main": "./src/index.js",
+	"main": "./dist/index.js",
 	"scripts": {
 		"lint": "eslint . --ext .js",
-		"start": "cd src && node ./index.js"
+		"build": "tsc -p tsconfig.json",
+		"start": "cd dist && node ./index.js",
+		"commands": "cd dist && node ./deploy-commands.js"
 	},
 	"dependencies": {
 		"@colors/colors": "^1.5.0",
@@ -15,6 +17,7 @@
 		"discord.js": "^14.7.1"
 	},
 	"devDependencies": {
-		"eslint": "^8.31.0"
+		"eslint": "^8.31.0",
+		"typescript": "^4.9.4"
 	}
 }

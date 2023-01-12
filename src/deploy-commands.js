@@ -17,7 +17,7 @@ const account = process.argv[2];
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client } = require('discord.js');
-const authFilePath = `./accounts/${account}/config.json`;
+const authFilePath = `../accounts/${account}/config.json`;
 const { token } = require(authFilePath);
 
 // Gather all the command files
