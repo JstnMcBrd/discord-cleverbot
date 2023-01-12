@@ -1,11 +1,20 @@
 {
-  "main": "index.js",
-  "dependencies": {
-    "@colors/colors": "^1.5.0",
-    "cleverbot-free": "^1.1.11",
-    "discord.js": "^14.4.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.24.0"
-  }
+	"name": "Discord-Cleverbot",
+	"version": "5.0.0-alpha",
+	"description": "Chatbot for Discord",
+	"author": "Justin McBride",
+	"private": true,
+	"main": "./index.js",
+	"scripts": {
+		"lint": "eslint . --ext .js",
+		"start": "node ./index.js CleverBoi"
+	},
+	"dependencies": {
+		"@colors/colors": "^1.5.0",
+		"cleverbot-free": "^1.1.11",
+		"discord.js": "^14.4.0"
+	},
+	"devDependencies": {
+		"eslint": "^8.24.0"
+	}
 }
