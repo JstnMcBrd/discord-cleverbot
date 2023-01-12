@@ -118,7 +118,7 @@ if (process.argv[2] === undefined) {
 	error.message += '\n\tnode index.js ' + '[ACCOUNT DIRECTORY NAME]'.underline;
 	throw client.debugFormatError(error);
 }
-const filePath = `./accounts/${process.argv[2]}`;
+const filePath = `../accounts/${process.argv[2]}`;
 const configFilePath = `${filePath}/config.json`;
 const whitelistFilePath = `${filePath}/whitelist.json`;
 

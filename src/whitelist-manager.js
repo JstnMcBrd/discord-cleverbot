@@ -73,7 +73,7 @@ const save = function() {
  * @public
  */
 const setAccount = function(account) {
-	filePath = `./accounts/${account}/whitelist.json`;
+	filePath = `../accounts/${account}/whitelist.json`;
 	load();
 };
 

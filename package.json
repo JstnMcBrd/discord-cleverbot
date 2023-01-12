@@ -4,10 +4,10 @@
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
 	"private": true,
-	"main": "./index.js",
+	"main": "./src/index.js",
 	"scripts": {
 		"lint": "eslint . --ext .js",
-		"start": "node ./index.js CleverBoi"
+		"start": "cd src && node ./index.js CleverBoi"
 	},
 	"dependencies": {
 		"@colors/colors": "^1.5.0",
