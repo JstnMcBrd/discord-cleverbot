@@ -1,5 +1,7 @@
 {
-	"extends": "eslint:recommended",
+	"root": true,
+	"ignorePatterns": [ "node_modules", "dist" ],
+	"extends": [ "eslint:recommended" ],
 	"env": {
 		"node": true,
 		"es6": true
@@ -45,5 +47,22 @@
 		"space-unary-ops": "error",
 		"spaced-comment": "error",
 		"yoda": "error"
-	}
+	},
+
+	"overrides": [
+		{
+			"files": [ "src/**/*.ts" ],
+			"extends": [
+				"eslint:recommended",
+				"plugin:@typescript-eslint/recommended",
+				"plugin:@typescript-eslint/recommended-requiring-type-checking"
+			],
+			"plugins": [ "@typescript-eslint" ],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"project": "./tsconfig.json",
+				"tsconfigRootDir": "./"
+			}
+		}
+	]
 }

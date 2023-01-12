@@ -6,7 +6,7 @@
 	"private": true,
 	"main": "./dist/index.js",
 	"scripts": {
-		"lint": "eslint . --ext .js",
+		"lint": "eslint . --ext .js,.ts",
 		"build": "tsc -p tsconfig.json",
 		"start": "cd dist && node ./index.js",
 		"commands": "cd dist && node ./deploy-commands.js"
@@ -17,6 +17,8 @@
 		"discord.js": "^14.7.1"
 	},
 	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.48.1",
+		"@typescript-eslint/parser": "^5.48.1",
 		"eslint": "^8.31.0",
 		"typescript": "^4.9.4"
 	}
