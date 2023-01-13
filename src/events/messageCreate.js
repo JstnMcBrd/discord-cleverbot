@@ -17,6 +17,7 @@ const { typingSpeed } = require('../parameters.js');
 const { executeEvent, eventError } = require('.');
 const { hasChannel: isWhitelisted } = require('../whitelist-manager.js');
 const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../helpers/message-analyzer.js');
+const { replyWithError } = require('../helpers/replyWithError');
 
 // Called whenever the discord.js client observes a new message
 const onMessage = async function(message) {
@@ -144,7 +145,7 @@ const onMessage = async function(message) {
 		else {
 			logger.info('Replying with error message');
 			logger.info();
-			client.sendErrorMessage(message, error);
+			replyWithError(message, error);
 		}
 	});
 };

@@ -12,6 +12,7 @@ module.exports = {
 };
 
 const logger = require('../helpers/logger');
+const { replyWithError } = require('../helpers/replyWithError');
 const { eventError } = require('./');
 
 // Called whenever the discord.js client receives an interaction (usually means a slash command)
@@ -37,7 +38,7 @@ const onInteraction = async function(interaction) {
 		logger.error(error);
 		logger.warn('Failed to execute command');
 		logger.log();
-		client.sendErrorMessage(interaction, error);
+		replyWithError(interaction, error);
 		return;
 	}
 	logger.info('Command executed successfully');

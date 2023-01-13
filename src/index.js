@@ -7,9 +7,8 @@ logger.info('Importing packages');
 // Load in all the required packages
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
+const { Client, Partials, GatewayIntentBits, Collection } = require('discord.js');
 
-const { embedColors } = require('./parameters.js');
 const { setEventHandlers } = require('./events');
 const { setAccount: setWhitelistAccount } = require('./whitelist-manager.js');
 
@@ -35,29 +34,6 @@ client.executeEvent = async function(eventName, ...args) {
 	if (!event) throw new Error(`Could not find handler for event '${eventName}'`);
 
 	return await event.execute(client, ...args);
-};
-
-// Responds to a message with an error message
-client.sendErrorMessage = function(message, internalError) {
-	// Format the message as an embed
-	const embed = new EmbedBuilder()
-		.setColor(embedColors.error)
-		.setTitle('Error')
-		.setDescription('I encountered an error while trying to respond. Please forward this to my developer.')
-		.setFields(
-			{ name: 'Message', value: `\`\`${internalError}\`\`` },
-		);
-
-	// Send the error message as a reply
-	logger.info('Sending error message');
-	message.reply({ embeds: [embed] }).then(() => {
-		logger.info('Error message sent successfully');
-		logger.info();
-	}).catch(error => {
-		logger.error(error);
-		logger.warn('Failed to send error message');
-		logger.info();
-	});
 };
 
 logger.info('Imported packages successfully');
