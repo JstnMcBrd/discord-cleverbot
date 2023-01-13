@@ -29,7 +29,7 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 6. In the top directory, run `npm install` to download all necessary packages
 7. Run `npm run build` to build the project
 8. Run `npm run commands [bot username]` to register slash commands with Discord
-9. Run `npm run start [bot username]` to start the bot
+9. Run `npm start [bot username]` to start the bot
 
 ### Interacting with the bot
 

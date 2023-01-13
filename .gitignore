@@ -1,5 +1,6 @@
 node_modules
 dist
-.outdated/
+.vscode
+.outdated
 accounts/*
 !accounts/ExampleUsername

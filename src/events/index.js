@@ -35,10 +35,10 @@ const setEventHandlers = function(client) {
 
 	getEvents().each((event) => {
 		if (event.once) {
-			client.once(event.name, (...args) => event.execute(...args));
+			client.once(event.name, event.execute);
 		}
 		else {
-			client.on(event.name, (...args) => event.execute(...args));
+			client.on(event.name, event.execute);
 		}
 		console.log('\tSet'.system, `${event.once ? 'once' : 'on'}(${event.name})`);
 	});
