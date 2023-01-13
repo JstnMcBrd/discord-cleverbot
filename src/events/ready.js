@@ -12,14 +12,15 @@ module.exports = {
 };
 
 const { ActivityType } = require('discord.js');
+const logger = require('../helpers/logger');
 const { executeEvent, eventError } = require('./');
 const { verify: verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
-const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../message-analyzer.js');
+const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../helpers/message-analyzer.js');
 
 // Called once the client successfully logs in
 const onceReady = async function(client) {
-	console.log('Client ready'.system);
-	console.log();
+	logger.info('Client ready');
+	logger.info();
 
 	setUserActivity(client);
 
@@ -54,7 +55,7 @@ const setUserActivity = function(client) {
 	};
 
 	// Set the user's activity
-	console.log('Setting user activity'.system);
+	logger.info('Setting user activity');
 	const presence = client.user.setActivity(activityOptions);
 
 	// Double check to see if it worked
@@ -66,13 +67,13 @@ const setUserActivity = function(client) {
 			activity.type === activityOptions.type &&
 			activity.url === activityOptions.url;
 	}
-	if (correct)	console.log('Set user activity successfully'.system);
-	else 			console.error('Failed to set user activity'.warning);
+	if (correct)	logger.info('Set user activity successfully');
+	else 			logger.warn('Failed to set user activity');
 
 	// Set user activity at regular intervals
 	setTimeout(setUserActivity, repeatWait * 1000, client);
-	console.log('Setting again in'.system, repeatWait, 'seconds'.system);
-	console.log();
+	logger.info(`Setting again in ${repeatWait} seconds`);
+	logger.info();
 };
 
 // Searchs for unread messages in whitelisted channels that were sent when the bot was offline, and responds to them
@@ -85,7 +86,7 @@ const resumeConversations = async function(client) {
 	// TODO This is a temporary solution
 	await verifyWhitelist(client);
 
-	console.log('Searching for missed messages'.system);
+	logger.info('Searching for missed messages');
 	const toRespondTo = [];
 	for (const channelID of getWhitelist()) {
 
@@ -106,21 +107,21 @@ const resumeConversations = async function(client) {
 		}
 	}
 	if (toRespondTo.length !== 0) {
-		console.log('\tFound'.system, toRespondTo.length, 'missed messages'.system);
+		logger.info(`\tFound ${toRespondTo.length} missed messages`);
 	}
-	console.log('Searched for missed messages successfully'.system);
+	logger.info('Searched for missed messages successfully');
 
 	// Check for missed messages at regular intervals
 	setTimeout(resumeConversations, repeatWait * 1000, client);
-	console.log('Searching again in'.system, repeatWait, 'seconds'.system);
+	logger.info(`Searching again in ${repeatWait} seconds`);
 
 	// Respond to missed messages
 	if (toRespondTo.length !== 0) {
-		console.log('Forwarding messages to message handler'.system);
-		console.log();
+		logger.info('Forwarding messages to message handler');
+		logger.info();
 		toRespondTo.forEach(message => executeEvent('messageCreate', message));
 	}
 	else {
-		console.log();
+		logger.info();
 	}
 };

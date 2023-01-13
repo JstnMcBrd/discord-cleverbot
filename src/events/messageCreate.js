@@ -12,10 +12,11 @@ module.exports = {
 };
 
 const cleverbot = require('cleverbot-free');
+const logger = require('../helpers/logger');
 const { typingSpeed } = require('../parameters.js');
 const { executeEvent, eventError } = require('.');
 const { hasChannel: isWhitelisted } = require('../whitelist-manager.js');
-const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../message-analyzer.js');
+const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../helpers/message-analyzer.js');
 
 // Called whenever the discord.js client observes a new message
 const onMessage = async function(message) {
@@ -33,39 +34,39 @@ const onMessage = async function(message) {
 	// ... not whitelisted or forced reply
 	if (!isWhitelisted(message.channel) && !isAMention(message, client.user)) return;
 
-	console.log('Received new message'.system);
-	console.log(indent(debugMessage(message), 1));
+	logger.info('Received new message');
+	logger.debug(indent(debugMessage(message), 1));
 
 	// Clean up message, also used in generateContext()
-	console.log('Cleaning up message'.system);
+	logger.info('Cleaning up message');
 	let input = message.cleanContent;
 	if (isAMention(message, client.user)) {
 		input = replaceMentions(client.user.username, input);
 	}
 	input = replaceUnknownEmojis(input);
 	input = input.trim();
-	console.log(indent('Content: '.info + input, 1));
+	logger.info(indent(`Content: ${input}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel)) {
 		if (!hasContext(message.channel)) {
-			console.log('Generating new channel context'.system);
+			logger.info('Generating new channel context');
 			await generateContext(client, message.channel);
 		}
 		else {
-			console.log('Updating channel context'.system);
+			logger.info('Updating channel context');
 			addToContext(message.channel, input);
 		}
 	}
 	else {
-		console.log('Skipping channel context generation'.system);
+		logger.info('Skipping channel context generation');
 	}
 
 	// Prevent bot from responding to anything else while it thinks
 	startThinking(message.channel);
 
 	// Actually generate response
-	console.log('Generating response'.system);
+	logger.info('Generating response');
 	cleverbot(input, getContext(message.channel)).then(response => {
 		// Sometimes cleverbot goofs and returns an empty response
 		if (response === '') {
@@ -75,8 +76,8 @@ const onMessage = async function(message) {
 			throw error;
 		}
 
-		console.log('Generated response successfully'.system);
-		console.log('\tResponse:'.info, response);
+		logger.info('Generated response successfully');
+		logger.debug(`\tResponse: ${response}`);
 
 		// Determine how long to show the typing indicator before sending the message (seconds)
 		const timeTypeSec = response.length / typingSpeed;
@@ -84,27 +85,27 @@ const onMessage = async function(message) {
 		// Will automatically stop typing when message sends
 
 		// Send the message once the typing time is over
-		console.log('Sending message'.system);
+		logger.info('Sending message');
 		setTimeout(
 			function() {
 				// Respond normally if no extra messages have been sent in the meantime
 				if (message.channel.lastMessageId === message.id) {
 					message.channel.send(response).then(() => {
-						console.log('Sent message successfully'.system);
-						console.log();
+						logger.info('Sent message successfully');
+						logger.info();
 					}).catch(error => {
-						console.error('\t' + client.debugFormatError(error));
-						console.error('Failed to send message'.warning);
+						logger.error(error);
+						logger.warn('Failed to send message');
 					});
 				}
 				// Use reply to respond directly if extra messages are in the way
 				else {
 					message.reply(response).then(() => {
-						console.log('Sent reply successfully'.system);
-						console.log();
+						logger.info('Sent reply successfully');
+						logger.info();
 					}).catch(error => {
-						console.error('\t' + client.debugFormatError(error));
-						console.error('Failed to send reply'.warning);
+						logger.error(error);
+						logger.warn('Failed to send reply');
 					});
 				}
 
@@ -128,35 +129,35 @@ const onMessage = async function(message) {
 		stopThinking(message.channel);
 
 		// Log the error
-		console.error('\t' + client.debugFormatError(error));
-		console.error('Failed to generate response'.warning);
+		logger.error(error);
+		logger.warn('Failed to generate response');
 
 		// If error is timeout, then try again
 		if (error.message === 'Response timeout of 10000ms exceeded' ||
 		error === 'Failed to get a response after 15 tries' ||
 		error.message === 'Response is an empty string') {
-			console.log('Trying again'.system);
-			console.log();
+			logger.info('Trying again');
+			logger.info();
 			executeEvent('messageCreate', message);
 		}
 		// If unknown error, then respond to message with error message
 		else {
-			console.log('Replying with error message'.system);
-			console.log();
+			logger.info('Replying with error message');
+			logger.info();
 			client.sendErrorMessage(message, error);
 		}
 	});
 };
 
-// Logs important information about a message to the console
+// Formats important information about a message to a string
 const debugMessage = function(message) {
-	let str = 'MESSAGE'.info;
-	str += '\nContent: '.info + message.cleanContent;
-	str += '\nAuthor:  '.info + message.author.tag + ' ('.info + message.author.id + ')'.info;
-	str += '\nChannel: '.info + message.channel.name + ' ('.info + message.channel.id + ')'.info;
+	let str = 'MESSAGE';
+	str += `\nContent: ${message.cleanContent}`;
+	str += `\nAuthor:  ${message.author.tag} (${message.author.id})`;
+	str += `\nChannel: ${message.channel.name} (${message.channel.id})`;
 	// Compensate for DMs
 	if (message.guild !== null) {
-		str += '\nGuild:   '.info + message.guild.name + ' ('.info + message.guild.id + ')'.info;
+		str += `\nGuild:   ${message.guild.name} (${message.guild.id})`;
 	}
 	return str;
 };
@@ -168,7 +169,7 @@ const indent = function(str, numTabs) {
 		tabs += '\t';
 		numTabs--;
 	}
-	return (tabs + str).replaceAll('\n', '\n' + tabs);
+	return (tabs + str).replaceAll('\n', `\n${tabs}`);
 };
 
 // Keeps track of whether the bot is already generating a response for each channel
@@ -231,7 +232,7 @@ const generateContext = async function(client, channel) {
 
 		// If there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
 		if (!isFromUser(message, client.user) && !lastMessageFromUser && context[channel.id][0] !== undefined) {
-			context[channel.id][0] = input + '\n' + context[channel.id][0];
+			context[channel.id][0] = input + `\n${context[channel.id][0]}`;
 		}
 		else {
 			context[channel.id].unshift(input);
@@ -273,7 +274,7 @@ const removeLastMessageFromContext = function(channel) {
 
 // Replaces @ mentions of the user with 'Cleverbot' to avoid confusing the Cleverbot AI
 const replaceMentions = function(username, content) {
-	return content.replaceAll('@' + username, 'Cleverbot');
+	return content.replaceAll(`@${username}`, 'Cleverbot');
 };
 
 // Replaces unknown discord emojis with the name of the emoji as *emphasized* text to avoid confusing the Cleverbot AI
@@ -283,7 +284,7 @@ const replaceUnknownEmojis = function(content) {
 		match = match.replace('<:', '');
 		match = match.replace(/:\d+>/g, '');
 		match = match.replace('_', ' ');
-		return '*' + match + '*';
+		return `*${match}*`;
 	});
 	// Now replace any unknown emojis that aren't custom
 	content = content.replaceAll(':', '*').replaceAll('_', ' ');

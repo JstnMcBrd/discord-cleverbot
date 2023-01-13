@@ -10,16 +10,6 @@ export const lastUpdated = new Date(2022, 8, 30, 3, 30);
 export const typingSpeed = 6;
 
 /**
- * The colors that the console output should use.
- */
-export const debugTheme = {
-	system: ['green'],
-	warning: ['yellow'],
-	error: ['red'],
-	info: ['gray'],
-};
-
-/**
  * The hexadecimal values of colors to be used for embeds.
  */
 export const embedColors = {

@@ -10,6 +10,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Collection } = require('discord.js');
 
+const logger = require('../helpers/logger');
+
 // Gather all the event files
 const events = new Collection();
 const eventFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.js') && file != 'index.js');
@@ -31,7 +33,7 @@ const getEvents = function() {
  * @public
  */
 const setEventHandlers = function(client) {
-	console.log('Setting client event handlers'.system);
+	logger.info('Setting client event handlers');
 
 	getEvents().each((event) => {
 		if (event.once) {
@@ -40,10 +42,10 @@ const setEventHandlers = function(client) {
 		else {
 			client.on(event.name, event.execute);
 		}
-		console.log('\tSet'.system, `${event.once ? 'once' : 'on'}(${event.name})`);
+		logger.info(`\tSet ${event.once ? 'once' : 'on'}(${event.name})`);
 	});
 
-	console.log('Set client event handlers successfully'.system);
+	logger.info('Set client event handlers successfully');
 };
 
 /**
@@ -67,26 +69,8 @@ const executeEvent = async function(eventName, ...args) {
  * @public
  */
 const eventError = function(eventName, error) {
-	error = debugFormatError(error);
-	console.error(`Error in event '${eventName}'`);
-	console.error(error);
-};
-
-// Takes either a string or an Error and gives them the error color for the console
-// TODO duplicate method, abstract this out
-const debugFormatError = function(error) {
-	// If the error is just a string, color it with the error color
-	if (typeof (error) === 'string') {
-		return error.error;
-	}
-
-	// If the error is an error object, color the title with the error color
-	const e = new Error();
-	if (error.name !== undefined) {
-		e.name = error.name.error;
-	}
-	e.message = error.message;
-	return e;
+	logger.error(`Error in event '${eventName}'`);
+	logger.error(error);
 };
 
 // Export public methods

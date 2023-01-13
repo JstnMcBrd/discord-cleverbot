@@ -1,20 +1,17 @@
 /* Discord-Cleverbot */
 
-console.log('Importing packages');
-// .system);	// Won't work yet because colors isn't imported
+const logger = require('./helpers/logger');
+
+logger.info('Importing packages');
 
 // Load in all the required packages
 const fs = require('node:fs');
 const path = require('node:path');
-const colors = require('@colors/colors');
 const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 
-const { debugTheme, embedColors } = require('./parameters.js');
+const { embedColors } = require('./parameters.js');
 const { setEventHandlers } = require('./events');
 const { setAccount: setWhitelistAccount } = require('./whitelist-manager.js');
-
-// Set the console debug colors
-colors.setTheme(debugTheme);
 
 // Create a discord client and give it helper functions and values
 const client = new Client({
@@ -40,22 +37,6 @@ client.executeEvent = async function(eventName, ...args) {
 	return await event.execute(client, ...args);
 };
 
-// Takes either a string or an Error and gives them the error color for the console
-client.debugFormatError = function(error) {
-	// If the error is just a string, color it with the error color
-	if (typeof (error) === 'string') {
-		return error.error;
-	}
-
-	// If the error is an error object, color the title with the error color
-	const e = new Error();
-	if (error.name !== undefined) {
-		e.name = error.name.error;
-	}
-	e.message = error.message;
-	return e;
-};
-
 // Responds to a message with an error message
 client.sendErrorMessage = function(message, internalError) {
 	// Format the message as an embed
@@ -68,23 +49,23 @@ client.sendErrorMessage = function(message, internalError) {
 		);
 
 	// Send the error message as a reply
-	console.log('Sending error message'.system);
+	logger.info('Sending error message');
 	message.reply({ embeds: [embed] }).then(() => {
-		console.log('Error message sent successfully'.system);
-		console.log();
+		logger.info('Error message sent successfully');
+		logger.info();
 	}).catch(error => {
-		console.error('\t', client.debugFormatError(error));
-		console.log('Failed to send error message'.warning);
-		console.log();
+		logger.error(error);
+		logger.warn('Failed to send error message');
+		logger.info();
 	});
 };
 
-console.log('Imported packages successfully'.system);
-console.log();
+logger.info('Imported packages successfully');
+logger.info();
 
 // Retrieves the command names and files
 const retrieveSlashCommands = function() {
-	console.log('Retrieving commands'.system);
+	logger.info('Retrieving commands');
 
 	// Gather all the command files
 	client.commands = new Collection();
@@ -96,27 +77,28 @@ const retrieveSlashCommands = function() {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 		client.commands.set(command.data.name, command);
-		console.log('\tRetrieved'.system, `/${command.data.name}`);
+		logger.info(`\tRetrieved /${command.data.name}`);
 	}
 
-	console.log('Retrieved commands successfully'.system);
-	console.log();
+	logger.info('Retrieved commands successfully');
+	logger.info();
 }; retrieveSlashCommands();
 
 // Retrieve the event handler files and give them to the client
 setEventHandlers(client);
 
 // Load memory files
-console.log('Loading memory files'.system);
+logger.info('Loading memory files');
 
 // Was login info provided?
 if (process.argv[2] === undefined) {
 	const error = new Error();
-	error.name = 'Missing Console Argument';
+	error.name = 'Missing Command-line Argument';
 	error.message = 'Account directory name not provided';
 	error.message += '\n\tPlease follow this usage:';
 	error.message += '\n\tnode index.js ' + '[ACCOUNT DIRECTORY NAME]'.underline;
-	throw client.debugFormatError(error);
+	logger.error(error);
+	process.exit(1);
 }
 const filePath = `../accounts/${process.argv[2]}`;
 const configFilePath = `${filePath}/config.json`;
@@ -128,7 +110,8 @@ if (!fs.existsSync(filePath)) {
 	error.name = 'Missing Account Directory';
 	error.message = 'Account directory does not exist';
 	error.message += `\n\tPlease create a directory (${filePath}) to contain the account's memory files`;
-	throw client.debugFormatError(error);
+	logger.error(error);
+	process.exit(1);
 }
 
 // Do the necessary files exist?
@@ -137,14 +120,15 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 	error.name = 'Missing Memory Files';
 	error.message = 'Account directory missing essential memory files';
 	error.message += `\n\tPlease create the necessary files (${configFilePath}) (${whitelistFilePath})`;
-	throw client.debugFormatError(error);
+	logger.error(error);
+	process.exit(1);
 }
 
 const { token } = require(configFilePath);
 setWhitelistAccount(process.argv[2]);
 
-console.log('Loaded memory files successfully'.system);
-console.log();
+logger.info('Loaded memory files successfully');
+logger.info();
 
 // Let's begin
 // Connects the client with the discord API
@@ -152,14 +136,14 @@ const connect = function() {
 	// How long to wait before trying again (seconds)
 	const retryWait = 10;
 
-	console.log('Logging in'.system);
+	logger.info('Logging in');
 	client.login(token).then(() => {
-		console.log('Logged in successfully'.system);
-		console.log();
+		logger.info('Logged in successfully');
+		logger.info();
 	}).catch(error => {
-		console.error('\t' + client.debugFormatError(error));
-		console.log('Retrying connection in'.warning, retryWait, 'seconds...'.warning);
-		console.log();
+		logger.error(error);
+		logger.warn(`Retrying connection in ${retryWait} seconds...`);
+		logger.log();
 		// Use connect() function again
 		setTimeout(connect, retryWait * 1000);
 	});

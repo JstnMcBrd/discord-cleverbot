@@ -11,6 +11,7 @@ module.exports = {
 	},
 };
 
+const logger = require('../helpers/logger');
 const { eventError } = require('./');
 
 // Called whenever the discord.js client receives an interaction (usually means a slash command)
@@ -19,41 +20,41 @@ const onInteraction = async function(interaction) {
 
 	// Ignore any interactions that are not commands
 	if (!interaction.isChatInputCommand()) return;
-	console.log('Received command interaction'.system);
-	console.log(indent(debugInteraction(interaction), 1));
+	logger.info('Received command interaction');
+	logger.debug(indent(debugInteraction(interaction), 1));
 
 	// Ignore any commands that are not recognized
 	const command = client.commands.get(interaction.commandName);
 	if (!command) return;
-	console.log('Command recognized'.system);
+	logger.info('Command recognized');
 
 	// Execute the command script
-	console.log('Executing command'.system);
+	logger.info('Executing command');
 	try {
 		await command.execute(interaction);
 	}
 	catch (error) {
-		console.error('\t', client.debugFormatError(error));
-		console.error('Failed to execute command'.warning);
-		console.log();
+		logger.error(error);
+		logger.warn('Failed to execute command');
+		logger.log();
 		client.sendErrorMessage(interaction, error);
 		return;
 	}
-	console.log('Command executed successfully'.system);
-	console.log();
+	logger.info('Command executed successfully');
+	logger.info();
 };
 
-// Logs important information about an interaction to the console
+// Formats important information about an interaction to a string
 const debugInteraction = function(interaction) {
-	let str = 'INTERACTION'.info;
+	let str = 'INTERACTION';
 	if (interaction.isChatInputCommand()) {
-		str += '\nCommand: '.info + interaction.commandName;
+		str += '\nCommand: ' + interaction.commandName;
 	}
-	str += '\nUser:    '.info + interaction.user.tag + ' ('.info + interaction.user.id + ')'.info;
-	str += '\nChannel: '.info + interaction.channel.name + ' ('.info + interaction.channel.id + ')'.info;
+	str += '\nUser:    ' + interaction.user.tag + ' (' + interaction.user.id + ')';
+	str += '\nChannel: ' + interaction.channel.name + ' (' + interaction.channel.id + ')';
 	// Compensate for DMs
 	if (interaction.guild !== null) {
-		str += '\nGuild:   '.info + interaction.guild.name + ' ('.info + interaction.guild.id + ')'.info;
+		str += '\nGuild:   ' + interaction.guild.name + ' (' + interaction.guild.id + ')';
 	}
 	return str;
 };
