@@ -3,39 +3,51 @@
  * It only needs to be run when commands are updated.
  *
  * Usage: node deploy-commands.js [account name]
+ *
+ * // TODO make this file typescript-safe
 */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { ApplicationCommandDataResolvable, Client } from 'discord.js';
+
 // Verify input
-const usage = function() {
+function usage(): void {
 	console.log('Usage: node deploy-commands.js [account name]');
+}
+if (process.argv[2] === undefined) {
+	usage();
 	process.exit(1);
-};
-if (process.argv[2] === undefined) usage();
+}
 const account = process.argv[2];
 
-// Import dependencies
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client } = require('discord.js');
+// Import auth token
 const authFilePath = `../accounts/${account}/config.json`;
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const { token } = require(authFilePath);
 
 // Gather all the command files
-const commands = [];
+const commands: Array<ApplicationCommandDataResolvable> = [];
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 // Extract the JSON contents of all the command files
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 	const command = require(filePath);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
 	commands.push(command.data.toJSON());
+	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 	console.log(`Retrieved /${command.data.name}`);
 }
 
 // Log in to the Client
 const client = new Client({ intents: [] });
-client.login(token).then(() => console.log('Client logged in'));
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+client.login(token)
+	.then(() => console.log('Client logged in'))
+	.catch((error) => console.error(error));
 
 // Register the commands with Discord
 client.once('ready', async (c) => {
