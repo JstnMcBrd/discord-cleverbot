@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
-const { embedColors } = require('../parameters.js');
-const { removeChannel: unwhitelistChannel } = require('../whitelist-manager.js');
+const { embedColors } = require("../parameters.js");
+const { removeChannel: unwhitelistChannel } = require("../whitelist-manager.js");
 
 const channelMention = function(channelID) {
 	return `<#${channelID}>`;
@@ -11,10 +11,10 @@ const createSuccessEmbed = function(channelID) {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.unwhitelist)
-		.setTitle('Unwhitelisted')
+		.setTitle("Unwhitelisted")
 		.setDescription(`You have disabled me for ${mention}. This means that I will no longer respond to future messages sent in ${mention}.`)
 		.addFields(
-			{ name: 'Enabling', value: `If you wish for me to start responding to messages in ${mention} in the future, use the **/whitelist** command.` },
+			{ name: "Enabling", value: `If you wish for me to start responding to messages in ${mention} in the future, use the **/whitelist** command.` },
 		);
 };
 
@@ -22,14 +22,14 @@ const createRedundantEmbed = function(channelID) {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.info)
-		.setTitle('Already Unwhitelisted')
+		.setTitle("Already Unwhitelisted")
 		.setDescription(`You have already disabled me for ${mention}.`);
 };
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('unwhitelist')
-		.setDescription('Disallows me from responding to messages in this channel'),
+		.setName("unwhitelist")
+		.setDescription("Disallows me from responding to messages in this channel"),
 
 	async execute(interaction) {
 		let embed = {};

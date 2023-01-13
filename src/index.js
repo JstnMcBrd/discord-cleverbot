@@ -1,16 +1,16 @@
 /* Discord-Cleverbot */
 
-const logger = require('./helpers/logger');
+const logger = require("./helpers/logger");
 
-logger.info('Importing packages');
+logger.info("Importing packages");
 
 // Load in all the required packages
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Partials, GatewayIntentBits, Collection } = require('discord.js');
+const fs = require("node:fs");
+const path = require("node:path");
+const { Client, Partials, GatewayIntentBits, Collection } = require("discord.js");
 
-const { setEventHandlers } = require('./events');
-const { setAccount: setWhitelistAccount } = require('./whitelist-manager.js');
+const { setEventHandlers } = require("./events");
+const { setAccount: setWhitelistAccount } = require("./whitelist-manager.js");
 
 // Create a discord client and give it helper functions and values
 const client = new Client({
@@ -36,17 +36,17 @@ client.executeEvent = async function(eventName, ...args) {
 	return await event.execute(client, ...args);
 };
 
-logger.info('Imported packages successfully');
+logger.info("Imported packages successfully");
 logger.info();
 
 // Retrieves the command names and files
 const retrieveSlashCommands = function() {
-	logger.info('Retrieving commands');
+	logger.info("Retrieving commands");
 
 	// Gather all the command files
 	client.commands = new Collection();
-	const commandsPath = path.join(__dirname, 'commands');
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandsPath = path.join(__dirname, "commands");
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
 	// Extract the name and executables of the command files
 	for (const file of commandFiles) {
@@ -56,7 +56,7 @@ const retrieveSlashCommands = function() {
 		logger.info(`\tRetrieved /${command.data.name}`);
 	}
 
-	logger.info('Retrieved commands successfully');
+	logger.info("Retrieved commands successfully");
 	logger.info();
 }; retrieveSlashCommands();
 
@@ -64,15 +64,15 @@ const retrieveSlashCommands = function() {
 setEventHandlers(client);
 
 // Load memory files
-logger.info('Loading memory files');
+logger.info("Loading memory files");
 
 // Was login info provided?
 if (process.argv[2] === undefined) {
 	const error = new Error();
-	error.name = 'Missing Command-line Argument';
-	error.message = 'Account directory name not provided';
-	error.message += '\n\tPlease follow this usage:';
-	error.message += '\n\tnode index.js ' + '[ACCOUNT DIRECTORY NAME]'.underline;
+	error.name = "Missing Command-line Argument";
+	error.message = "Account directory name not provided";
+	error.message += "\n\tPlease follow this usage:";
+	error.message += "\n\tnode index.js " + "[ACCOUNT DIRECTORY NAME]".underline;
 	logger.error(error);
 	process.exit(1);
 }
@@ -83,8 +83,8 @@ const whitelistFilePath = `${filePath}/whitelist.json`;
 // Does the necessary directory exist?
 if (!fs.existsSync(filePath)) {
 	const error = new Error();
-	error.name = 'Missing Account Directory';
-	error.message = 'Account directory does not exist';
+	error.name = "Missing Account Directory";
+	error.message = "Account directory does not exist";
 	error.message += `\n\tPlease create a directory (${filePath}) to contain the account's memory files`;
 	logger.error(error);
 	process.exit(1);
@@ -93,8 +93,8 @@ if (!fs.existsSync(filePath)) {
 // Do the necessary files exist?
 if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 	const error = new Error();
-	error.name = 'Missing Memory Files';
-	error.message = 'Account directory missing essential memory files';
+	error.name = "Missing Memory Files";
+	error.message = "Account directory missing essential memory files";
 	error.message += `\n\tPlease create the necessary files (${configFilePath}) (${whitelistFilePath})`;
 	logger.error(error);
 	process.exit(1);
@@ -103,7 +103,7 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 const { token } = require(configFilePath);
 setWhitelistAccount(process.argv[2]);
 
-logger.info('Loaded memory files successfully');
+logger.info("Loaded memory files successfully");
 logger.info();
 
 // Let's begin
@@ -112,9 +112,9 @@ const connect = function() {
 	// How long to wait before trying again (seconds)
 	const retryWait = 10;
 
-	logger.info('Logging in');
+	logger.info("Logging in");
 	client.login(token).then(() => {
-		logger.info('Logged in successfully');
+		logger.info("Logged in successfully");
 		logger.info();
 	}).catch(error => {
 		logger.error(error);

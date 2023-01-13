@@ -4,7 +4,7 @@
  * This script contains useful functions for analyzing messages.
 */
 
-import type { Message, User } from 'discord.js';
+import type { Message, User } from "discord.js";
 
 /**
  * Recognizes when a message is prepended with '> ', which tells the bot not to respond.
@@ -12,7 +12,7 @@ import type { Message, User } from 'discord.js';
  * @returns true if the message begins with '> ', false if otherwise
  */
 export function isMarkedAsIgnore(message: Message): boolean {
-	return message.cleanContent.substring(0, 2) === '> ';
+	return message.cleanContent.substring(0, 2) === "> ";
 }
 
 /**
@@ -31,7 +31,7 @@ export function isFromUser(message: Message, user: User): boolean {
  * @returns true if the message has no text content, false if otherwise
  */
 export function isEmpty(message: Message): boolean {
-	return message.cleanContent === '';
+	return message.cleanContent === "";
 }
 
 /**

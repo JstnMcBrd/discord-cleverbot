@@ -6,15 +6,15 @@
  */
 
 // Load in all the required packages
-const fs = require('node:fs');
-const path = require('node:path');
-const { Collection } = require('discord.js');
+const fs = require("node:fs");
+const path = require("node:path");
+const { Collection } = require("discord.js");
 
-const logger = require('../helpers/logger');
+const logger = require("../helpers/logger");
 
 // Gather all the event files
 const events = new Collection();
-const eventFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.js') && file != 'index.js');
+const eventFiles = fs.readdirSync(__dirname).filter(file => file.endsWith(".js") && file != "index.js");
 
 // Define methods
 
@@ -33,7 +33,7 @@ const getEvents = function() {
  * @public
  */
 const setEventHandlers = function(client) {
-	logger.info('Setting client event handlers');
+	logger.info("Setting client event handlers");
 
 	getEvents().each((event) => {
 		if (event.once) {
@@ -42,10 +42,10 @@ const setEventHandlers = function(client) {
 		else {
 			client.on(event.name, event.execute);
 		}
-		logger.info(`\tSet ${event.once ? 'once' : 'on'}(${event.name})`);
+		logger.info(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
 	});
 
-	logger.info('Set client event handlers successfully');
+	logger.info("Set client event handlers successfully");
 };
 
 /**

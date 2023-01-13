@@ -1,25 +1,25 @@
 module.exports = {
-	name: 'ready',
+	name: "ready",
 	once: true,
 	async execute(client) {
 		try {
 			await onceReady(client);
 		}
 		catch (error) {
-			eventError('ready', error);
+			eventError("ready", error);
 		}
 	},
 };
 
-const { ActivityType } = require('discord.js');
-const logger = require('../helpers/logger');
-const { executeEvent, eventError } = require('./');
-const { verify: verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
-const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../helpers/message-analyzer.js');
+const { ActivityType } = require("discord.js");
+const logger = require("../helpers/logger");
+const { executeEvent, eventError } = require("./");
+const { verify: verifyWhitelist, getWhitelist } = require("../whitelist-manager.js");
+const { isMarkedAsIgnore, isEmpty, isFromUser } = require("../helpers/message-analyzer.js");
 
 // Called once the client successfully logs in
 const onceReady = async function(client) {
-	logger.info('Client ready');
+	logger.info("Client ready");
 	logger.info();
 
 	setUserActivity(client);
@@ -49,13 +49,13 @@ const setUserActivity = function(client) {
 	*/
 	// Use this in the meantime
 	const activityOptions = {
-		name: '/help',
+		name: "/help",
 		type: ActivityType.Listening,
-		url: 'https://www.cleverbot.com/',
+		url: "https://www.cleverbot.com/",
 	};
 
 	// Set the user's activity
-	logger.info('Setting user activity');
+	logger.info("Setting user activity");
 	const presence = client.user.setActivity(activityOptions);
 
 	// Double check to see if it worked
@@ -67,8 +67,8 @@ const setUserActivity = function(client) {
 			activity.type === activityOptions.type &&
 			activity.url === activityOptions.url;
 	}
-	if (correct)	logger.info('Set user activity successfully');
-	else 			logger.warn('Failed to set user activity');
+	if (correct)	logger.info("Set user activity successfully");
+	else 			logger.warn("Failed to set user activity");
 
 	// Set user activity at regular intervals
 	setTimeout(setUserActivity, repeatWait * 1000, client);
@@ -86,7 +86,7 @@ const resumeConversations = async function(client) {
 	// TODO This is a temporary solution
 	await verifyWhitelist(client);
 
-	logger.info('Searching for missed messages');
+	logger.info("Searching for missed messages");
 	const toRespondTo = [];
 	for (const channelID of getWhitelist()) {
 
@@ -109,7 +109,7 @@ const resumeConversations = async function(client) {
 	if (toRespondTo.length !== 0) {
 		logger.info(`\tFound ${toRespondTo.length} missed messages`);
 	}
-	logger.info('Searched for missed messages successfully');
+	logger.info("Searched for missed messages successfully");
 
 	// Check for missed messages at regular intervals
 	setTimeout(resumeConversations, repeatWait * 1000, client);
@@ -117,9 +117,9 @@ const resumeConversations = async function(client) {
 
 	// Respond to missed messages
 	if (toRespondTo.length !== 0) {
-		logger.info('Forwarding messages to message handler');
+		logger.info("Forwarding messages to message handler");
 		logger.info();
-		toRespondTo.forEach(message => executeEvent('messageCreate', message));
+		toRespondTo.forEach(message => executeEvent("messageCreate", message));
 	}
 	else {
 		logger.info();

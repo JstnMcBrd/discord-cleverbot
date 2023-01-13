@@ -8,13 +8,13 @@
  * - saving the whitelist to memory
 */
 
-import fs from 'node:fs';
-import type { Channel, Client } from 'discord.js';
+import fs from "node:fs";
+import type { Channel, Client } from "discord.js";
 
 /**
  * The file path of the whitelist memory file.
  */
-let filePath = '';
+let filePath = "";
 
 /**
  * The local copy of the whitelist.
@@ -41,7 +41,7 @@ export async function verify(client: Client): Promise<void> {
 			// If the channel doesn't exist, remove it from the whitelist
 			// TODO make this more typescript-safe
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (error.message === 'Unknown Channel' || error.message === 'Missing Access') {
+			if (error.message === "Unknown Channel" || error.message === "Missing Access") {
 				removeChannel(channelID);
 			}
 			// If there's some other kind of error, throw a fit
@@ -84,7 +84,7 @@ export function getWhitelist(): Array<string> {
  * @returns the channel ID
  */
 function getChannelID(channel: string|Channel): string {
-	if (typeof channel === 'string') {
+	if (typeof channel === "string") {
 		return channel;
 	}
 	else {

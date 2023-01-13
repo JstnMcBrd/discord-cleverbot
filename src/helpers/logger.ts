@@ -1,4 +1,4 @@
-import colors from '@colors/colors/safe';
+import colors from "@colors/colors/safe";
 
 /**
  * The default logger for this application. Set to the console for now.
@@ -7,9 +7,9 @@ import colors from '@colors/colors/safe';
 const logger: Console = console;
 
 export function error(message?: unknown): void {
-	message = message ? message : '';
+	message = message ? message : "";
 
-	if (typeof message === 'string') {
+	if (typeof message === "string") {
 		message = colors.red(message);
 	}
 	else if (message instanceof Error) {
@@ -20,9 +20,9 @@ export function error(message?: unknown): void {
 }
 
 export function warn(message?: unknown): void {
-	message = message ? message : '';
+	message = message ? message : "";
 
-	if (typeof message === 'string') {
+	if (typeof message === "string") {
 		message = colors.yellow(message);
 	}
 	else if (message instanceof Error) {
@@ -33,9 +33,9 @@ export function warn(message?: unknown): void {
 }
 
 export function info(message?: unknown): void {
-	message = message ? message : '';
+	message = message ? message : "";
 
-	if (typeof message === 'string') {
+	if (typeof message === "string") {
 		message = colors.green(message);
 	}
 
@@ -43,9 +43,9 @@ export function info(message?: unknown): void {
 }
 
 export function debug(message?: unknown): void {
-	message = message ? message : '';
+	message = message ? message : "";
 
-	if (typeof message === 'string') {
+	if (typeof message === "string") {
 		message = colors.gray(message);
 	}
 
