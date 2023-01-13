@@ -21,8 +21,8 @@ export function isMarkedAsIgnore(message: Message): boolean {
  * @param user the user to check if the message came from
  * @returns true if the message came from the user, false if otherwise
  */
-export function isFromUser(message: Message, user: User): boolean {
-	return message.author.id === user.id;
+export function isFromUser(message: Message, user: User|null): boolean {
+	return user !== null && message.author.id === user.id;
 }
 
 /**
@@ -40,6 +40,6 @@ export function isEmpty(message: Message): boolean {
  * @param user the user to see if the message mentions
  * @returns true if the message mentions the user, else if otherwise
  */
-export function isAMention(message: Message, user: User): boolean {
-	return message.mentions.has(user);
+export function isAMention(message: Message, user: User|null): boolean {
+	return user !== null && message.mentions.has(user);
 }
