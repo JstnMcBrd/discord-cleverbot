@@ -14,7 +14,7 @@ module.exports = {
 const cleverbot = require('cleverbot-free');
 const { typingSpeed } = require('../parameters.js');
 const { executeEvent, eventError } = require('.');
-const { isWhitelisted } = require('../whitelist-manager.js');
+const { hasChannel: isWhitelisted } = require('../whitelist-manager.js');
 const { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } = require('../message-analyzer.js');
 
 // Called whenever the discord.js client observes a new message

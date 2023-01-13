@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const { embedColors } = require('../parameters.js');
-const { unwhitelistChannel } = require('../whitelist-manager.js');
+const { removeChannel: unwhitelistChannel } = require('../whitelist-manager.js');
 
 const channelMention = function(channelID) {
 	return `<#${channelID}>`;

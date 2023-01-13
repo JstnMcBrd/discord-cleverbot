@@ -11,7 +11,7 @@ const { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } = requir
 
 const { debugTheme, embedColors } = require('./parameters.js');
 const { setEventHandlers } = require('./events');
-const { setWhitelistAccount } = require('./whitelist-manager.js');
+const { setAccount: setWhitelistAccount } = require('./whitelist-manager.js');
 
 // Set the console debug colors
 colors.setTheme(debugTheme);

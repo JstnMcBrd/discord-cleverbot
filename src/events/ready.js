@@ -13,7 +13,7 @@ module.exports = {
 
 const { ActivityType } = require('discord.js');
 const { executeEvent, eventError } = require('./');
-const { verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
+const { verify: verifyWhitelist, getWhitelist } = require('../whitelist-manager.js');
 const { isMarkedAsIgnore, isEmpty, isFromUser } = require('../message-analyzer.js');
 
 // Called once the client successfully logs in
