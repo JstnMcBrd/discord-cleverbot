@@ -8,7 +8,7 @@
 import type { Client, ClientEvents } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../helpers/logger";
+import * as logger from "../logger";
 import { error } from "./error";
 import { interactionCreate } from "./interactionCreate";
 import { messageCreate } from "./messageCreate";

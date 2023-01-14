@@ -4,7 +4,7 @@ import type { ActivityOptions, Client, TextChannel } from "discord.js";
 import { ActivityType } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../helpers/logger";
+import * as logger from "../logger";
 import { logEventError } from "./";
 import { messageCreate } from "./messageCreate";
 import { verify as verifyWhitelist, getWhitelist } from "../whitelistManager";

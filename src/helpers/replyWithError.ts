@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import type { Message } from "discord.js";
 
-import * as logger from "./logger";
+import * as logger from "../logger";
 import { embedColors } from "../parameters";
 
 /**

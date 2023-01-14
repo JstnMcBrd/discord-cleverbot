@@ -10,7 +10,7 @@
 import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
 
-import * as logger from "./helpers/logger";
+import * as logger from "./logger";
 import { getCommandHandlers } from "./commands";
 
 // Verify input

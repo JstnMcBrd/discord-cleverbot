@@ -1,7 +1,7 @@
 import type { Interaction, TextChannel } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../helpers/logger";
+import * as logger from "../logger";
 import { replyWithError } from "../helpers/replyWithError";
 import { getCommandHandler } from "../commands";
 import { logEventError } from "./";

@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import { Client, Partials, GatewayIntentBits } from "discord.js";
 
-import * as logger from "./helpers/logger";
+import * as logger from "./logger";
 import { registerEventHandlers } from "./events";
 import { setAccount as setWhitelistAccount } from "./whitelistManager";
 

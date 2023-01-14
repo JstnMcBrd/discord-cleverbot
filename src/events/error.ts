@@ -1,6 +1,6 @@
 import type { EventHandler } from "../@types/EventHandler";
 
-import * as logger from "../helpers/logger";
+import * as logger from "../logger";
 import { logEventError } from "./";
 
 export const error: EventHandler<"error"> = {

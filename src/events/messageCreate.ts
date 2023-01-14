@@ -4,7 +4,7 @@ import type { Channel, Client, Message, TextChannel } from "discord.js";
 import cleverbot from "cleverbot-free";
 
 import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../helpers/logger";
+import * as logger from "../logger";
 import { indent } from "../helpers/indent";
 import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
