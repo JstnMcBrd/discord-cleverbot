@@ -1,6 +1,4 @@
-// TODO make typescript-safe
-
-import type { Channel, Client, Message, TextChannel } from "discord.js";
+import type { Channel, Client, Collection, Message, TextBasedChannel } from "discord.js";
 import cleverbot from "cleverbot-free";
 
 import type { EventHandler } from "../@types/EventHandler";
@@ -20,7 +18,7 @@ export const messageCreate: EventHandler<"messageCreate"> = {
 			await onMessage(message);
 		}
 		catch (error) {
-			logEventError(this.name, error as Error);
+			logEventError(this.name, error);
 		}
 	},
 };
@@ -60,7 +58,7 @@ async function onMessage(message: Message) {
 	if (isWhitelisted(message.channel)) {
 		if (!hasContext(message.channel)) {
 			logger.info("Generating new channel context");
-			await generateContext(client, message.channel as TextChannel);
+			await generateContext(client, message.channel);
 		}
 		else {
 			logger.info("Updating channel context");
@@ -142,11 +140,17 @@ async function onMessage(message: Message) {
 		logger.warn("Failed to generate response");
 
 		// If error is timeout, then try again
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (error.message === "Response timeout of 10000ms exceeded" ||
-		error === "Failed to get a response after 15 tries" ||
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		error.message === "Response is an empty string") {
+		let errorMessage: unknown;
+		if (error instanceof Error) {
+			errorMessage = error.message;
+		}
+		else {
+			errorMessage = error;
+		}
+
+		if (errorMessage === "Response timeout of 10000ms exceeded" ||
+		errorMessage === "Failed to get a response after 15 tries" ||
+		errorMessage === "Response is an empty string") {
 			logger.info("Trying again");
 			logger.info();
 			void messageCreate.execute(message);
@@ -155,7 +159,7 @@ async function onMessage(message: Message) {
 		else {
 			logger.info("Replying with error message");
 			logger.info();
-			replyWithError(message, error as Error);
+			replyWithError(message, error);
 		}
 	});
 }
@@ -167,8 +171,9 @@ function debugMessage(message: Message): string {
 	let str = "MESSAGE";
 	str += `\nContent: ${message.cleanContent}`;
 	str += `\nAuthor:  ${message.author.tag} (${message.author.id})`;
-	// TODO
-	str += `\nChannel: ${(message.channel as TextChannel).name} (${message.channel.id})`;
+	if (!message.channel.isDMBased()) {
+		str += `\nChannel: ${message.channel.name} (${message.channel.id})`;
+	}
 	// Compensate for DMs
 	if (message.guild !== null) {
 		str += `\nGuild:   ${message.guild.name} (${message.guild.id})`;
@@ -234,13 +239,13 @@ function hasContext(channel: Channel): boolean {
 /**
  * Fetches and records the past messages of the channel.
  */
-async function generateContext(client: Client, channel: TextChannel) {
+async function generateContext(client: Client, channel: TextBasedChannel) {
 	const newContext: string[] = [];
 	let repliedTo: string|undefined = undefined;
 	let lastMessageFromUser = false;
 
 	// Fetch past messages
-	const messages = await channel.messages.fetch({ limit: maxContextLength });
+	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
 	messages.each(message => {
 		// Skip ignored messages and empty messages
 		if (isMarkedAsIgnore(message) || isEmpty(message)) return;

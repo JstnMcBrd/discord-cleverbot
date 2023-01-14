@@ -52,7 +52,7 @@ export function registerEventHandlers(client: Client) {
 	logger.info();
 }
 
-export function logEventError(eventName: string, err: Error) {
+export function logEventError(eventName: string, err: Error|unknown) {
 	logger.error(`Error in event '${eventName}'`);
 	logger.error(err);
 }

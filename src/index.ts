@@ -1,11 +1,11 @@
 /* Discord-Cleverbot */
-// TODO make typescript-safe
+// TODO find a typescript-safe way to load in the token
 
 import fs from "node:fs";
 import { Client, Partials, GatewayIntentBits } from "discord.js";
 
-import * as logger from "./logger";
 import { registerEventHandlers } from "./events";
+import * as logger from "./logger";
 import { setAccount as setWhitelistAccount } from "./whitelistManager";
 
 logger.info("Initializing client");
@@ -69,7 +69,7 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const { token } = require(configFilePath);
+const { token }: { token: string } = require(configFilePath);
 setWhitelistAccount(process.argv[2]);
 
 logger.info("Loaded memory files successfully");
@@ -82,7 +82,6 @@ function connect(): void {
 	const retryWait = 10;
 
 	logger.info("Logging in");
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	client.login(token).then(() => {
 		logger.info("Logged in successfully");
 		logger.info();

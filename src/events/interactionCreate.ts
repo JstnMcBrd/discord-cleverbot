@@ -1,4 +1,4 @@
-import type { Interaction, TextChannel } from "discord.js";
+import type { Interaction } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../logger";
@@ -14,7 +14,7 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
 			await onInteraction(interaction);
 		}
 		catch (error) {
-			logEventError(this.name, error as Error);
+			logEventError(this.name, error);
 		}
 	},
 };
@@ -46,7 +46,7 @@ async function onInteraction(interaction: Interaction): Promise<void> {
 		logger.error(error);
 		logger.warn("Failed to execute command");
 		logger.info();
-		replyWithError(interaction, error as Error);
+		replyWithError(interaction, error);
 		return;
 	}
 	logger.info("Command executed successfully");
@@ -62,8 +62,8 @@ function debugInteraction(interaction: Interaction): string {
 		str += `\nCommand: ${interaction.commandName}`;
 	}
 	str += `\nUser:    ${interaction.user.tag} (${interaction.user.id})`;
-	if (interaction.channel !== null) {
-		str += `\nChannel: ${(interaction.channel as TextChannel).name} (${interaction.channel.id})`;
+	if (interaction.channel !== null && !interaction.channel.isDMBased() && !interaction.channel.partial) {
+		str += `\nChannel: ${interaction.channel.name} (${interaction.channel.id})`;
 	}
 	// Compensate for DMs
 	if (interaction.guild !== null) {

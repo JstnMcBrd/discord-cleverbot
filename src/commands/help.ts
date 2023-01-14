@@ -14,6 +14,7 @@ export const help = new CommandHandler()
 
 function createHelpEmbed(user: User): EmbedBuilder {
 	const mention = userMention(user.id);
+	const avatarURL = user.avatarURL();
 	return new EmbedBuilder()
 		.setColor(embedColors.info)
 		.setTitle("User Guide")
@@ -27,7 +28,7 @@ function createHelpEmbed(user: User): EmbedBuilder {
 		)
 		.setFooter({
 			text: "Last Updated",
-			iconURL: user.avatarURL() as string,
+			iconURL: (avatarURL !== null) ? avatarURL : undefined,
 		})
 		.setTimestamp(lastUpdated);
 }

@@ -3,9 +3,8 @@
  * It only needs to be run when commands are updated.
  *
  * Usage: node deploy-commands.js [account name]
- *
- * // TODO make this file typescript-safe
 */
+// TODO find a typescript-safe way to load in the token
 
 import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
@@ -26,7 +25,7 @@ const account = process.argv[2];
 // Import auth token
 const authFilePath = `../accounts/${account}/config.json`;
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const { token } = require(authFilePath);
+const { token }: { token: string } = require(authFilePath);
 
 // Get the JSON data of the commands
 const commandJSONs: Array<ApplicationCommandDataResolvable> = [];
@@ -37,7 +36,6 @@ getCommandHandlers().forEach(command => {
 
 // Log in to the Client
 const client = new Client({ intents: [] });
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 client.login(token)
 	.then(() => logger.info("Client logged in"))
 	.catch((error) => logger.error(error));

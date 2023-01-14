@@ -1,6 +1,4 @@
-// TODO make typescript-safe
-
-import type { ActivityOptions, Client, TextChannel } from "discord.js";
+import { ActivityOptions, CategoryChannel, Client, PartialGroupDMChannel, StageChannel } from "discord.js";
 import { ActivityType } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
@@ -18,7 +16,7 @@ export const ready: EventHandler<"ready"> = {
 			await onceReady(client);
 		}
 		catch (error) {
-			logEventError(this.name, error as Error);
+			logEventError(this.name, error);
 		}
 	},
 };
@@ -106,12 +104,18 @@ async function resumeConversations(client: Client): Promise<void> {
 		const channel = await client.channels.fetch(channelID);
 
 		if (!channel) continue;
+		if (channel instanceof CategoryChannel) continue;
+		if (channel instanceof StageChannel) continue;
+		if (channel instanceof PartialGroupDMChannel) continue;
 
 		// Request the most recent messages of the channel
-		const messagesMap = await (channel as TextChannel).messages.fetch({ limit: messageSearchDepth });
+		const messagesMap = await channel.messages.fetch({ limit: messageSearchDepth });
 
 		// Convert map to array
 		const messages = messagesMap.first(messagesMap.size);
+
+		if (!messages) continue;
+		if (!(messages instanceof Array)) continue;
 
 		// Search for messages that haven't been replied to
 		for (const message of messages) {
@@ -126,16 +130,14 @@ async function resumeConversations(client: Client): Promise<void> {
 	logger.info("Searched for missed messages successfully");
 
 	// Check for missed messages at regular intervals
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
-	setTimeout(resumeConversations, repeatWait * 1000, client);
+	setTimeout(() => resumeConversations, repeatWait * 1000, client);
 	logger.info(`Searching again in ${repeatWait} seconds`);
 
 	// Respond to missed messages
 	if (toRespondTo.length !== 0) {
 		logger.info("Forwarding messages to message handler");
 		logger.info();
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
-		toRespondTo.forEach(message => messageCreate.execute(message));
+		toRespondTo.forEach(message => void messageCreate.execute(message));
 	}
 	else {
 		logger.info();
