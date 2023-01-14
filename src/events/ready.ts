@@ -63,7 +63,7 @@ function setUserActivity(client: Client): void {
 	};
 
 	// Set the user's activity
-	logger.info("Setting user activity");
+	logger.info("Setting user activity...");
 	const presence = client.user?.setActivity(activityOptions);
 
 	// Double check to see if it worked
@@ -75,8 +75,9 @@ function setUserActivity(client: Client): void {
 			activity.type === activityOptions.type &&
 			activity.url === activityOptions.url;
 	}
-	if (correct)	logger.info("Set user activity successfully");
-	else 			logger.warn("Failed to set user activity");
+	if (!correct) {
+		logger.warn("Failed to set user activity");
+	}
 
 	// Set user activity at regular intervals
 	setTimeout(setUserActivity, repeatWait * 1000, client);
@@ -96,7 +97,7 @@ async function resumeConversations(client: Client): Promise<void> {
 	// TODO This is a temporary solution
 	await verifyWhitelist(client);
 
-	logger.info("Searching for missed messages");
+	logger.info("Searching for missed messages...");
 	const toRespondTo = [];
 	for (const channelID of getWhitelist()) {
 
@@ -127,19 +128,16 @@ async function resumeConversations(client: Client): Promise<void> {
 	if (toRespondTo.length !== 0) {
 		logger.info(`\tFound ${toRespondTo.length} missed messages`);
 	}
-	logger.info("Searched for missed messages successfully");
+
+	// Respond to missed messages
+	if (toRespondTo.length !== 0) {
+		logger.info("\tForwarding messages to message handler");
+		logger.info();
+		toRespondTo.forEach(message => void messageCreate.execute(message));
+	}
 
 	// Check for missed messages at regular intervals
 	setTimeout(() => resumeConversations, repeatWait * 1000, client);
 	logger.info(`Searching again in ${repeatWait} seconds`);
-
-	// Respond to missed messages
-	if (toRespondTo.length !== 0) {
-		logger.info("Forwarding messages to message handler");
-		logger.info();
-		toRespondTo.forEach(message => void messageCreate.execute(message));
-	}
-	else {
-		logger.info();
-	}
+	logger.info();
 }

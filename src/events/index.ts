@@ -36,7 +36,7 @@ export function getEventHandlers(): ReadonlyMap<string, EventHandler> {
 }
 
 export function registerEventHandlers(client: Client) {
-	logger.info("Setting client event handlers");
+	logger.info("Setting client event handlers...");
 
 	getEventHandlers().forEach((event) => {
 		if (event.once) {
@@ -45,10 +45,9 @@ export function registerEventHandlers(client: Client) {
 		else {
 			client.on(event.name, event.execute);
 		}
-		logger.info(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
+		logger.debug(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
 	});
 
-	logger.info("Set client event handlers successfully");
 	logger.info();
 }
 

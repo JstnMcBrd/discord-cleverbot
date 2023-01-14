@@ -12,9 +12,6 @@ export function error(message?: unknown): void {
 	if (typeof message === "string") {
 		message = colors.red(message);
 	}
-	else if (message instanceof Error) {
-		message.name = colors.red(message.name);
-	}
 
 	logger.error(message);
 }
@@ -24,9 +21,6 @@ export function warn(message?: unknown): void {
 
 	if (typeof message === "string") {
 		message = colors.yellow(message);
-	}
-	else if (message instanceof Error) {
-		message.name = colors.yellow(message.name);
 	}
 
 	logger.warn(message);

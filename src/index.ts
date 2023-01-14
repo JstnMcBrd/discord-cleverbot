@@ -8,7 +8,33 @@ import { registerEventHandlers } from "./events";
 import * as logger from "./logger";
 import { setAccount as setWhitelistAccount } from "./whitelistManager";
 
-logger.info("Initializing client");
+/* Validate input */
+
+const accountName = process.argv[2];
+
+if (accountName === undefined) {
+	logger.warn("usage: npm start [ACCOUNT NAME]");
+	process.exit(1);
+}
+
+const filePath = `../accounts/${accountName}`;
+
+if (!fs.existsSync(filePath)) {
+	logger.error(`Invalid account name: ${accountName}`);
+	logger.error("Account directory does not exist");
+	process.exit(1);
+}
+
+const configFilePath = `${filePath}/config.json`;
+const whitelistFilePath = `${filePath}/whitelist.json`;
+
+if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
+	logger.error(`Invalid account name: ${accountName}`);
+	logger.error("Account directory does not contain necessary memory files");
+	process.exit(1);
+}
+
+/* Setup client and whitelist */
 
 const client = new Client({
 	partials: [
@@ -25,72 +51,38 @@ const client = new Client({
 	],
 });
 
-logger.info("Initialized client successfully");
-logger.info();
-
-// Register the event handlers with the client
 registerEventHandlers(client);
 
-// Load memory files
-logger.info("Loading memory files");
+setWhitelistAccount(accountName);
 
-// Was login info provided?
-if (process.argv[2] === undefined) {
-	const error = new Error();
-	error.name = "Missing Command-line Argument";
-	error.message = "Account directory name not provided";
-	error.message += "\n\tPlease follow this usage:";
-	error.message += "\n\tnode index.js [ACCOUNT DIRECTORY NAME]";
-	logger.error(error);
-	process.exit(1);
-}
-const filePath = `../accounts/${process.argv[2]}`;
-const configFilePath = `${filePath}/config.json`;
-const whitelistFilePath = `${filePath}/whitelist.json`;
-
-// Does the necessary directory exist?
-if (!fs.existsSync(filePath)) {
-	const error = new Error();
-	error.name = "Missing Account Directory";
-	error.message = "Account directory does not exist";
-	error.message += `\n\tPlease create a directory (${filePath}) to contain the account's memory files`;
-	logger.error(error);
-	process.exit(1);
-}
-
-// Do the necessary files exist?
-if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
-	const error = new Error();
-	error.name = "Missing Memory Files";
-	error.message = "Account directory missing essential memory files";
-	error.message += `\n\tPlease create the necessary files (${configFilePath}) (${whitelistFilePath})`;
-	logger.error(error);
-	process.exit(1);
-}
+/* Login */
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const { token }: { token: string } = require(configFilePath);
-setWhitelistAccount(process.argv[2]);
 
-logger.info("Loaded memory files successfully");
-logger.info();
+void connect(token);
 
-// Let's begin
-// Connects the client with the discord API
-function connect(): void {
+/* Methods */
+
+/**
+ * Connects the client with the discord API
+ */
+async function connect(authToken: string): Promise<void> {
 	// How long to wait before trying again (seconds)
 	const retryWait = 10;
 
-	logger.info("Logging in");
-	client.login(token).then(() => {
-		logger.info("Logged in successfully");
-		logger.info();
-	}).catch(error => {
+	logger.info("Logging in...");
+	try {
+		await client.login(authToken);
+	}
+	catch (error) {
 		logger.error(error);
 		logger.warn(`Retrying connection in ${retryWait} seconds...`);
-		logger.info();
+		logger.error();
+
 		// Use connect() function again
-		setTimeout(connect, retryWait * 1000);
-	});
+		setTimeout(() => connect, retryWait * 1000);
+		return;
+	}
+	logger.info();
 }
-connect();
