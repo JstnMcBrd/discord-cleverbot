@@ -1,8 +1,8 @@
 import { EmbedBuilder } from "discord.js";
 
-import { CommandHandler } from "../@types/CommandHandler.js";
-import { embedColors } from "../parameters.js";
-import { removeChannel as unwhitelistChannel } from "../whitelist-manager.js";
+import { CommandHandler } from "../@types/CommandHandler";
+import { embedColors } from "../parameters";
+import { removeChannel as unwhitelistChannel } from "../whitelist-manager";
 
 export const unwhitelist = new CommandHandler()
 	.setName("unwhitelist")

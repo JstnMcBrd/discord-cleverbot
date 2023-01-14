@@ -6,10 +6,10 @@ import cleverbot from "cleverbot-free";
 import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
 import { indent } from "../helpers/indent";
-import { typingSpeed } from "../parameters.js";
+import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
-import { hasChannel as isWhitelisted } from "../whitelist-manager.js";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/message-analyzer.js";
+import { hasChannel as isWhitelisted } from "../whitelist-manager";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/message-analyzer";
 import { replyWithError } from "../helpers/replyWithError";
 
 export const messageCreate: EventHandler<"messageCreate"> = {
