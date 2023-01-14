@@ -6,6 +6,7 @@ import * as logger from "../logger";
 import { indent } from "../helpers/indent";
 import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
+import { isThinking, startThinking, stopThinking } from "../thinkingManager";
 import { hasChannel as isWhitelisted } from "../whitelistManager";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
 import { replyWithError } from "../helpers/replyWithError";
@@ -179,35 +180,6 @@ function debugMessage(message: Message): string {
 		str += `\nGuild:   ${message.guild.name} (${message.guild.id})`;
 	}
 	return str;
-}
-
-/**
- * Keeps track of whether the bot is already generating a response for each channel.
- * Don't access directly - use the methods below.
- */
-const thinking: Record<string, boolean> = {
-	// channelID: true/false,
-};
-
-/**
- * Checks to see if the bot is currently generating a response in a channel.
- */
-function isThinking(channel: Channel): boolean|undefined {
-	return thinking[channel.id];
-}
-
-/**
- * Records that the bot is currently generating a response in the channel.
- */
-function startThinking(channel: Channel): void {
-	thinking[channel.id] = true;
-}
-
-/**
- * Records that the bot has finished generating a response in the channel.
- */
-function stopThinking(channel: Channel) {
-	thinking[channel.id] = false;
 }
 
 /**
