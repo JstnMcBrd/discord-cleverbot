@@ -1,12 +1,18 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import type { User } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
-const { lastUpdated, embedColors } = require("../parameters.js");
+import { CommandHandler } from "../@types/CommandHandler.js";
+import { lastUpdated, embedColors } from "../parameters.js";
 
-const userMention = function(userID) {
-	return `<@${userID}>`;
-};
+export const help = new CommandHandler()
+	.setName("help")
+	.setDescription("Prints a simple guide about me")
+	.setExecution(async interaction => {
+		const embed = createHelpEmbed(interaction.client.user);
+		await interaction.reply({ embeds: [embed] });
+	});
 
-const createHelpEmbed = function(user) {
+function createHelpEmbed(user: User): EmbedBuilder {
 	const mention = userMention(user.id);
 	return new EmbedBuilder()
 		.setColor(embedColors.info)
@@ -21,18 +27,11 @@ const createHelpEmbed = function(user) {
 		)
 		.setFooter({
 			text: "Last Updated",
-			iconUrl: user.avatarURL(),
+			iconURL: user.avatarURL() as string,
 		})
 		.setTimestamp(lastUpdated);
-};
+}
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName("help")
-		.setDescription("Prints a simple guide about me"),
-
-	async execute(interaction) {
-		const embed = createHelpEmbed(interaction.client.user);
-		await interaction.reply({ embeds: [embed] });
-	},
-};
+function userMention(userID: string): string {
+	return `<@${userID}>`;
+}
