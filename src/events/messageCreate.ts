@@ -7,7 +7,7 @@ import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
 import { indent } from "../helpers/indent";
 import { typingSpeed } from "../parameters.js";
-import { eventError } from ".";
+import { logEventError } from ".";
 import { hasChannel as isWhitelisted } from "../whitelist-manager.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/message-analyzer.js";
 import { replyWithError } from "../helpers/replyWithError";
@@ -20,7 +20,7 @@ export const messageCreate: EventHandler<"messageCreate"> = {
 			await onMessage(message);
 		}
 		catch (error) {
-			eventError(this.name, error as Error);
+			logEventError(this.name, error as Error);
 		}
 	},
 };

@@ -5,7 +5,7 @@ import { ActivityType } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
-import { eventError } from "./";
+import { logEventError } from "./";
 import { messageCreate } from "./messageCreate";
 import { verify as verifyWhitelist, getWhitelist } from "../whitelist-manager.js";
 import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/message-analyzer.js";
@@ -18,7 +18,7 @@ export const ready: EventHandler<"ready"> = {
 			await onceReady(client);
 		}
 		catch (error) {
-			eventError(this.name, error as Error);
+			logEventError(this.name, error as Error);
 		}
 	},
 };

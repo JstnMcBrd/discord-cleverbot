@@ -6,24 +6,24 @@ import { whitelist } from "./whitelist";
 
 const commands = new Map<string, CommandHandler>();
 
-addCommand(help);
-addCommand(unwhitelist);
-addCommand(whitelist);
+addCommandHandler(help);
+addCommandHandler(unwhitelist);
+addCommandHandler(whitelist);
 
-function addCommand(cmd: CommandHandler): void {
-	const name = cmd.name;
+function addCommandHandler(command: CommandHandler): void {
+	const name = command.name;
 
 	if (commands.has(name)) {
 		throw new TypeError(`Failed to add command '${name}' when a command with that name was already added`);
 	}
 
-	commands.set(name, cmd);
+	commands.set(name, command);
 }
 
-export function getCommands(): ReadonlyMap<string, CommandHandler> {
+export function getCommandHandlers(): ReadonlyMap<string, CommandHandler> {
 	return commands;
 }
 
-export function getCommand(name: string): CommandHandler | undefined {
+export function getCommandHandler(name: string): CommandHandler | undefined {
 	return commands.get(name);
 }

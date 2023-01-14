@@ -3,8 +3,8 @@ import type { Interaction, TextChannel } from "discord.js";
 import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
 import { replyWithError } from "../helpers/replyWithError";
-import { getCommand } from "../commands";
-import { eventError } from "./";
+import { getCommandHandler } from "../commands";
+import { logEventError } from "./";
 
 export const interactionCreate: EventHandler<"interactionCreate"> = {
 	name: "interactionCreate",
@@ -14,7 +14,7 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
 			await onInteraction(interaction);
 		}
 		catch (error) {
-			eventError(this.name, error as Error);
+			logEventError(this.name, error as Error);
 		}
 	},
 };
@@ -31,7 +31,7 @@ async function onInteraction(interaction: Interaction): Promise<void> {
 	logger.debug(indent(debugInteraction(interaction), 1));
 
 	// Ignore any commands that are not recognized
-	const command = getCommand(interaction.commandName);
+	const command = getCommandHandler(interaction.commandName);
 	if (!command) {
 		return;
 	}

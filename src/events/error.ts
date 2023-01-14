@@ -1,7 +1,7 @@
 import type { EventHandler } from "../@types/EventHandler";
 
 import * as logger from "../helpers/logger";
-import { eventError } from "./";
+import { logEventError } from "./";
 
 export const error: EventHandler<"error"> = {
 	name: "error",
@@ -11,7 +11,7 @@ export const error: EventHandler<"error"> = {
 			onError(err);
 		}
 		catch (err2) {
-			eventError(this.name, err2 as Error);
+			logEventError(this.name, err2 as Error);
 		}
 	},
 };

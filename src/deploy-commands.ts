@@ -11,7 +11,7 @@ import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
 
 import * as logger from "./helpers/logger";
-import { getCommands } from "./commands";
+import { getCommandHandlers } from "./commands";
 
 // Verify input
 function usage(): void {
@@ -30,7 +30,7 @@ const { token } = require(authFilePath);
 
 // Get the JSON data of the commands
 const commandJSONs: Array<ApplicationCommandDataResolvable> = [];
-getCommands().forEach(command => {
+getCommandHandlers().forEach(command => {
 	commandJSONs.push(command.toJSON());
 	logger.info(`Retrieved /${command.name}`);
 });
