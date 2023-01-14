@@ -1,3 +1,5 @@
+import { Colors } from "discord.js";
+
 /**
  * When this code was last changed.
  */
@@ -10,11 +12,11 @@ export const lastUpdated = new Date(2022, 8, 30, 3, 30);
 export const typingSpeed = 6;
 
 /**
- * The hexadecimal values of colors to be used for embeds.
+ * The colors to be used for embeds.
  */
 export const embedColors = {
-	error: 0xFF0000,
-	info: 0xCFD8FF,
-	whitelist: 0x00FF00,
-	unwhitelist: 0xFFF900,
+	error: Colors.Red,
+	info: Colors.Grey,
+	whitelist: Colors.Green,
+	unwhitelist: Colors.Yellow,
 };
