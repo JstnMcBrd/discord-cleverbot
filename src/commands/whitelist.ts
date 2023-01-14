@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, channelMention } from "discord.js";
 
 import { CommandHandler } from "../@types/CommandHandler";
 import { embedColors } from "../parameters";
@@ -39,8 +39,4 @@ function createRedundantEmbed(channelID: string): EmbedBuilder {
 		.setColor(embedColors.info)
 		.setTitle("Already Whitelisted")
 		.setDescription(`You have already enabled me for ${mention}.`);
-}
-
-function channelMention(channelID: string): string {
-	return `<#${channelID}>`;
 }

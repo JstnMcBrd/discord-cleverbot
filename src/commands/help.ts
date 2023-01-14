@@ -1,5 +1,5 @@
 import type { User } from "discord.js";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, userMention } from "discord.js";
 
 import { CommandHandler } from "../@types/CommandHandler";
 import { lastUpdated, embedColors } from "../parameters";
@@ -30,8 +30,4 @@ function createHelpEmbed(user: User): EmbedBuilder {
 			iconURL: user.avatarURL() as string,
 		})
 		.setTimestamp(lastUpdated);
-}
-
-function userMention(userID: string): string {
-	return `<@${userID}>`;
 }
