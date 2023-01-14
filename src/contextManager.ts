@@ -6,11 +6,10 @@ import { replaceUnknownEmojis } from "./helpers/replaceUnknownEmojis";
 
 /**
  * Keeps track of the past conversation for each channel.
+ * Maps channelID to lists of messages.
  * Don't access directly - use the methods below.
  */
-const context: Record<string, string[]> = {
-	// channelID: ['past','messages']
-};
+const context = new Map<string, string[]>;
 
 /**
  * Limits the length of each channel's context so memory isn't overburdened.
@@ -21,14 +20,14 @@ const maxContextLength = 50;
  * @returns the past messages of the channel
  */
 export function getContext(channel: Channel): string[]|undefined {
-	return context[channel.id];
+	return context.get(channel.id);
 }
 
 /**
  * Checks whether the past messages of the channel have been recorded yet.
  */
 export function hasContext(channel: Channel): boolean {
-	return context[channel.id] !== undefined;
+	return context.has(channel.id);
 }
 
 /**
@@ -75,8 +74,8 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 		lastMessageFromUser = isFromUser(message, client.user);
 	});
 
-	context[channel.id] = newContext;
-	return context[channel.id];
+	context.set(channel.id, newContext);
+	return newContext;
 }
 
 /**
@@ -86,7 +85,7 @@ export function addToContext(channel: Channel, message: string): void {
 	if (!hasContext(channel)) return;
 
 	// To make typescript happy
-	const updatedContext = context[channel.id];
+	const updatedContext = getContext(channel);
 	if (!updatedContext) return;
 
 	updatedContext.push(message);
@@ -95,7 +94,7 @@ export function addToContext(channel: Channel, message: string): void {
 		updatedContext.shift();
 	}
 
-	context[channel.id] = updatedContext;
+	context.set(channel.id, updatedContext);
 }
 
 /**
@@ -105,10 +104,10 @@ export function removeLastMessageFromContext(channel: Channel): void {
 	if (!hasContext(channel)) return;
 
 	// To make typescript happy
-	const updatedContext = context[channel.id];
+	const updatedContext = getContext(channel);
 	if (!updatedContext) return;
 
 	updatedContext.pop();
 
-	context[channel.id] = updatedContext;
+	context.set(channel.id, updatedContext);
 }
