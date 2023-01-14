@@ -6,8 +6,7 @@ logger.info("Importing packages");
 
 // Load in all the required packages
 const fs = require("node:fs");
-const path = require("node:path");
-const { Client, Partials, GatewayIntentBits, Collection } = require("discord.js");
+const { Client, Partials, GatewayIntentBits } = require("discord.js");
 
 const { setEventHandlers } = require("./events");
 const { setAccount: setWhitelistAccount } = require("./whitelist-manager.js");
@@ -38,27 +37,6 @@ client.executeEvent = async function(eventName, ...args) {
 
 logger.info("Imported packages successfully");
 logger.info();
-
-// Retrieves the command names and files
-const retrieveSlashCommands = function() {
-	logger.info("Retrieving commands");
-
-	// Gather all the command files
-	client.commands = new Collection();
-	const commandsPath = path.join(__dirname, "commands");
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-
-	// Extract the name and executables of the command files
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		client.commands.set(command.data.name, command);
-		logger.info(`\tRetrieved /${command.data.name}`);
-	}
-
-	logger.info("Retrieved commands successfully");
-	logger.info();
-}; retrieveSlashCommands();
 
 // Retrieve the event handler files and give them to the client
 setEventHandlers(client);

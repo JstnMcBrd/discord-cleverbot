@@ -5,8 +5,9 @@ type CommandExecution = (interaction: ChatInputCommandInteraction) => Promise<vo
 export class CommandHandler extends SlashCommandBuilder {
 	private execution: CommandExecution | undefined;
 
-	setExecution(execution: CommandExecution): void {
+	setExecution(execution: CommandExecution): this {
 		this.execution = execution;
+		return this;
 	}
 
 	async execute(interaction: ChatInputCommandInteraction): Promise<void> {

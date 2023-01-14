@@ -1,10 +1,9 @@
-// TODO make typescript-safe
-
 import type { Interaction, TextChannel } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
 import { replyWithError } from "../helpers/replyWithError";
+import { getCommand } from "../commands";
 import { eventError } from "./";
 
 export const interactionCreate: EventHandler<"interactionCreate"> = {
@@ -24,25 +23,23 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
  * Called whenever the discord.js client receives an interaction (usually means a slash command).
  */
 async function onInteraction(interaction: Interaction): Promise<void> {
-	const client = interaction.client;
-
 	// Ignore any interactions that are not commands
-	if (!interaction.isChatInputCommand()) return;
+	if (!interaction.isChatInputCommand()) {
+		return;
+	}
 	logger.info("Received command interaction");
 	logger.debug(indent(debugInteraction(interaction), 1));
 
 	// Ignore any commands that are not recognized
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-	const command = client.commands.get(interaction.commandName);
-	if (!command) return;
+	const command = getCommand(interaction.commandName);
+	if (!command) {
+		return;
+	}
 	logger.info("Command recognized");
 
 	// Execute the command script
 	logger.info("Executing command");
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 		await command.execute(interaction);
 	}
 	catch (error) {
