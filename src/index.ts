@@ -1,17 +1,15 @@
 /* Discord-Cleverbot */
+// TODO make typescript-safe
 
-const logger = require("./helpers/logger");
+import fs from "node:fs";
+import { Client, Partials, GatewayIntentBits } from "discord.js";
 
-logger.info("Importing packages");
+import * as logger from "./helpers/logger";
+import { registerEventHandlers } from "./events";
+import { setAccount as setWhitelistAccount } from "./whitelist-manager.js";
 
-// Load in all the required packages
-const fs = require("node:fs");
-const { Client, Partials, GatewayIntentBits } = require("discord.js");
+logger.info("Initializing client");
 
-const { setEventHandlers } = require("./events");
-const { setAccount: setWhitelistAccount } = require("./whitelist-manager.js");
-
-// Create a discord client and give it helper functions and values
 const client = new Client({
 	partials: [
 		// Necessary to receive DMs
@@ -27,19 +25,11 @@ const client = new Client({
 	],
 });
 
-// Executes the code for a particular handler without needing to receive the event
-client.executeEvent = async function(eventName, ...args) {
-	const event = client.events.get(eventName);
-	if (!event) throw new Error(`Could not find handler for event '${eventName}'`);
-
-	return await event.execute(client, ...args);
-};
-
-logger.info("Imported packages successfully");
+logger.info("Initialized client successfully");
 logger.info();
 
-// Retrieve the event handler files and give them to the client
-setEventHandlers(client);
+// Register the event handlers with the client
+registerEventHandlers(client);
 
 // Load memory files
 logger.info("Loading memory files");
@@ -50,7 +40,7 @@ if (process.argv[2] === undefined) {
 	error.name = "Missing Command-line Argument";
 	error.message = "Account directory name not provided";
 	error.message += "\n\tPlease follow this usage:";
-	error.message += "\n\tnode index.js " + "[ACCOUNT DIRECTORY NAME]".underline;
+	error.message += "\n\tnode index.js [ACCOUNT DIRECTORY NAME]";
 	logger.error(error);
 	process.exit(1);
 }
@@ -78,6 +68,7 @@ if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
 	process.exit(1);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const { token } = require(configFilePath);
 setWhitelistAccount(process.argv[2]);
 
@@ -86,19 +77,21 @@ logger.info();
 
 // Let's begin
 // Connects the client with the discord API
-const connect = function() {
+function connect(): void {
 	// How long to wait before trying again (seconds)
 	const retryWait = 10;
 
 	logger.info("Logging in");
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	client.login(token).then(() => {
 		logger.info("Logged in successfully");
 		logger.info();
 	}).catch(error => {
 		logger.error(error);
 		logger.warn(`Retrying connection in ${retryWait} seconds...`);
-		logger.log();
+		logger.info();
 		// Use connect() function again
 		setTimeout(connect, retryWait * 1000);
 	});
-}; connect();
+}
+connect();
