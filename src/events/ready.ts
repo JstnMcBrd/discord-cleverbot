@@ -7,8 +7,8 @@ import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../helpers/logger";
 import { logEventError } from "./";
 import { messageCreate } from "./messageCreate";
-import { verify as verifyWhitelist, getWhitelist } from "../whitelist-manager";
-import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/message-analyzer";
+import { verify as verifyWhitelist, getWhitelist } from "../whitelistManager";
+import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/messageAnalyzer";
 
 export const ready: EventHandler<"ready"> = {
 	name: "ready",

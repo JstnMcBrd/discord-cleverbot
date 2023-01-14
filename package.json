@@ -9,7 +9,7 @@
 		"lint": "eslint . --ext .js,.ts",
 		"build": "tsc -p tsconfig.json",
 		"start": "cd dist && node ./index.js",
-		"commands": "cd dist && node ./deploy-commands.js"
+		"commands": "cd dist && node ./deployCommands.js"
 	},
 	"dependencies": {
 		"@colors/colors": "^1.5.0",

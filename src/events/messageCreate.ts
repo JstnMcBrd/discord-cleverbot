@@ -8,8 +8,8 @@ import * as logger from "../helpers/logger";
 import { indent } from "../helpers/indent";
 import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
-import { hasChannel as isWhitelisted } from "../whitelist-manager";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/message-analyzer";
+import { hasChannel as isWhitelisted } from "../whitelistManager";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
 import { replyWithError } from "../helpers/replyWithError";
 
 export const messageCreate: EventHandler<"messageCreate"> = {

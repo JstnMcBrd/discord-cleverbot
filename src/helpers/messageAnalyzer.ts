@@ -1,5 +1,5 @@
 /*
- * Message Helper
+ * Message Analyzer
  *
  * This script contains useful functions for analyzing messages.
 */
@@ -26,7 +26,7 @@ export function isFromUser(message: Message, user: User|null): boolean {
 }
 
 /**
- * Recognizes when a message is empty (mostly likely an image).
+ * Recognizes when a message is empty (mostly likely an image or embed).
  * @param message the message to check
  * @returns true if the message has no text content, false if otherwise
  */

@@ -2,7 +2,7 @@ import { EmbedBuilder, channelMention } from "discord.js";
 
 import { CommandHandler } from "../@types/CommandHandler";
 import { embedColors } from "../parameters";
-import { removeChannel as unwhitelistChannel } from "../whitelist-manager";
+import { removeChannel as unwhitelistChannel } from "../whitelistManager";
 
 export const unwhitelist = new CommandHandler()
 	.setName("unwhitelist")

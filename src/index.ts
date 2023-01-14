@@ -6,7 +6,7 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import * as logger from "./helpers/logger";
 import { registerEventHandlers } from "./events";
-import { setAccount as setWhitelistAccount } from "./whitelist-manager";
+import { setAccount as setWhitelistAccount } from "./whitelistManager";
 
 logger.info("Initializing client");
 

@@ -22,11 +22,35 @@ let filePath = "";
 let whitelist: Array<string> = [];
 
 /**
+ * Returns a read-only copy of the whitelist.
+ * @returns the whitelist
+ */
+export function getWhitelist(): ReadonlyArray<string> {
+	return whitelist;
+}
+
+/**
+ * Sets the account name so the memory file can be loaded.
+ * Should be called before trying to use the whitelist.
+ * Assumes the account name is valid.
+ * @param account a valid account name
+ */
+export function setAccount(account: string): void {
+	filePath = `../accounts/${account}/whitelist.json`;
+	load();
+}
+
+/**
  * Loads the whitelist from the memory file.
  */
 function load(): void {
-	whitelist = JSON.parse(fs.readFileSync(filePath).toString()) as Array<string>;
-	// TODO clean this up and make it safer for TypeScript
+	const json: unknown = JSON.parse(fs.readFileSync(filePath).toString());
+	if (json instanceof Array<string>) {
+		whitelist = json as string[];
+	}
+	else {
+		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
+	}
 }
 
 /**
@@ -39,10 +63,10 @@ export async function verify(client: Client): Promise<void> {
 		// Verify the channel exists / is accessible
 		await client.channels.fetch(channelID).catch(error => {
 			// If the channel doesn't exist, remove it from the whitelist
-			// TODO make this more typescript-safe
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (error.message === "Unknown Channel" || error.message === "Missing Access") {
-				removeChannel(channelID);
+			if (error instanceof Error) {
+				if (error.message === "Unknown Channel" || error.message === "Missing Access") {
+					removeChannel(channelID);
+				}
 			}
 			// If there's some other kind of error, throw a fit
 			else {
@@ -60,27 +84,8 @@ function save(): void {
 }
 
 /**
- * Sets the account name so the memory file can be loaded.
- * Should be called before trying to use the whitelist.
- * Assumes the account name is valid.
- * @param account a valid account name
- */
-export function setAccount(account: string): void {
-	filePath = `../accounts/${account}/whitelist.json`;
-	load();
-}
-
-/**
- * Returns the local copy of the whitelist.
- * @returns the whitelist
- */
-export function getWhitelist(): Array<string> {
-	return whitelist;
-}
-
-/**
  * Used by other methods to standardize their input so they can accept discord.js channels or string channel IDs.
- * @param channel Either a discord.js channel or the channel ID
+ * @param channel either a discord.js channel or the channel ID
  * @returns the channel ID
  */
 function getChannelID(channel: string|Channel): string {
@@ -94,7 +99,7 @@ function getChannelID(channel: string|Channel): string {
 
 /**
  * Adds a channel to the whitelist and saves to the memory file.
- * @param channel Either a discord.js channel or the channel ID
+ * @param channel either a discord.js channel or the channel ID
  * @returns true if successful, false if the channel was already in the whitelist
  */
 export function addChannel(channel: string|Channel): boolean {
@@ -112,7 +117,7 @@ export function addChannel(channel: string|Channel): boolean {
 
 /**
  * Removes a channel from the whitelist and saves to the memory file.
- * @param channel Either a discord.js channel or the channel ID
+ * @param channel either a discord.js channel or the channel ID
  * @returns true if successful, false if the whitelist doesn't have the channel
  */
 export function removeChannel(channel: string|Channel): boolean {
@@ -130,7 +135,7 @@ export function removeChannel(channel: string|Channel): boolean {
 
 /**
  * Checks if a channel is in the whitelist.
- * @param channel Either a discord.js channel or the channel ID
+ * @param channel either a discord.js channel or the channel ID
  * @returns true if the channel is in the whitelist, false if not
  */
 export function hasChannel(channel: string|Channel): boolean {
