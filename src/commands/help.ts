@@ -2,7 +2,7 @@ import type { User } from "discord.js";
 import { EmbedBuilder, userMention } from "discord.js";
 
 import { CommandHandler } from "../@types/CommandHandler";
-import { lastUpdated, embedColors } from "../parameters";
+import { lastUpdated, embedColors, version } from "../parameters";
 
 export const help = new CommandHandler()
 	.setName("help")
@@ -27,7 +27,7 @@ function createHelpEmbed(user: User): EmbedBuilder {
 			{ name: "Adding To Other Servers", value: "For now, this feature is disabled. Please check with my developer if you would like to add me to your server." },
 		)
 		.setFooter({
-			text: "Last Updated",
+			text: `Version ${version}\nLast Updated`,
 			iconURL: (avatarURL !== null) ? avatarURL : undefined,
 		})
 		.setTimestamp(lastUpdated);

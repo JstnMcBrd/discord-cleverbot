@@ -1,9 +1,15 @@
 import { Colors } from "discord.js";
+import { getVersion } from "./helpers/getVersion";
+
+/**
+ * The version number of this project.
+ */
+export const version = getVersion();
 
 /**
  * When this code was last changed.
  */
-export const lastUpdated = new Date(2022, 8, 30, 3, 30);
+export const lastUpdated = new Date(2023, 0, 17, 10, 30);
 // Year, month (0-11), day of month, hour (0-23), minutes
 
 /**
