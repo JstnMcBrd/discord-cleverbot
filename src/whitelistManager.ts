@@ -8,7 +8,8 @@
  * - saving the whitelist to memory
 */
 
-import fs from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import type { Channel, Client } from "discord.js";
 
 /**
@@ -36,7 +37,7 @@ export function getWhitelist(): ReadonlyArray<string> {
  * @param account a valid account name
  */
 export function setAccount(account: string): void {
-	filePath = `../accounts/${account}/whitelist.json`;
+	filePath = join("..", "accounts", account, "whitelist.json");
 	load();
 }
 
@@ -44,7 +45,7 @@ export function setAccount(account: string): void {
  * Loads the whitelist from the memory file.
  */
 function load(): void {
-	const json: unknown = JSON.parse(fs.readFileSync(filePath).toString());
+	const json: unknown = JSON.parse(readFileSync(filePath).toString());
 	if (json instanceof Array<string>) {
 		whitelist = json as string[];
 	}
@@ -80,7 +81,7 @@ export async function verify(client: Client): Promise<void> {
  * Writes the whitelist to the memory file.
  */
 function save(): void {
-	fs.writeFileSync(filePath, JSON.stringify(whitelist));
+	writeFileSync(filePath, JSON.stringify(whitelist));
 }
 
 /**

@@ -1,7 +1,8 @@
 /* Discord-Cleverbot */
 // TODO find a typescript-safe way to load in the token
 
-import fs from "node:fs";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events";
@@ -17,18 +18,18 @@ if (accountName === undefined) {
 	process.exit(1);
 }
 
-const filePath = `../accounts/${accountName}`;
+const filePath = join("..", "accounts", accountName);
 
-if (!fs.existsSync(filePath)) {
+if (!existsSync(filePath)) {
 	logger.error(`Invalid account name: ${accountName}`);
 	logger.error("Account directory does not exist");
 	process.exit(1);
 }
 
-const configFilePath = `${filePath}/config.json`;
-const whitelistFilePath = `${filePath}/whitelist.json`;
+const configFilePath = join(filePath, "config.json");
+const whitelistFilePath = join(filePath, "whitelist.json");
 
-if (!fs.existsSync(configFilePath) || !fs.existsSync(whitelistFilePath)) {
+if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
 	logger.error(`Invalid account name: ${accountName}`);
 	logger.error("Account directory does not contain necessary memory files");
 	process.exit(1);
@@ -78,11 +79,9 @@ async function connect(authToken: string): Promise<void> {
 	catch (error) {
 		logger.error(error);
 		logger.warn(`Retrying connection in ${retryWait} seconds...`);
-		logger.error();
 
 		// Use connect() function again
 		setTimeout(() => connect, retryWait * 1000);
-		return;
 	}
 	logger.info();
 }
