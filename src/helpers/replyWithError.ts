@@ -1,5 +1,3 @@
-// TODO make typescript-safe
-
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import type { Message } from "discord.js";
 
@@ -10,7 +8,7 @@ import { embedColors } from "../parameters";
  * Responds to a message with an error message.
  */
 export function replyWithError(message: Message|ChatInputCommandInteraction, internalError: Error|unknown) {
-	const typecastError = internalError as Error;
+	const stringifiedError = (internalError as object).toString();
 
 	// Format the message as an embed
 	const embed = new EmbedBuilder()
@@ -18,7 +16,7 @@ export function replyWithError(message: Message|ChatInputCommandInteraction, int
 		.setTitle("Error")
 		.setDescription("I encountered an error while trying to respond. Please forward this to my developer.")
 		.setFields(
-			{ name: "Message", value: `\`\`${typecastError.toString()}\`\`` },
+			{ name: "Message", value: `\`\`${stringifiedError}\`\`` },
 		);
 
 	// Send the error message as a reply

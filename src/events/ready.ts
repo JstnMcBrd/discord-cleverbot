@@ -4,7 +4,7 @@ import type { EventHandler } from "../@types/EventHandler";
 import * as logger from "../logger";
 import { logEventError } from "./";
 import { messageCreate } from "./messageCreate";
-import { verify as verifyWhitelist, getWhitelist } from "../whitelistManager";
+import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelistManager";
 import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/messageAnalyzer";
 import { start as manageActivity } from "../activityManager";
 

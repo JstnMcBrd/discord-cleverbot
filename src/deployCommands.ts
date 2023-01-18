@@ -4,12 +4,12 @@
  *
  * Usage: node deploy-commands.js [account name]
 */
-// TODO find a typescript-safe way to load in the token
 
 import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
 
 import * as logger from "./logger";
+import { getToken, setAccount as setConfigAccount } from "./memory/configManager";
 import { getCommandHandlers } from "./commands";
 
 // Verify input
@@ -20,12 +20,11 @@ if (process.argv[2] === undefined) {
 	usage();
 	process.exit(1);
 }
-const account = process.argv[2];
+const accountName = process.argv[2];
 
 // Import auth token
-const authFilePath = `../accounts/${account}/config.json`;
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const { token }: { token: string } = require(authFilePath);
+setConfigAccount(accountName);
+const token = getToken();
 
 // Get the JSON data of the commands
 const commandJSONs: Array<ApplicationCommandDataResolvable> = [];

@@ -1,5 +1,4 @@
 /* Discord-Cleverbot */
-// TODO find a typescript-safe way to load in the token
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -7,7 +6,8 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events";
 import * as logger from "./logger";
-import { setAccount as setWhitelistAccount } from "./whitelistManager";
+import { getToken, setAccount as setConfigAccount } from "./memory/configManager";
+import { setAccount as setWhitelistAccount } from "./memory/whitelistManager";
 
 /* Validate input */
 
@@ -35,7 +35,12 @@ if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
 	process.exit(1);
 }
 
-/* Setup client and whitelist */
+/* Load memory files */
+
+setConfigAccount(accountName);
+setWhitelistAccount(accountName);
+
+/* Setup client */
 
 const client = new Client({
 	partials: [
@@ -54,13 +59,9 @@ const client = new Client({
 
 registerEventHandlers(client);
 
-setWhitelistAccount(accountName);
-
 /* Login */
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const { token }: { token: string } = require(configFilePath);
-
+const token = getToken();
 void connect(token);
 
 /* Methods */

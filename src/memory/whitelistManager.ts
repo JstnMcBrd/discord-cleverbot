@@ -12,6 +12,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Channel, Client } from "discord.js";
 
+import type { Whitelist } from "../@types/MemoryFiles";
+
 /**
  * The file path of the whitelist memory file.
  */
@@ -20,14 +22,15 @@ let filePath = "";
 /**
  * The local copy of the whitelist.
  */
-let whitelist: Array<string> = [];
+let whitelist: Whitelist = [];
 
 /**
- * Returns a read-only copy of the whitelist.
- * @returns the whitelist
+ * Only returns a copy of the whitelist to prevent illegal editing.
+ * Use the `addChannel` and `removeChannel` methods for whitelist editing.
+ * @returns a copy of the whitelist
  */
-export function getWhitelist(): ReadonlyArray<string> {
-	return whitelist;
+export function getWhitelist(): Whitelist {
+	return whitelist.map(value => value);
 }
 
 /**
@@ -46,12 +49,19 @@ export function setAccount(account: string): void {
  */
 function load(): void {
 	const json: unknown = JSON.parse(readFileSync(filePath).toString());
-	if (json instanceof Array<string>) {
-		whitelist = json as string[];
+	if (Array.isArray(json) && allElementsAreStrings(json)) {
+		whitelist = json as Whitelist;
 	}
 	else {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
 	}
+}
+
+/**
+ * @returns whether the given array only consists of strings
+ */
+function allElementsAreStrings(array: Array<unknown>): boolean {
+	return array.every(value => typeof value === "string");
 }
 
 /**
