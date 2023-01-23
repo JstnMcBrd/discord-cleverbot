@@ -41,7 +41,7 @@ async function onceReady(client: Client): Promise<void> {
  */
 async function resumeConversations(client: Client): Promise<void> {
 	// How long to wait before trying again (seconds)
-	const repeatWait = 30 * 60;
+	const retryWait = 30 * 60;
 	const messageSearchDepth = 10;
 
 	// Verify the whitelist first every time
@@ -88,7 +88,7 @@ async function resumeConversations(client: Client): Promise<void> {
 	}
 
 	// Check for missed messages at regular intervals
-	setTimeout(() => resumeConversations, repeatWait * 1000, client);
-	logger.info(`Searching again in ${repeatWait} seconds`);
+	setTimeout(() => void resumeConversations(client), retryWait * 1000, client);
+	logger.info(`Searching again in ${retryWait} seconds`);
 	logger.info();
 }

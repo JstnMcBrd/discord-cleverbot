@@ -82,7 +82,7 @@ async function connect(authToken: string): Promise<void> {
 		logger.warn(`Retrying connection in ${retryWait} seconds...`);
 
 		// Use connect() function again
-		setTimeout(() => connect, retryWait * 1000);
+		setTimeout(() => void connect(authToken), retryWait * 1000);
 	}
 	logger.info();
 }
