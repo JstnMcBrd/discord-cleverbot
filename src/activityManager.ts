@@ -6,7 +6,7 @@ import * as logger from "./logger";
 /**
  * How often to update the activity (in seconds).
  */
-const updateFrequency = 5 * 60;
+const activityUpdateFrequency = 5 * 60;
 
 /**
  * The activity the bot should use.
@@ -42,8 +42,8 @@ export function start(client: Client): void {
 	}
 
 	// Set user activity at regular intervals
-	setTimeout(start, updateFrequency * 1000, client);
-	logger.info(`Setting again in ${updateFrequency} seconds`);
+	setTimeout(start, activityUpdateFrequency * 1000, client);
+	logger.info(`Setting again in ${activityUpdateFrequency} seconds`);
 	logger.info();
 }
 

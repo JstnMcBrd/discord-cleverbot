@@ -9,6 +9,12 @@ import * as logger from "./logger";
 import { getToken, setAccount as setConfigAccount } from "./memory/config";
 import { setAccount as setWhitelistAccount } from "./memory/whitelist";
 
+/**
+ * How long to wait before retrying a failed Discord API connection attempt (in seconds).
+ */
+const connectionRetryWait = 10;
+
+
 /* Validate input */
 
 const accountName = process.argv[2];
@@ -70,19 +76,16 @@ void connect(token);
  * Connects the client with the discord API
  */
 async function connect(authToken: string): Promise<void> {
-	// How long to wait before trying again (seconds)
-	const retryWait = 10;
-
 	logger.info("Logging in...");
 	try {
 		await client.login(authToken);
 	}
 	catch (error) {
 		logger.error(error);
-		logger.warn(`Retrying connection in ${retryWait} seconds...`);
 
 		// Use connect() function again
-		setTimeout(() => void connect(authToken), retryWait * 1000);
+		setTimeout(() => void connect(authToken), connectionRetryWait * 1000);
+		logger.warn(`Retrying connection in ${connectionRetryWait} seconds...`);
 	}
 	logger.info();
 }

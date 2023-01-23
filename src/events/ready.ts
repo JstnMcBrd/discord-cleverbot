@@ -8,6 +8,16 @@ import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelist";
 import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/messageAnalyzer";
 import { start as manageActivity } from "../activityManager";
 
+/**
+ * How often to look for missed messages (in seconds).
+ */
+const missedMessageSearchFrequency = 30 * 60;
+
+/**
+ * How many messages back to look when searching for missed messages.
+ */
+const missedMessageSearchDepth = 10;
+
 export const ready: EventHandler<"ready"> = {
 	name: "ready",
 	once: true,
@@ -40,10 +50,6 @@ async function onceReady(client: Client): Promise<void> {
  * Searchs for unread messages in whitelisted channels that were sent when the bot was offline, and responds to them.
  */
 async function resumeConversations(client: Client): Promise<void> {
-	// How long to wait before trying again (seconds)
-	const retryWait = 30 * 60;
-	const messageSearchDepth = 10;
-
 	// Verify the whitelist first every time
 	// TODO This is a temporary solution
 	await verifyWhitelist(client);
@@ -61,7 +67,7 @@ async function resumeConversations(client: Client): Promise<void> {
 		if (channel instanceof PartialGroupDMChannel) continue;
 
 		// Request the most recent messages of the channel
-		const messagesMap = await channel.messages.fetch({ limit: messageSearchDepth });
+		const messagesMap = await channel.messages.fetch({ limit: missedMessageSearchDepth });
 
 		// Convert map to array
 		const messages = messagesMap.first(messagesMap.size);
@@ -88,7 +94,7 @@ async function resumeConversations(client: Client): Promise<void> {
 	}
 
 	// Check for missed messages at regular intervals
-	setTimeout(() => void resumeConversations(client), retryWait * 1000, client);
-	logger.info(`Searching again in ${retryWait} seconds`);
+	setTimeout(() => void resumeConversations(client), missedMessageSearchFrequency * 1000, client);
+	logger.info(`Searching again in ${missedMessageSearchFrequency} seconds`);
 	logger.info();
 }
