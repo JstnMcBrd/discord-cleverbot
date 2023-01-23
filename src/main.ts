@@ -6,8 +6,8 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events";
 import * as logger from "./logger";
-import { getToken, setAccount as setConfigAccount } from "./memory/configManager";
-import { setAccount as setWhitelistAccount } from "./memory/whitelistManager";
+import { getToken, setAccount as setConfigAccount } from "./memory/config";
+import { setAccount as setWhitelistAccount } from "./memory/whitelist";
 
 /* Validate input */
 

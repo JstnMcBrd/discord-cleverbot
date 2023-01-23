@@ -8,7 +8,7 @@ import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
 import { addToContext, generateContext, getContext, hasContext, removeLastMessageFromContext } from "../contextManager";
 import { isThinking, startThinking, stopThinking } from "../thinkingManager";
-import { hasChannel as isWhitelisted } from "../memory/whitelistManager";
+import { hasChannel as isWhitelisted } from "../memory/whitelist";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
 import { replyWithError } from "../helpers/replyWithError";
 import { replaceMentions } from "../helpers/replaceMentions";

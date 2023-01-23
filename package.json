@@ -4,11 +4,11 @@
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
 	"private": true,
-	"main": "./dist/index.js",
+	"main": "./dist/main.js",
 	"scripts": {
 		"lint": "eslint . --ext .js,.ts",
 		"build": "tsc -p tsconfig.json",
-		"start": "cd dist && node ./index.js",
+		"start": "cd dist && node ./main.js",
 		"commands": "cd dist && node ./deployCommands.js"
 	},
 	"dependencies": {

@@ -1,3 +1,10 @@
+/*
+ * Config Manager
+ *
+ * The config contains various information about the bot account.
+ * This global manager takes care of loading the config from memory and returning the values.
+*/
+
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
