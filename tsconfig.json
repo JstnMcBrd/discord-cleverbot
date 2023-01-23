@@ -4,24 +4,9 @@
 		"src/**/*.js",
 	],
 	"compilerOptions": {
-		"target": "ES2021",
-		"module": "CommonJS",
-		"lib": [
-			"ES2021"
-		],
-		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"sourceMap": true,
-		"outDir": "./dist",
-		"strict": true,
-		"allowJs": true,
-		"useUnknownInCatchVariables": true,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitReturns": true,
-		"importsNotUsedAsValues": "error",
-		"noPropertyAccessFromIndexSignature": true,
-		"noUncheckedIndexedAccess": true,
-		"forceConsistentCasingInFileNames": true,
+		"target": "ES2022",
+		"module": "Node16",
+		"moduleResolution": "Node16",
 		"typeRoots": [
 			"./node_modules/@types",
 			"./src/@types"
@@ -29,5 +14,16 @@
 		"types": [
 			"node"
 		],
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"sourceMap": true,
+		"removeComments": true,
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"importsNotUsedAsValues": "error",
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"forceConsistentCasingInFileNames": true,
 	},
 }
