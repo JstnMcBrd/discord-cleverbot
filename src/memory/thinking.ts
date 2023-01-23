@@ -1,3 +1,10 @@
+/**
+ * Thinking Manager
+ *
+ * This manager keeps track of which channels the bot is already generating
+ * a message for, so the bot doesn't reply to several messages at the same time.
+ */
+
 import type { Channel } from "discord.js";
 
 /**

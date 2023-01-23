@@ -1,8 +1,15 @@
+/**
+ * Context Manager
+ *
+ * This manager records past messages in each chat, so the cleverbot API
+ * can understand the past conversation context when generating a new reply.
+ */
+
 import type { Channel, Client, Collection, Message, TextBasedChannel } from "discord.js";
 
-import { isAMention, isEmpty, isFromUser, isMarkedAsIgnore } from "./helpers/messageAnalyzer";
-import { replaceMentions } from "./helpers/replaceMentions";
-import { replaceUnknownEmojis } from "./helpers/replaceUnknownEmojis";
+import { isAMention, isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer";
+import { replaceMentions } from "../helpers/replaceMentions";
+import { replaceUnknownEmojis } from "../helpers/replaceUnknownEmojis";
 
 /**
  * Keeps track of the past conversation for each channel.

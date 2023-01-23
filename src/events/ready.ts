@@ -6,7 +6,7 @@ import { logEventError } from "./";
 import { messageCreate } from "./messageCreate";
 import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelist";
 import { isMarkedAsIgnore, isEmpty, isFromUser } from "../helpers/messageAnalyzer";
-import { start as manageActivity } from "../activityManager";
+import { start as manageActivity } from "../helpers/activityManager";
 
 /**
  * How often to look for missed messages (in seconds).
