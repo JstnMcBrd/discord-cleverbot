@@ -6,10 +6,9 @@
  */
 
 import type { Channel, Client, Collection, Message, TextBasedChannel } from "discord.js";
+import { cleanUpMessage } from "../helpers/cleanUpMessage";
 
-import { isAMention, isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer";
-import { replaceMentions } from "../helpers/replaceMentions";
-import { replaceUnknownEmojis } from "../helpers/replaceUnknownEmojis";
+import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer";
 
 /**
  * Keeps track of the past conversation for each channel.
@@ -49,14 +48,12 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
 	messages.each(message => {
 		// Skip ignored messages and empty messages
-		if (isMarkedAsIgnore(message) || isEmpty(message)) return;
+		if (isEmpty(message) || isMarkedAsIgnore(message)) return;
 		// Skip messages that bot skipped in the past
 		if (!isFromUser(message, client.user) && repliedTo !== undefined && message.id !== repliedTo) return;
 
-		// Clean up message, also used in onMessage()
-		let input = message.cleanContent;
-		if (client.user && isAMention(message, client.user)) input = replaceMentions(client.user.username, input);
-		input = replaceUnknownEmojis(input);
+		// Clean up message
+		message = cleanUpMessage(message);
 
 		// If there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
 		if (!isFromUser(message, client.user) && !lastMessageFromUser && newContext[0] !== undefined) {

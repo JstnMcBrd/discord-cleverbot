@@ -11,8 +11,7 @@ import { isThinking, startThinking, stopThinking } from "../memory/thinking";
 import { hasChannel as isWhitelisted } from "../memory/whitelist";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
 import { replyWithError } from "../helpers/replyWithError";
-import { replaceMentions } from "../helpers/replaceMentions";
-import { replaceUnknownEmojis } from "../helpers/replaceUnknownEmojis";
+import { cleanUpMessage } from "../helpers/cleanUpMessage";
 
 export const messageCreate: EventHandler<"messageCreate"> = {
 	name: "messageCreate",
@@ -48,15 +47,10 @@ async function onMessage(message: Message) {
 	logger.info("Received new message");
 	logger.debug(indent(debugMessage(message), 1));
 
-	// Clean up message, also used in generateContext()
+	// Clean up message
 	logger.info("Cleaning up message");
-	let input = message.cleanContent;
-	if (isAMention(message, client.user)) {
-		input = replaceMentions(client.user.username, input);
-	}
-	input = replaceUnknownEmojis(input);
-	input = input.trim();
-	logger.info(indent(`Content: ${input}`, 1));
+	message = cleanUpMessage(message);
+	logger.info(indent(`Content: ${message.content}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel)) {
@@ -66,7 +60,7 @@ async function onMessage(message: Message) {
 		}
 		else {
 			logger.info("Updating channel context");
-			addToContext(message.channel, input);
+			addToContext(message.channel, message);
 		}
 	}
 	else {
