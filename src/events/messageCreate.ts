@@ -6,7 +6,7 @@ import * as logger from "../logger";
 import { indent } from "../helpers/indent";
 import { typingSpeed } from "../parameters";
 import { logEventError } from ".";
-import { addToContext, generateContext, getContext, hasContext, removeLastMessageFromContext } from "../memory/context";
+import { addToContext, generateContext, getContextAsStrings, hasContext, removeLastMessageFromContext } from "../memory/context";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking";
 import { hasChannel as isWhitelisted } from "../memory/whitelist";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
@@ -72,7 +72,7 @@ async function onMessage(message: Message) {
 
 	// Actually generate response
 	logger.info("Generating response");
-	cleverbot(input, getContext(message.channel)).then(response => {
+	cleverbot(message.content, getContextAsStrings(message.channel)).then(response => {
 		// Sometimes cleverbot goofs and returns an empty response
 		if (response === "") {
 			const error = new Error();

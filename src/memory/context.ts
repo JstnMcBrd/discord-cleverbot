@@ -15,7 +15,7 @@ import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyze
  * Maps channelID to lists of messages.
  * Don't access directly - use the methods below.
  */
-const context = new Map<string, string[]>;
+const context = new Map<string, Message[]>;
 
 /**
  * Limits the length of each channel's context so memory isn't overburdened.
@@ -25,8 +25,15 @@ const maxContextLength = 50;
 /**
  * @returns the past messages of the channel
  */
-export function getContext(channel: Channel): string[]|undefined {
+export function getContext(channel: Channel): Message[]|undefined {
 	return context.get(channel.id);
+}
+
+/**
+ * @returns the past messages of the channel as strings
+ */
+export function getContextAsStrings(channel: Channel): string[]|undefined {
+	return getContext(channel)?.map(message => message.content);
 }
 
 /**
@@ -40,9 +47,8 @@ export function hasContext(channel: Channel): boolean {
  * Fetches and records the past messages of the channel.
  */
 export async function generateContext(client: Client, channel: TextBasedChannel) {
-	const newContext: string[] = [];
+	const newContext: Message[] = [];
 	let repliedTo: string|undefined = undefined;
-	let lastMessageFromUser = false;
 
 	// Fetch past messages
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
@@ -56,11 +62,11 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 		message = cleanUpMessage(message);
 
 		// If there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
-		if (!isFromUser(message, client.user) && !lastMessageFromUser && newContext[0] !== undefined) {
-			newContext[0] = input + `\n${newContext[0]}`;
+		if (newContext[0] !== undefined && !isFromUser(message, client.user) && !isFromUser(newContext[0], client.user)) {
+			newContext[0].content = `${message.content}\n${newContext[0].content}`;
 		}
 		else {
-			newContext.unshift(input);
+			newContext.unshift(message);
 		}
 
 		// If the message is from self, and it replies to another message,
@@ -74,8 +80,6 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 				repliedTo = message.reference.messageId;
 			}
 		}
-
-		lastMessageFromUser = isFromUser(message, client.user);
 	});
 
 	context.set(channel.id, newContext);
@@ -85,7 +89,7 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 /**
  * Adds a message to the recorded past messages of a channel.
  */
-export function addToContext(channel: Channel, message: string): void {
+export function addToContext(channel: Channel, message: Message): void {
 	if (!hasContext(channel)) return;
 
 	// To make typescript happy
