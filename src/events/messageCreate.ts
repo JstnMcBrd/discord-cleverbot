@@ -95,9 +95,14 @@ async function onMessage(message: Message) {
 			function() {
 				// Respond normally if no extra messages have been sent in the meantime
 				if (message.channel.lastMessageId === message.id) {
-					message.channel.send(response).then(() => {
+					message.channel.send(response).then(responseMessage => {
 						logger.info("Sent message successfully");
 						logger.info();
+
+						// Update conversation context (but only for whitelisted channels)
+						if (isWhitelisted(message.channel)) {
+							addToContext(message.channel, responseMessage);
+						}
 					}).catch(error => {
 						logger.error(error);
 						logger.warn("Failed to send message");
@@ -105,18 +110,18 @@ async function onMessage(message: Message) {
 				}
 				// Use reply to respond directly if extra messages are in the way
 				else {
-					message.reply(response).then(() => {
+					message.reply(response).then(responseMessage => {
 						logger.info("Sent reply successfully");
 						logger.info();
+
+						// Update conversation context (but only for whitelisted channels)
+						if (isWhitelisted(message.channel)) {
+							addToContext(message.channel, responseMessage);
+						}
 					}).catch(error => {
 						logger.error(error);
 						logger.warn("Failed to send reply");
 					});
-				}
-
-				// Update conversation context (but only for whitelisted channels)
-				if (isWhitelisted(message.channel)) {
-					addToContext(message.channel, response);
 				}
 
 				// Allow bot to think about new messages now
@@ -138,13 +143,7 @@ async function onMessage(message: Message) {
 		logger.warn("Failed to generate response");
 
 		// If error is timeout, then try again
-		let errorMessage: unknown;
-		if (error instanceof Error) {
-			errorMessage = error.message;
-		}
-		else {
-			errorMessage = error;
-		}
+		const errorMessage: string|unknown = error instanceof Error ? error.message : error;
 
 		if (errorMessage === "Response timeout of 10000ms exceeded" ||
 		errorMessage === "Failed to get a response after 15 tries" ||
