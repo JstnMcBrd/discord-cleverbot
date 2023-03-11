@@ -105,7 +105,7 @@ export function addToContext(channel: Channel, message: string): void {
 }
 
 /**
- * Removes the most recent message from the recorded past messages of a channel
+ * Removes the most recent message from the recorded past messages of a channel.
  */
 export function removeLastMessageFromContext(channel: Channel): void {
 	if (!hasContext(channel)) return;

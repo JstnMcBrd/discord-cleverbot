@@ -25,15 +25,6 @@ let filePath = "";
 let whitelist: Whitelist = [];
 
 /**
- * Only returns a copy of the whitelist to prevent illegal editing.
- * Use the `addChannel` and `removeChannel` methods for whitelist editing.
- * @returns a copy of the whitelist
- */
-export function getWhitelist(): Whitelist {
-	return whitelist.map(value => value);
-}
-
-/**
  * Sets the account name so the memory file can be loaded.
  * Should be called before trying to use the whitelist.
  * Assumes the account name is valid.
@@ -42,6 +33,15 @@ export function getWhitelist(): Whitelist {
 export function setAccount(account: string): void {
 	filePath = join("..", "accounts", account, "whitelist.json");
 	load();
+}
+
+/**
+ * Only returns a copy of the whitelist to prevent illegal editing.
+ * Use the `addChannel` and `removeChannel` methods for whitelist editing.
+ * @returns a copy of the whitelist
+ */
+export function getWhitelist(): Whitelist {
+	return whitelist.map(value => value);
 }
 
 /**

@@ -1,11 +1,11 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import type { Message } from "discord.js";
+import type { ChatInputCommandInteraction, Message } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 import * as logger from "../logger";
 import { embedColors } from "../parameters";
 
 /**
- * Responds to a message with an error message.
+ * Replies to a Discord message with an error message.
  */
 export function replyWithError(message: Message|ChatInputCommandInteraction, internalError: Error|unknown) {
 	const stringifiedError = (internalError as object).toString();

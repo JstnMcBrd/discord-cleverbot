@@ -11,7 +11,7 @@ import { join } from "node:path";
 import type { Config } from "../@types/MemoryFiles";
 
 /**
- * The file path of the whitelist memory file.
+ * The file path of the config memory file.
  */
 let filePath = "";
 
@@ -55,8 +55,7 @@ function hasAllConfigProperties(json: unknown): boolean {
 }
 
 /**
- * Returns a read-only copy of the whitelist.
- * @returns the whitelist
+ * @returns a read-only copy of the whitelist
  */
 export function getConfig(): Config {
 	return config;
