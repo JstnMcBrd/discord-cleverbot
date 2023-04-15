@@ -3,24 +3,15 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"module": "Node16",
-		"moduleResolution": "Node16",
-		"typeRoots": [
-			"./node_modules/@types",
-			"./src/@types"
-		],
-		"types": [
-			"node"
-		],
+		"typeRoots": [ "./src/@types" ],
 		"outDir": "./dist",
-		"esModuleInterop": true,
-		"sourceMap": true,
-		"removeComments": true,
-		"strict": true,
 		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
 		"noImplicitReturns": true,
-		"importsNotUsedAsValues": "error",
 		"noPropertyAccessFromIndexSignature": true,
 		"noUncheckedIndexedAccess": true,
-		"forceConsistentCasingInFileNames": true,
-	},
+		"strict": true,
+		// "verbatimModuleSyntax": true // re-enable for TypeScript 5.0
+		"importsNotUsedAsValues": "error"
+	}
 }
