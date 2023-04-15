@@ -6,8 +6,8 @@
 	"private": true,
 	"main": "./dist/main.js",
 	"scripts": {
-		"lint": "eslint . --ext .js,.ts",
 		"build": "tsc -p tsconfig.json",
+		"lint": "eslint . --ext .ts",
 		"start": "cd dist && node ./main.js",
 		"commands": "cd dist && node ./deployCommands.js"
 	},
