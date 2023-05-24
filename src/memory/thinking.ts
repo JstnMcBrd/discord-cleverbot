@@ -5,13 +5,13 @@
  * a message for, so the bot doesn't reply to several messages at the same time.
  */
 
-import type { Channel } from "discord.js";
+import type { Channel, Snowflake } from "discord.js";
 
 /**
  * Keeps track of which channels the bot is already generating a response for.
  * Don't access directly - use the methods below.
  */
-const thinking: string[] = [];
+const thinking: Snowflake[] = [];
 
 /**
  * Checks to see if the bot is currently generating a response in a channel.

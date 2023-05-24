@@ -5,8 +5,8 @@
  * can understand the past conversation context when generating a new reply.
  */
 
-import type { Channel, Client, Collection, Message, TextBasedChannel } from "discord.js";
 import { cleanUpMessage } from "../helpers/cleanUpMessage";
+import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel } from "discord.js";
 
 import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer";
 
@@ -15,7 +15,7 @@ import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyze
  * Maps channelID to lists of messages.
  * Don't access directly - use the methods below.
  */
-const context = new Map<string, Message[]>;
+const context = new Map<Snowflake, Message[]>;
 
 /**
  * Limits the length of each channel's context so memory isn't overburdened.

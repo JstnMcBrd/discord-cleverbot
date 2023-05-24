@@ -7,6 +7,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { Snowflake } from "discord.js";
 
 import type { Config } from "../@types/MemoryFiles";
 
@@ -64,7 +65,7 @@ export function getConfig(): Config {
 /**
  * @returns the user ID of the bot account
  */
-export function getClientID(): string {
+export function getClientID(): Snowflake {
 	return config.clientId;
 }
 

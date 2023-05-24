@@ -1,3 +1,5 @@
+import type { Snowflake } from "discord.js";
+
 /**
  * These types define the format of the JSON memory files that should be stored in the account directory for the bot.
  */
@@ -7,7 +9,7 @@
  * See an example in [accounts/ExampleUsername/config.json](../../accounts/ExampleUsername/config.json).
  */
 export type Config = {
-	clientId: string;
+	clientId: Snowflake;
 	token: string;
 	url: string;
 };
@@ -16,4 +18,4 @@ export type Config = {
  * The format of the whitelist JSON file.
  * See an example in [accounts/ExampleUsername/whitelist.json](../../accounts/ExampleUsername/whitelist.json).
  */
-declare type Whitelist = Array<string>;
+declare type Whitelist = Array<Snowflake>;

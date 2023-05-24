@@ -10,7 +10,7 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Channel, Client } from "discord.js";
+import type { Channel, Client, Snowflake } from "discord.js";
 
 import type { Whitelist } from "../@types/MemoryFiles";
 
@@ -99,7 +99,7 @@ function save(): void {
  * @param channel either a discord.js channel or the channel ID
  * @returns the channel ID
  */
-function getChannelID(channel: string|Channel): string {
+function getChannelID(channel: Snowflake|Channel): Snowflake {
 	if (typeof channel === "string") {
 		return channel;
 	}
@@ -113,7 +113,7 @@ function getChannelID(channel: string|Channel): string {
  * @param channel either a discord.js channel or the channel ID
  * @returns true if successful, false if the channel was already in the whitelist
  */
-export function addChannel(channel: string|Channel): boolean {
+export function addChannel(channel: Snowflake|Channel): boolean {
 	// Standardize the input
 	const channelID = getChannelID(channel);
 
@@ -131,7 +131,7 @@ export function addChannel(channel: string|Channel): boolean {
  * @param channel either a discord.js channel or the channel ID
  * @returns true if successful, false if the whitelist doesn't have the channel
  */
-export function removeChannel(channel: string|Channel): boolean {
+export function removeChannel(channel: Snowflake|Channel): boolean {
 	// Standardize the input
 	const channelID = getChannelID(channel);
 
@@ -149,7 +149,7 @@ export function removeChannel(channel: string|Channel): boolean {
  * @param channel either a discord.js channel or the channel ID
  * @returns true if the channel is in the whitelist, false if not
  */
-export function hasChannel(channel: string|Channel): boolean {
+export function hasChannel(channel: Snowflake|Channel): boolean {
 	// Standardize the input
 	const channelID = getChannelID(channel);
 
