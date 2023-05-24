@@ -11,7 +11,5 @@
 		"noPropertyAccessFromIndexSignature": true,
 		"noUncheckedIndexedAccess": true,
 		"strict": true,
-		// "verbatimModuleSyntax": true // re-enable for TypeScript 5.0
-		"importsNotUsedAsValues": "error"
 	}
 }
