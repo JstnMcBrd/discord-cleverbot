@@ -31,7 +31,7 @@ let whitelist: Whitelist = [];
  * @param account a valid account name
  */
 export function setAccount(account: string): void {
-	filePath = join("..", "accounts", account, "whitelist.json");
+	filePath = join(__dirname, "..", "..", "accounts", account, "whitelist.json");
 	load();
 }
 

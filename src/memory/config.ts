@@ -28,7 +28,7 @@ let config: Config;
  * @param account a valid account name
  */
 export function setAccount(account: string): void {
-	filePath = join("..", "accounts", account, "config.json");
+	filePath = join(__dirname, "..", "..", "accounts", account, "config.json");
 	load();
 }
 

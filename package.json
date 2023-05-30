@@ -8,8 +8,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
 		"lint": "eslint . --ext .ts",
-		"start": "cd dist && node ./main.js",
-		"commands": "cd dist && node ./deployCommands.js"
+		"start": "node ./dist/main.js",
+		"commands": "node ./dist/deployCommands.js"
 	},
 	"dependencies": {
 		"@colors/colors": "^1.5.0",

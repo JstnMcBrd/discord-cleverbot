@@ -24,7 +24,7 @@ if (accountName === undefined) {
 	process.exit(1);
 }
 
-const filePath = join("..", "accounts", accountName);
+const filePath = join(__dirname, "..", "accounts", accountName);
 
 if (!existsSync(filePath)) {
 	logger.error(`Invalid account name: ${accountName}`);
