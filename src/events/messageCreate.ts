@@ -1,7 +1,6 @@
 import type { Message } from "discord.js";
 import cleverbot from "cleverbot-free";
 
-import { cleanUpMessage } from "../helpers/cleanUpMessage";
 import type { EventHandler } from "../@types/EventHandler.js";
 import * as logger from "../logger.js";
 import { indent } from "../helpers/indent.js";
@@ -12,6 +11,7 @@ import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer.js";
 import { replyWithError } from "../helpers/replyWithError.js";
+import { formatPrompt } from "../helpers/formatPrompt.js";
 
 // Something is wrong with cleverbot-free's types, so I need to substitute them myself to make TypeScript happy.
 // TODO figure this out later
@@ -51,10 +51,10 @@ async function onMessage(message: Message) {
 	logger.info("Received new message");
 	logger.debug(indent(debugMessage(message), 1));
 
-	// Clean up message
-	logger.info("Cleaning up message");
-	message = cleanUpMessage(message);
-	logger.info(indent(`Content: ${message.content}`, 1));
+	// Format the prompt
+	logger.info("Formatting prompt");
+	const prompt = formatPrompt(message);
+	logger.info(indent(`Prompt: ${prompt}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel)) {

@@ -5,10 +5,10 @@
  * can understand the past conversation context when generating a new reply.
  */
 
-import { cleanUpMessage } from "../helpers/cleanUpMessage";
 import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel } from "discord.js";
 
 import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer.js";
+import { formatPrompt } from "../helpers/formatPrompt.js";
 
 /**
  * Keeps track of the past conversation for each channel.
@@ -30,10 +30,10 @@ export function getContext(channel: Channel): Message[]|undefined {
 }
 
 /**
- * @returns the past messages of the channel as strings
+ * @returns the past messages of the channel as formatted prompts
  */
-export function getContextAsStrings(channel: Channel): string[]|undefined {
-	return getContext(channel)?.map(message => message.content);
+export function getContextAsFormattedPrompts(channel: Channel): string[]|undefined {
+	return getContext(channel)?.map(formatPrompt);
 }
 
 /**
@@ -44,42 +44,29 @@ export function hasContext(channel: Channel): boolean {
 }
 
 /**
- * Fetches and records the past messages of the channel.
+ * Fetches and stores the past messages of the channel.
  */
 export async function generateContext(client: Client, channel: TextBasedChannel) {
 	const newContext: Message[] = [];
-	let repliedTo: string|undefined = undefined;
 
 	// Fetch past messages
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
 	messages.each(message => {
-		// Skip ignored messages and empty messages
+		// TODO abstract out this logic
+		// Skip empty messages and ignored messages
 		if (isEmpty(message) || isMarkedAsIgnore(message)) return;
-		// Skip messages that bot skipped in the past
-		if (!isFromUser(message, client.user) && repliedTo !== undefined && message.id !== repliedTo) return;
 
-		// Clean up message
-		message = cleanUpMessage(message);
-
-		// If there are two messages from other users in a row, make them the same message so cleverbot doesn't get confused
+		// If there are two messages from other users in a row, skip the most recent one (like the bot normally would)
 		if (newContext[0] !== undefined && !isFromUser(message, client.user) && !isFromUser(newContext[0], client.user)) {
-			newContext[0].content = `${message.content}\n${newContext[0].content}`;
-		}
-		else {
-			newContext.unshift(message);
+			newContext.shift();
 		}
 
-		// If the message is from self, and it replies to another message,
-		// record what that message is so we can skip all the ignored messages in between (see above)
-		if (message.id === repliedTo) {
-			// Reset for the future
-			repliedTo = undefined;
-		}
-		if (isFromUser(message, client.user) && message.reference !== null) {
-			if (message.reference.messageId !== undefined) {
-				repliedTo = message.reference.messageId;
-			}
-		}
+		// DO NOT take message replies into account.
+		// While it could be useful to follow reply chains to map out a conversation,
+		// there is no guarantee that a reply message points to the other user and doesn't
+		// skip other valid messages.
+
+		newContext.unshift(message);
 	});
 
 	context.set(channel.id, newContext);

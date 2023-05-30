@@ -1,11 +1,11 @@
 import type { Message } from "discord.js";
 
-import { isAMention } from "./messageAnalyzer";
+import { isAMention } from "./messageAnalyzer.js";
 
 /**
  * // TODO
  */
-export function cleanUpMessage(message: Message): Message {
+export function formatPrompt(message: Message): string {
 	const user = message.client.user;
 	let content = message.cleanContent;
 
@@ -15,8 +15,7 @@ export function cleanUpMessage(message: Message): Message {
 	content = replaceUnknownEmojis(content);
 	content = content.trim();
 
-	message.content = content;
-	return message;
+	return content;
 }
 
 /**
