@@ -7,12 +7,12 @@
 
 import type { Client, ClientEvents } from "discord.js";
 
-import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../logger";
-import { error } from "./error";
-import { interactionCreate } from "./interactionCreate";
-import { messageCreate } from "./messageCreate";
-import { ready } from "./ready";
+import type { EventHandler } from "../@types/EventHandler.js";
+import * as logger from "../logger.js";
+import { error } from "./error.js";
+import { interactionCreate } from "./interactionCreate.js";
+import { messageCreate } from "./messageCreate.js";
+import { ready } from "./ready.js";
 
 const events = new Map<string, EventHandler>;
 

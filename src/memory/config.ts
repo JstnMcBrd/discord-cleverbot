@@ -9,7 +9,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Snowflake } from "discord.js";
 
-import type { Config } from "../@types/MemoryFiles";
+import type { Config } from "../@types/MemoryFiles.js";
+import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 
 /**
  * The file path of the config memory file.
@@ -28,7 +29,7 @@ let config: Config;
  * @param account a valid account name
  */
 export function setAccount(account: string): void {
-	filePath = join(__dirname, "..", "..", "accounts", account, "config.json");
+	filePath = join(getCurrentDirectory(import.meta.url), "..", "..", "accounts", account, "config.json");
 	load();
 }
 

@@ -1,17 +1,21 @@
 import type { Message } from "discord.js";
 import cleverbot from "cleverbot-free";
 
-import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../logger";
-import { indent } from "../helpers/indent";
-import { typingSpeed } from "../parameters";
-import { logEventError } from ".";
-import { addToContext, generateContext, getContextAsStrings, hasContext, removeLastMessageFromContext } from "../memory/context";
-import { isThinking, startThinking, stopThinking } from "../memory/thinking";
-import { hasChannel as isWhitelisted } from "../memory/whitelist";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer";
-import { replyWithError } from "../helpers/replyWithError";
 import { cleanUpMessage } from "../helpers/cleanUpMessage";
+import type { EventHandler } from "../@types/EventHandler.js";
+import * as logger from "../logger.js";
+import { indent } from "../helpers/indent.js";
+import { typingSpeed } from "../parameters.js";
+import { logEventError } from "./index.js";
+import { addToContext, generateContext, getContextAsFormattedPrompts, hasContext, removeLastMessageFromContext } from "../memory/context.js";
+import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
+import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer.js";
+import { replyWithError } from "../helpers/replyWithError.js";
+
+// Something is wrong with cleverbot-free's types, so I need to substitute them myself to make TypeScript happy.
+// TODO figure this out later
+const bot = cleverbot as unknown as (stimlus: string, context?: string[]) => Promise<string>;
 
 export const messageCreate: EventHandler<"messageCreate"> = {
 	name: "messageCreate",
@@ -72,7 +76,7 @@ async function onMessage(message: Message) {
 
 	// Actually generate response
 	logger.info("Generating response");
-	cleverbot(message.content, getContextAsStrings(message.channel)).then(response => {
+	bot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
 		// Sometimes cleverbot goofs and returns an empty response
 		if (response === "") {
 			const error = new Error();

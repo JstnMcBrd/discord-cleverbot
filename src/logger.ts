@@ -1,4 +1,4 @@
-import colors from "@colors/colors/safe";
+import colors from "@colors/colors/safe.js";
 
 /**
  * The default logger for this application. Set to the console for now.

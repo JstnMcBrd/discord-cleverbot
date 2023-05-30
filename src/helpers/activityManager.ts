@@ -1,7 +1,7 @@
 import type { ActivityOptions, Client } from "discord.js";
 import { ActivityType } from "discord.js";
 
-import * as logger from "../logger";
+import * as logger from "../logger.js";
 
 /**
  * How often to update the activity (in seconds).

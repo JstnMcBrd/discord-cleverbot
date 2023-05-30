@@ -1,8 +1,8 @@
 import type { User } from "discord.js";
 import { EmbedBuilder, userMention } from "discord.js";
 
-import { CommandHandler } from "../@types/CommandHandler";
-import { lastUpdated, embedColors, version } from "../parameters";
+import { CommandHandler } from "../@types/CommandHandler.js";
+import { lastUpdated, embedColors, version } from "../parameters.js";
 
 export const help = new CommandHandler()
 	.setName("help")

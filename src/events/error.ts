@@ -1,7 +1,7 @@
-import type { EventHandler } from "../@types/EventHandler";
+import type { EventHandler } from "../@types/EventHandler.js";
 
-import * as logger from "../logger";
-import { logEventError } from "./";
+import * as logger from "../logger.js";
+import { logEventError } from "./index.js";
 
 export const error: EventHandler<"error"> = {
 	name: "error",

@@ -8,7 +8,7 @@
 import { cleanUpMessage } from "../helpers/cleanUpMessage";
 import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel } from "discord.js";
 
-import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer";
+import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer.js";
 
 /**
  * Keeps track of the past conversation for each channel.

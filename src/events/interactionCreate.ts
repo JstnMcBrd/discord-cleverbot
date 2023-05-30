@@ -1,10 +1,10 @@
 import type { Interaction } from "discord.js";
 
-import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../logger";
-import { replyWithError } from "../helpers/replyWithError";
-import { getCommandHandler } from "../commands";
-import { logEventError } from "./";
+import type { EventHandler } from "../@types/EventHandler.js";
+import * as logger from "../logger.js";
+import { replyWithError } from "../helpers/replyWithError.js";
+import { getCommandHandler } from "../commands/index.js";
+import { logEventError } from "./index.js";
 
 export const interactionCreate: EventHandler<"interactionCreate"> = {
 	name: "interactionCreate",

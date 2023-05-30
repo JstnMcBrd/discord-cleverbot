@@ -1,13 +1,14 @@
-import { CategoryChannel, Client, Message, PartialGroupDMChannel, StageChannel, TextBasedChannel } from "discord.js";
+import { CategoryChannel, Client, Message, PartialGroupDMChannel, StageChannel } from "discord.js";
+import type { TextBasedChannel } from "discord.js";
 
-import type { EventHandler } from "../@types/EventHandler";
-import * as logger from "../logger";
-import { logEventError } from "./";
-import { messageCreate } from "./messageCreate";
-import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelist";
-import { isFromUser } from "../helpers/messageAnalyzer";
-import { start as manageActivity } from "../helpers/activityManager";
-import { generateContext, getContext } from "../memory/context";
+import type { EventHandler } from "../@types/EventHandler.js";
+import * as logger from "../logger.js";
+import { logEventError } from "./index.js";
+import { messageCreate } from "./messageCreate.js";
+import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelist.js";
+import { isFromUser } from "../helpers/messageAnalyzer.js";
+import { start as manageActivity } from "../helpers/activityManager.js";
+import { generateContext, getContext } from "../memory/context.js";
 
 /**
  * How often to look for missed messages (in seconds).

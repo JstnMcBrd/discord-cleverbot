@@ -8,9 +8,9 @@
 import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
 
-import * as logger from "./logger";
-import { getToken, setAccount as setConfigAccount } from "./memory/config";
-import { getCommandHandlers } from "./commands";
+import * as logger from "./logger.js";
+import { getToken, setAccount as setConfigAccount } from "./memory/config.js";
+import { getCommandHandlers } from "./commands/index.js";
 
 // Verify input
 function usage(): void {

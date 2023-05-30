@@ -1,8 +1,8 @@
-import type { CommandHandler } from "../@types/CommandHandler";
+import type { CommandHandler } from "../@types/CommandHandler.js";
 
-import { help } from "./help";
-import { unwhitelist } from "./unwhitelist";
-import { whitelist } from "./whitelist";
+import { help } from "./help.js";
+import { unwhitelist } from "./unwhitelist.js";
+import { whitelist } from "./whitelist.js";
 
 const commands = new Map<string, CommandHandler>();
 

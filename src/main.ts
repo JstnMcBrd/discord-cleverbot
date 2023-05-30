@@ -4,10 +4,11 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { Client, Partials, GatewayIntentBits } from "discord.js";
 
-import { registerEventHandlers } from "./events";
-import * as logger from "./logger";
-import { getToken, setAccount as setConfigAccount } from "./memory/config";
-import { setAccount as setWhitelistAccount } from "./memory/whitelist";
+import { registerEventHandlers } from "./events/index.js";
+import * as logger from "./logger.js";
+import { getToken, setAccount as setConfigAccount } from "./memory/config.js";
+import { setAccount as setWhitelistAccount } from "./memory/whitelist.js";
+import { getCurrentDirectory } from "./helpers/getCurrentDirectory.js";
 
 /**
  * How long to wait before retrying a failed Discord API connection attempt (in seconds).
@@ -24,7 +25,7 @@ if (accountName === undefined) {
 	process.exit(1);
 }
 
-const filePath = join(__dirname, "..", "accounts", accountName);
+const filePath = join(getCurrentDirectory(import.meta.url), "..", "accounts", accountName);
 
 if (!existsSync(filePath)) {
 	logger.error(`Invalid account name: ${accountName}`);

@@ -1,11 +1,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { getCurrentDirectory } from "./getCurrentDirectory.js";
+
+
 /**
  * // TODO
  */
 function getPackageFilePath(): string {
-	return join(__dirname, "..", "..", "package.json");
+	return join(getCurrentDirectory(import.meta.url), "..", "..", "package.json");
 }
 
 /**

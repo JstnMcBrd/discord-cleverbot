@@ -3,11 +3,11 @@
 	"version": "5.0.0-alpha",
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
+	"type": "module",
 	"private": true,
-	"main": "./dist/main.js",
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
-		"lint": "eslint . --ext .ts",
+		"build": "tsc",
+		"lint": "eslint .",
 		"start": "node ./dist/main.js",
 		"commands": "node ./dist/deployCommands.js"
 	},
