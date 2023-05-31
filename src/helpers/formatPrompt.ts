@@ -12,7 +12,7 @@ export function formatPrompt(message: Message): string {
 	if (isAMention(message, user)) {
 		content = replaceMentions(user.username, content);
 	}
-	content = replaceUnknownEmojis(content);
+	content = replaceCustomEmojis(content);
 	content = content.trim();
 
 	return content;
@@ -26,17 +26,16 @@ function replaceMentions(username: string, content: string): string {
 }
 
 /**
- * Replaces unknown discord emojis with the name of the emoji as *emphasized* text to avoid confusing the Cleverbot AI
+ * Replaces unknown discord emojis with the name of the emoji as *emphasized* text to avoid confusing the Cleverbot AI.
+ *
+ * Example: `<:test_emoji:999999999999999999>` => `*test emoji*`
  */
-function replaceUnknownEmojis(content: string): string {
-	// Start with custom emojis
+function replaceCustomEmojis(content: string): string {
 	content = content.replaceAll(/<:[\w\W][^:\s]+:\d+>/g, match => {
 		match = match.replace("<:", "");
 		match = match.replace(/:\d+>/g, "");
 		match = match.replace("_", " ");
 		return `*${match}*`;
 	});
-	// Now replace any unknown emojis that aren't custom
-	content = content.replaceAll(":", "*").replaceAll("_", " ");
 	return content;
 }

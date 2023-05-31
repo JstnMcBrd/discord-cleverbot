@@ -54,7 +54,7 @@ async function onMessage(message: Message) {
 	// Format the prompt
 	logger.info("Formatting prompt");
 	const prompt = formatPrompt(message);
-	logger.info(indent(`Prompt: ${prompt}`, 1));
+	logger.debug(indent(`Prompt: ${prompt}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel)) {
