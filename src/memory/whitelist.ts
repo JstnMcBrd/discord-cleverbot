@@ -19,6 +19,7 @@ import { join } from "node:path";
 import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
 import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 
+import type { WhitelistFile } from "../@types/MemoryFiles.js";
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 import { warn } from "../logger.js";
 
@@ -36,7 +37,7 @@ let whitelist: TextBasedChannel[] = [];
  * A temporary list of channel IDs loaded from the whitelist memory file,
  * waiting to be fetched from the Discord API.
  */
-let whitelistAsChannelIDs: Snowflake[] = [];
+let whitelistAsChannelIDs: WhitelistFile = [];
 
 /**
  * Sets the account name and loads the whitelist from the memory file.
@@ -56,12 +57,20 @@ export function loadFrom (account: string): void {
 	const json: unknown = JSON.parse(fileStr);
 
 	// Validate the file formatting
-	if (Array.isArray(json) && allElementsAreStrings(json)) {
-		whitelistAsChannelIDs = json as Snowflake[];
+	if (isValidWhitelistFile(json)) {
+		whitelistAsChannelIDs = json;
 	}
 	else {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
 	}
+}
+
+/**
+ * @returns whether the given JSON is a properly formatted whitelist file
+ */
+function isValidWhitelistFile (json: unknown): json is WhitelistFile {
+	return Array.isArray(json)
+		&& json.every(value => typeof value === "string");
 }
 
 /**
@@ -77,30 +86,19 @@ export function loadFrom (account: string): void {
 export async function populate (client: Client) {
 	// Fetch and validate channels
 	whitelist = [];
-	const invalidChannelIDs: Snowflake[] = [];
 	for (const channelID of whitelistAsChannelIDs) {
 		const channel = await fetchAndValidateChannel(channelID, client);
 		if (channel !== undefined) {
 			whitelist.push(channel);
 		}
-		else {
-			invalidChannelIDs.push(channelID);
-		}
 	}
 
 	// Overwrite memory file if there were any invalid channel IDs
-	if (invalidChannelIDs.length > 0) {
-		warn(`Removing invalid channels from whitelist: ${invalidChannelIDs.toString()}`);
+	if (whitelist.length < whitelistAsChannelIDs.length) {
+		warn("Removing invalid channels from whitelist");
 		warn();
 		save();
 	}
-}
-
-/**
- * @returns whether the given array only consists of strings
- */
-function allElementsAreStrings (array: unknown[]): boolean {
-	return array.every(value => typeof value === "string");
 }
 
 /**

@@ -10,7 +10,7 @@ import { join } from "node:path";
 
 import type { Snowflake } from "discord.js";
 
-import type { Config } from "../@types/MemoryFiles.js";
+import type { ConfigFile } from "../@types/MemoryFiles.js";
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 
 /**
@@ -21,7 +21,7 @@ let filePath = "";
 /**
  * The local copy of the config.
  */
-let config: Config;
+let config: ConfigFile;
 
 /**
  * Sets the account name and loads the config from the memory file.
@@ -40,8 +40,8 @@ export function loadFrom (account: string): void {
 	const json: unknown = JSON.parse(fileStr);
 
 	// Validate the file formatting
-	if (json instanceof Object && hasAllConfigProperties(json)) {
-		config = json as Config;
+	if (isValidConfigFile(json)) {
+		config = json;
 	}
 	else {
 		throw new Error(`The config memory file at ${filePath} is not properly formatted`);
@@ -49,18 +49,19 @@ export function loadFrom (account: string): void {
 }
 
 /**
- * @returns whether the given object has all properties of the Config type
+ * @returns whether the given JSON has is a properly formatted config file
  */
-function hasAllConfigProperties (json: unknown): boolean {
-	return Object.prototype.hasOwnProperty.call(json, "clientId") &&
-	Object.prototype.hasOwnProperty.call(json, "token") &&
-	Object.prototype.hasOwnProperty.call(json, "url");
+function isValidConfigFile (json: unknown): json is ConfigFile {
+	return json instanceof Object
+		&& Object.prototype.hasOwnProperty.call(json, "clientId")
+		&& Object.prototype.hasOwnProperty.call(json, "token")
+		&& Object.prototype.hasOwnProperty.call(json, "url");
 }
 
 /**
  * @returns the full config
  */
-export function getConfig (): Config {
+export function getConfig (): ConfigFile {
 	return config;
 }
 
