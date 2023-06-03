@@ -1,13 +1,13 @@
 import type { Client, Message } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
-import { info } from "../logger.js";
 import { logEventError } from "./index.js";
 import { messageCreate } from "./messageCreate.js";
-import { populate as populateWhitelist, getWhitelist } from "../memory/whitelist.js";
-import { isFromUser } from "../helpers/messageAnalyzer.js";
 import { start as manageActivity } from "../helpers/activityManager.js";
+import { isFromUser } from "../helpers/messageAnalyzer.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "../memory/context.js";
+import { populate as populateWhitelist, getWhitelist } from "../memory/whitelist.js";
+import { info } from "../logger.js";
 
 /**
  * How often to refresh the state (in seconds).

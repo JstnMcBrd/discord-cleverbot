@@ -8,15 +8,15 @@
 import type { Client } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
-import * as logger from "../logger.js";
-import { error } from "./error.js";
+import { error as errorH } from "./error.js";
 import { interactionCreate } from "./interactionCreate.js";
 import { messageCreate } from "./messageCreate.js";
 import { ready } from "./ready.js";
+import { debug, error, info } from "../logger.js";
 
 const events = new Map<string, EventHandler>;
 
-addEventHandler(error as EventHandler);
+addEventHandler(errorH as EventHandler);
 addEventHandler(interactionCreate as EventHandler);
 addEventHandler(messageCreate as EventHandler);
 addEventHandler(ready as EventHandler);
@@ -35,7 +35,7 @@ export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
 }
 
 export function registerEventHandlers (client: Client) {
-	logger.info("Setting client event handlers...");
+	info("Setting client event handlers...");
 
 	getEventHandlers().forEach((event) => {
 		if (event.once) {
@@ -44,13 +44,13 @@ export function registerEventHandlers (client: Client) {
 		else {
 			client.on(event.name, event.execute);
 		}
-		logger.debug(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
+		debug(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
 	});
 
-	logger.info();
+	info();
 }
 
 export function logEventError (eventName: string, err: Error|unknown) {
-	logger.error(`Error in event '${eventName}'`);
-	logger.error(err);
+	error(`Error in event '${eventName}'`);
+	error(err);
 }

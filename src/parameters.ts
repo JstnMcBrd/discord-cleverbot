@@ -1,4 +1,5 @@
 import { Colors } from "discord.js";
+
 import { getVersion } from "./helpers/getVersion.js";
 
 /**

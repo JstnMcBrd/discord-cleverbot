@@ -5,12 +5,12 @@
  * Usage: node deploy-commands.js [account name]
 */
 
-import type { ApplicationCommandDataResolvable } from "discord.js";
 import { Client } from "discord.js";
+import type { ApplicationCommandDataResolvable } from "discord.js";
 
-import { error, info } from "./logger.js";
-import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
 import { getCommandHandlers } from "./commands/index.js";
+import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
+import { error, info } from "./logger.js";
 
 // Verify input
 function usage (): void {

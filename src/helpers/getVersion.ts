@@ -3,7 +3,6 @@ import { join } from "node:path";
 
 import { getCurrentDirectory } from "./getCurrentDirectory.js";
 
-
 /**
  * // TODO
  */

@@ -1,11 +1,11 @@
 import type { Interaction } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
-import * as logger from "../logger.js";
-import { replyWithError } from "../helpers/replyWithError.js";
 import { getCommandHandler } from "../commands/index.js";
 import { logEventError } from "./index.js";
 import { indent } from "../helpers/indent.js";
+import { replyWithError } from "../helpers/replyWithError.js";
+import { debug, error, info, warn } from "../logger.js";
 
 export const interactionCreate: EventHandler<"interactionCreate"> = {
 	name: "interactionCreate",
@@ -14,8 +14,8 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
 		try {
 			await onInteraction(interaction);
 		}
-		catch (error) {
-			logEventError(interactionCreate.name, error);
+		catch (err) {
+			logEventError(interactionCreate.name, err);
 		}
 	},
 };
@@ -28,30 +28,30 @@ async function onInteraction (interaction: Interaction): Promise<void> {
 	if (!interaction.isChatInputCommand()) {
 		return;
 	}
-	logger.info("Received command interaction");
-	logger.debug(indent(debugInteraction(interaction), 1));
+	info("Received command interaction");
+	debug(indent(debugInteraction(interaction), 1));
 
 	// Ignore any commands that are not recognized
 	const command = getCommandHandler(interaction.commandName);
 	if (!command) {
 		return;
 	}
-	logger.info("Command recognized");
+	info("Command recognized");
 
 	// Execute the command script
-	logger.info("Executing command");
+	info("Executing command");
 	try {
 		await command.execute(interaction);
 	}
-	catch (error) {
-		logger.error(error);
-		logger.warn("Failed to execute command");
-		logger.info();
+	catch (err) {
+		error(err);
+		warn("Failed to execute command");
+		info();
 		replyWithError(interaction, error);
 		return;
 	}
-	logger.info("Command executed successfully");
-	logger.info();
+	info("Command executed successfully");
+	info();
 }
 
 /**

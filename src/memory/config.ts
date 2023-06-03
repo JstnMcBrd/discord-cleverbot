@@ -7,6 +7,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
 import type { Snowflake } from "discord.js";
 
 import type { Config } from "../@types/MemoryFiles.js";

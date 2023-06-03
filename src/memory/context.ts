@@ -7,9 +7,9 @@
 
 import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel } from "discord.js";
 
+import { whitelist as whitelistCommand } from "../commands/whitelist.js";
 import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
-import { whitelist as whitelistCommand } from "../commands/whitelist.js";
 
 /**
  * Keeps track of the past conversation for each channel.

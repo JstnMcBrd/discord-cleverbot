@@ -1,21 +1,21 @@
+import cleverbot_badtype from "cleverbot-free";
+// cleverbot-free's types don't work with ESM and TypeScript Node16 resolution,
+// so I need to substitute them myself to make TypeScript happy.
+const cleverbot = cleverbot_badtype as unknown as (stimlus: string, context?: string[]) => Promise<string>;
+
 import type { Message } from "discord.js";
-import cleverbot from "cleverbot-free";
 
 import type { EventHandler } from "../@types/EventHandler.js";
-import * as logger from "../logger.js";
-import { indent } from "../helpers/indent.js";
-import { typingSpeed } from "../parameters.js";
 import { logEventError } from "./index.js";
+import { indent } from "../helpers/indent.js";
+import { formatPrompt } from "../helpers/formatPrompt.js";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer.js";
+import { replyWithError } from "../helpers/replyWithError.js";
 import { addToContext, generateContext, getContextAsFormattedPrompts, hasContext, removeLastMessageFromContext } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer.js";
-import { replyWithError } from "../helpers/replyWithError.js";
-import { formatPrompt } from "../helpers/formatPrompt.js";
-
-// Something is wrong with cleverbot-free's types, so I need to substitute them myself to make TypeScript happy.
-// TODO figure this out later
-const bot = cleverbot as unknown as (stimlus: string, context?: string[]) => Promise<string>;
+import { debug, error, info, warn } from "../logger.js";
+import { typingSpeed } from "../parameters.js";
 
 export const messageCreate: EventHandler<"messageCreate"> = {
 	name: "messageCreate",
@@ -24,8 +24,8 @@ export const messageCreate: EventHandler<"messageCreate"> = {
 		try {
 			await onMessage(message);
 		}
-		catch (error) {
-			logEventError(messageCreate.name, error);
+		catch (err) {
+			logEventError(messageCreate.name, err);
 		}
 	},
 };
@@ -58,17 +58,17 @@ async function onMessage (message: Message) {
 		return;
 	}
 
-	logger.info("Received new message");
-	logger.debug(indent(debugMessage(message), 1));
+	info("Received new message");
+	debug(indent(debugMessage(message), 1));
 
 	// Format the prompt
-	logger.info("Formatting prompt");
+	info("Formatting prompt");
 	const prompt = formatPrompt(message);
-	logger.debug(indent(`Prompt: ${prompt}`, 1));
+	debug(indent(`Prompt: ${prompt}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel) && !hasContext(message.channel)) {
-		logger.info("Generating new channel context");
+		info("Generating new channel context");
 		await generateContext(message.channel, client);
 		removeLastMessageFromContext(message.channel);
 	}
@@ -77,25 +77,25 @@ async function onMessage (message: Message) {
 	startThinking(message.channel);
 
 	// Actually generate response
-	logger.info("Generating response");
-	bot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
+	info("Generating response");
+	cleverbot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
 		// Sometimes cleverbot goofs and returns an empty response
 		if (response === "") {
-			const error = new Error();
-			error.name = "Invalid Cleverbot Response";
-			error.message = "Response is an empty string";
-			throw error;
+			const err = new Error();
+			err.name = "Invalid Cleverbot Response";
+			err.message = "Response is an empty string";
+			throw err;
 		}
 
-		logger.info("Generated response successfully");
-		logger.debug(`\tResponse: ${response}`);
+		info("Generated response successfully");
+		debug(`\tResponse: ${response}`);
 
 		// Determine how long to show the typing indicator before sending the message (seconds)
 		const timeTypeSec = response.length / typingSpeed;
 		void message.channel.sendTyping();
 		// Will automatically stop typing when message sends
 
-		logger.info("Sending message");
+		info("Sending message");
 
 		function respond () {
 			let messagePromise: Promise<Message>;
@@ -110,19 +110,19 @@ async function onMessage (message: Message) {
 			}
 
 			messagePromise.then(responseMessage => {
-				logger.info("Sent message successfully");
+				info("Sent message successfully");
 
 				// Update conversation context (but only for whitelisted channels)
 				if (isWhitelisted(message.channel)) {
-					logger.info("Updating channel context");
+					info("Updating channel context");
 					addToContext(message.channel, message);
 					addToContext(message.channel, responseMessage);
 				}
 
-				logger.info();
-			}).catch(error => {
-				logger.error(error);
-				logger.warn("Failed to send message");
+				info();
+			}).catch(err => {
+				error(err);
+				warn("Failed to send message");
 			});
 
 			// Allow bot to think about new messages now
@@ -131,28 +131,28 @@ async function onMessage (message: Message) {
 
 		// Send the message once the typing time is over
 		setTimeout(respond, timeTypeSec * 1000);
-	}).catch(error => {
+	}).catch(err => {
 		// Stop thinking so bot can respond in future
 		stopThinking(message.channel);
 
 		// Log the error
-		logger.error(error);
-		logger.warn("Failed to generate response");
+		error(err);
+		warn("Failed to generate response");
 
 		// If error is timeout, then try again
-		const errorMessage: string|unknown = error instanceof Error ? error.message : error;
+		const errorMessage: string|unknown = err instanceof Error ? err.message : err;
 
 		if (errorMessage === "Response timeout of 10000ms exceeded" ||
 		errorMessage === "Failed to get a response after 15 tries" ||
 		errorMessage === "Response is an empty string") {
-			logger.info("Trying again");
-			logger.info();
+			info("Trying again");
+			info();
 			void messageCreate.execute(message);
 		}
 		// If unknown error, then respond to message with error message
 		else {
-			logger.info("Replying with error message");
-			logger.info();
+			info("Replying with error message");
+			info();
 			replyWithError(message, error);
 		}
 	});

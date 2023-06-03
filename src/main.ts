@@ -2,13 +2,14 @@
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+
 import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events/index.js";
-import * as logger from "./logger.js";
+import { getCurrentDirectory } from "./helpers/getCurrentDirectory.js";
 import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
 import { loadFrom as loadWhitelistFrom } from "./memory/whitelist.js";
-import { getCurrentDirectory } from "./helpers/getCurrentDirectory.js";
+import { error, info, warn } from "./logger.js";
 
 /**
  * How long to wait before retrying a failed Discord API connection attempt (in seconds).
@@ -21,15 +22,15 @@ const connectionRetryWait = 10;
 const accountName = process.argv[2];
 
 if (accountName === undefined) {
-	logger.warn("usage: npm start [ACCOUNT NAME]");
+	warn("usage: npm start [ACCOUNT NAME]");
 	process.exit(1);
 }
 
 const filePath = join(getCurrentDirectory(import.meta.url), "..", "accounts", accountName);
 
 if (!existsSync(filePath)) {
-	logger.error(`Invalid account name: ${accountName}`);
-	logger.error("Account directory does not exist");
+	error(`Invalid account name: ${accountName}`);
+	error("Account directory does not exist");
 	process.exit(1);
 }
 
@@ -37,8 +38,8 @@ const configFilePath = join(filePath, "config.json");
 const whitelistFilePath = join(filePath, "whitelist.json");
 
 if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
-	logger.error(`Invalid account name: ${accountName}`);
-	logger.error("Account directory does not contain necessary memory files");
+	error(`Invalid account name: ${accountName}`);
+	error("Account directory does not contain necessary memory files");
 	process.exit(1);
 }
 
@@ -77,16 +78,16 @@ void connect(token);
  * Connects the client with the discord API
  */
 async function connect (authToken: string): Promise<void> {
-	logger.info("Logging in...");
+	info("Logging in...");
 	try {
 		await client.login(authToken);
 	}
-	catch (error) {
-		logger.error(error);
+	catch (err) {
+		error(err);
 
 		// Use connect() function again
 		setTimeout(() => void connect(authToken), connectionRetryWait * 1000);
-		logger.warn(`Retrying connection in ${connectionRetryWait} seconds...`);
+		warn(`Retrying connection in ${connectionRetryWait} seconds...`);
 	}
-	logger.info();
+	info();
 }

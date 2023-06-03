@@ -1,7 +1,8 @@
 import type { EventHandler } from "../@types/EventHandler.js";
 
-import * as logger from "../logger.js";
 import { logEventError } from "./index.js";
+import { error as errorLog, warn } from "../logger.js";
+
 
 export const error: EventHandler<"error"> = {
 	name: "error",
@@ -20,8 +21,8 @@ export const error: EventHandler<"error"> = {
  * Called whenever the discord.js client encounters an error.
  */
 const onError = function (err: Error) {
-	logger.info();
-	logger.warn("Discord Client encountered error");
-	logger.error(err);
-	logger.info();
+	warn();
+	warn("Discord Client encountered error");
+	errorLog(err);
+	warn();
 };

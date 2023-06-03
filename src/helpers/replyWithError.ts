@@ -1,7 +1,7 @@
-import type { ChatInputCommandInteraction, Message } from "discord.js";
 import { EmbedBuilder } from "discord.js";
+import type { ChatInputCommandInteraction, Message } from "discord.js";
 
-import * as logger from "../logger.js";
+import { error, info, warn } from "../logger.js";
 import { embedColors } from "../parameters.js";
 
 /**
@@ -20,13 +20,13 @@ export function replyWithError (message: Message|ChatInputCommandInteraction, in
 		);
 
 	// Send the error message as a reply
-	logger.info("Sending error message");
+	info("Sending error message");
 	message.reply({ embeds: [embed] }).then(() => {
-		logger.info("Error message sent successfully");
-		logger.info();
-	}).catch(error => {
-		logger.error(error);
-		logger.warn("Failed to send error message");
-		logger.info();
+		info("Error message sent successfully");
+		info();
+	}).catch(err => {
+		error(err);
+		warn("Failed to send error message");
+		info();
 	});
 }

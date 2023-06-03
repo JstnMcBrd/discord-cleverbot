@@ -1,7 +1,7 @@
-import type { ActivityOptions, Client } from "discord.js";
 import { ActivityType } from "discord.js";
+import type { ActivityOptions, Client } from "discord.js";
 
-import * as logger from "../logger.js";
+import { error, info, warn } from "../logger.js";
 
 /**
  * How often to update the activity (in seconds).
@@ -32,19 +32,19 @@ const activityOptions: ActivityOptions = {
  * Keeps the user activity of the bot regularly updated.
  */
 export function start (client: Client): void {
-	logger.info("Setting user activity...");
+	info("Setting user activity...");
 	try {
 		setActivity(client);
 	}
-	catch (error) {
-		logger.error(error);
-		logger.warn("Failed to set user activity");
+	catch (err) {
+		error(err);
+		warn("Failed to set user activity");
 	}
 
 	// Set user activity at regular intervals
 	setTimeout(start, activityUpdateFrequency * 1000, client);
-	logger.info(`Setting again in ${activityUpdateFrequency} seconds`);
-	logger.info();
+	info(`Setting again in ${activityUpdateFrequency} seconds`);
+	info();
 }
 
 /**
