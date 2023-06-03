@@ -13,7 +13,7 @@ import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
 import { getCommandHandlers } from "./commands/index.js";
 
 // Verify input
-function usage(): void {
+function usage (): void {
 	error("Usage: node deploy-commands.js [account name]");
 }
 if (process.argv[2] === undefined) {
@@ -27,7 +27,7 @@ loadConfigFrom(accountName);
 const token = getToken();
 
 // Get the JSON data of the commands
-const commandJSONs: Array<ApplicationCommandDataResolvable> = [];
+const commandJSONs: ApplicationCommandDataResolvable[] = [];
 getCommandHandlers().forEach(command => {
 	commandJSONs.push(command.toJSON());
 	info(`Retrieved /${command.name}`);

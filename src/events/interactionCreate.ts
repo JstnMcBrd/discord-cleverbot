@@ -5,11 +5,12 @@ import * as logger from "../logger.js";
 import { replyWithError } from "../helpers/replyWithError.js";
 import { getCommandHandler } from "../commands/index.js";
 import { logEventError } from "./index.js";
+import { indent } from "../helpers/indent.js";
 
 export const interactionCreate: EventHandler<"interactionCreate"> = {
 	name: "interactionCreate",
 	once: false,
-	async execute(interaction: Interaction) {
+	async execute (interaction: Interaction) {
 		try {
 			await onInteraction(interaction);
 		}
@@ -22,7 +23,7 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
 /**
  * Called whenever the discord.js client receives an interaction (usually means a slash command).
  */
-async function onInteraction(interaction: Interaction): Promise<void> {
+async function onInteraction (interaction: Interaction): Promise<void> {
 	// Ignore any interactions that are not commands
 	if (!interaction.isChatInputCommand()) {
 		return;
@@ -56,13 +57,13 @@ async function onInteraction(interaction: Interaction): Promise<void> {
 /**
  * Formats important information about an interaction to a string.
  */
-function debugInteraction(interaction: Interaction): string {
+function debugInteraction (interaction: Interaction): string {
 	let str = "INTERACTION";
 	if (interaction.isChatInputCommand()) {
 		str += `\nCommand: ${interaction.commandName}`;
 	}
 	str += `\nUser:    ${interaction.user.tag} (${interaction.user.id})`;
-	if (interaction.channel !== null && !interaction.channel.isDMBased() && !interaction.channel.partial) {
+	if (interaction.channel !== null && !interaction.channel.isDMBased()) {
 		str += `\nChannel: ${interaction.channel.name} (${interaction.channel.id})`;
 	}
 	// Compensate for DMs
@@ -70,16 +71,4 @@ function debugInteraction(interaction: Interaction): string {
 		str += `\nGuild:   ${interaction.guild.name} (${interaction.guild.id})`;
 	}
 	return str;
-}
-
-/**
- * Indents strings that have more than one line.
- */
-function indent(str: string, numTabs: number): string {
-	let tabs = "";
-	while (numTabs > 0) {
-		tabs += "\t";
-		numTabs--;
-	}
-	return (tabs + str).replaceAll("\n", `\n${tabs}`);
 }

@@ -7,8 +7,8 @@ import { embedColors } from "../parameters.js";
 /**
  * Replies to a Discord message with an error message.
  */
-export function replyWithError(message: Message|ChatInputCommandInteraction, internalError: Error|unknown) {
-	const stringifiedError = (internalError as object).toString();
+export function replyWithError (message: Message|ChatInputCommandInteraction, internalError: Error|unknown) {
+	const stringifiedError = String(internalError);
 
 	// Format the message as an embed
 	const embed = new EmbedBuilder()

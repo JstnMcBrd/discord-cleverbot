@@ -20,7 +20,7 @@ const bot = cleverbot as unknown as (stimlus: string, context?: string[]) => Pro
 export const messageCreate: EventHandler<"messageCreate"> = {
 	name: "messageCreate",
 	once: false,
-	async execute(message: Message) {
+	async execute (message: Message) {
 		try {
 			await onMessage(message);
 		}
@@ -33,20 +33,30 @@ export const messageCreate: EventHandler<"messageCreate"> = {
 /**
  * Called whenever the discord.js client observes a new message.
  */
-async function onMessage(message: Message) {
+async function onMessage (message: Message) {
 	const client = message.client;
 
 	// Ignore messages if they are...
 	// ... from the user
-	if (isFromUser(message, client.user)) return;
+	if (isFromUser(message, client.user)) {
+		return;
+	}
 	// ... empty (images, embeds, interactions)
-	if (isEmpty(message)) return;
+	if (isEmpty(message)) {
+		return;
+	}
 	// ... marked as ignore
-	if (isMarkedAsIgnore(message)) return;
+	if (isMarkedAsIgnore(message)) {
+		return;
+	}
 	// ... in a channel already responding to
-	if (isThinking(message.channel)) return;
+	if (isThinking(message.channel)) {
+		return;
+	}
 	// ... not whitelisted or forced reply
-	if (!isWhitelisted(message.channel) && !isAMention(message, client.user)) return;
+	if (!isWhitelisted(message.channel) && !isAMention(message, client.user)) {
+		return;
+	}
 
 	logger.info("Received new message");
 	logger.debug(indent(debugMessage(message), 1));
@@ -87,7 +97,7 @@ async function onMessage(message: Message) {
 
 		logger.info("Sending message");
 
-		function respond() {
+		function respond () {
 			let messagePromise: Promise<Message>;
 
 			// Respond normally if no extra messages have been sent in the meantime
@@ -151,7 +161,7 @@ async function onMessage(message: Message) {
 /**
  * Formats important information about a message to a string.
  */
-function debugMessage(message: Message): string {
+function debugMessage (message: Message): string {
 	let str = "MESSAGE";
 	str += `\nContent: ${message.cleanContent}`;
 	str += `\nAuthor:  ${message.author.tag} (${message.author.id})`;

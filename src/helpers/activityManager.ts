@@ -31,7 +31,7 @@ const activityOptions: ActivityOptions = {
 /**
  * Keeps the user activity of the bot regularly updated.
  */
-export function start(client: Client): void {
+export function start (client: Client): void {
 	logger.info("Setting user activity...");
 	try {
 		setActivity(client);
@@ -50,7 +50,7 @@ export function start(client: Client): void {
 /**
  * Sets the activity of the bot.
  */
-function setActivity(client: Client): void {
+function setActivity (client: Client): void {
 	if (!client.user) {
 		throw new TypeError("Client must be logged in");
 	}

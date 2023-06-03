@@ -5,7 +5,7 @@ import { isAMention } from "./messageAnalyzer.js";
 /**
  * // TODO
  */
-export function formatPrompt(message: Message): string {
+export function formatPrompt (message: Message): string {
 	const user = message.client.user;
 	let content = message.cleanContent;
 
@@ -21,7 +21,7 @@ export function formatPrompt(message: Message): string {
 /**
  * Replaces @ mentions of the user with 'Cleverbot' to avoid confusing the Cleverbot AI
  */
-function replaceMentions(username: string, content: string): string {
+function replaceMentions (username: string, content: string): string {
 	return content.replaceAll(`@${username}`, "Cleverbot");
 }
 
@@ -30,7 +30,7 @@ function replaceMentions(username: string, content: string): string {
  *
  * Example: `<:test_emoji:999999999999999999>` => `*test emoji*`
  */
-function replaceCustomEmojis(content: string): string {
+function replaceCustomEmojis (content: string): string {
 	content = content.replaceAll(/<:[\w\W][^:\s]+:\d+>/g, match => {
 		match = match.replace("<:", "");
 		match = match.replace(/:\d+>/g, "");

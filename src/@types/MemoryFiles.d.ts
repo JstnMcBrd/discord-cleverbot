@@ -8,14 +8,14 @@ import type { Snowflake } from "discord.js";
  * The format of the config JSON file.
  * See an example in [accounts/ExampleUsername/config.json](../../accounts/ExampleUsername/config.json).
  */
-export type Config = {
+export interface Config {
 	clientId: Snowflake;
 	token: string;
 	url: string;
-};
+}
 
 /**
  * The format of the whitelist JSON file.
  * See an example in [accounts/ExampleUsername/whitelist.json](../../accounts/ExampleUsername/whitelist.json).
  */
-declare type Whitelist = Array<Snowflake>;
+declare type Whitelist = Snowflake[];

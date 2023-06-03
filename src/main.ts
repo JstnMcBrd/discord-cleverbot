@@ -76,7 +76,7 @@ void connect(token);
 /**
  * Connects the client with the discord API
  */
-async function connect(authToken: string): Promise<void> {
+async function connect (authToken: string): Promise<void> {
 	logger.info("Logging in...");
 	try {
 		await client.login(authToken);

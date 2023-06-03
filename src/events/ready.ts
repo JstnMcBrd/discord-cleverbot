@@ -17,7 +17,7 @@ const refreshStateFrequency = 1 * 60 * 60;
 export const ready: EventHandler<"ready"> = {
 	name: "ready",
 	once: true,
-	async execute(client: Client) {
+	async execute (client: Client) {
 		try {
 			await onceReady(client);
 		}
@@ -30,7 +30,7 @@ export const ready: EventHandler<"ready"> = {
 /**
  * Called once the client successfully logs in.
  */
-async function onceReady(client: Client): Promise<void> {
+async function onceReady (client: Client): Promise<void> {
 	info("Client ready");
 	info();
 
@@ -48,7 +48,7 @@ async function onceReady(client: Client): Promise<void> {
  *
  * This method will automatically repeat itself on a regular basis.
  */
-async function refreshState(client: Client): Promise<void> {
+async function refreshState (client: Client): Promise<void> {
 	info("Refreshing state...");
 
 	await refreshWhitelist(client);
@@ -63,7 +63,7 @@ async function refreshState(client: Client): Promise<void> {
 /**
  * Populates (or re-populates) the whitelist from a list of channel IDs from memory.
  */
-async function refreshWhitelist(client: Client): Promise<void> {
+async function refreshWhitelist (client: Client): Promise<void> {
 	info("\tRefreshing whitelist channels...");
 	await populateWhitelist(client);
 }
@@ -71,7 +71,7 @@ async function refreshWhitelist(client: Client): Promise<void> {
 /**
  * Generates (or re-generates) context for every whitelisted channel.
  */
-async function refreshContext(client: Client): Promise<void> {
+async function refreshContext (client: Client): Promise<void> {
 	info("\tRefreshing context...");
 
 	for (const channel of getWhitelist()) {
@@ -82,18 +82,22 @@ async function refreshContext(client: Client): Promise<void> {
 /**
  * Searchs for unread messages in whitelisted channels and responds to them.
  */
-function resumeConversations(client: Client): void {
+function resumeConversations (client: Client): void {
 	info("\tSearching for missed messages...");
 
 	const toRespondTo: Message[] = [];
 	getWhitelist().forEach(channel => {
 		// Get the context
 		const context = getContext(channel);
-		if (!context) return;
+		if (!context) {
+			return;
+		}
 
 		// Get the last message
 		const lastMessage = context.at(context.length - 1);
-		if (!lastMessage) return;
+		if (!lastMessage) {
+			return;
+		}
 
 		// If the last message isn't from the bot, then respond to it
 		if (!isFromUser(lastMessage, client.user)) {

@@ -7,14 +7,14 @@ import { getCurrentDirectory } from "./getCurrentDirectory.js";
 /**
  * // TODO
  */
-function getPackageFilePath(): string {
+function getPackageFilePath (): string {
 	return join(getCurrentDirectory(import.meta.url), "..", "..", "package.json");
 }
 
 /**
  * Retrieves the version number from the npm [package.json](../../package.json) file.
  */
-export function getVersion(): string {
+export function getVersion (): string {
 	const filePath = getPackageFilePath();
 	const file = readFileSync(filePath);
 	const fileContents = file.toString();

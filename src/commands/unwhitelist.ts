@@ -24,7 +24,7 @@ export const unwhitelist = new CommandHandler()
 		await interaction.reply({ embeds: [embed] });
 	});
 
-function createSuccessEmbed(channelID: string): EmbedBuilder {
+function createSuccessEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.unwhitelist)
@@ -35,7 +35,7 @@ function createSuccessEmbed(channelID: string): EmbedBuilder {
 		);
 }
 
-function createRedundantEmbed(channelID: string): EmbedBuilder {
+function createRedundantEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.info)

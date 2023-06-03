@@ -30,7 +30,7 @@ let config: Config;
  * @param account a valid account name
  * @throws if the account name is not valid, or if the memory file is improperly formatted
  */
-export function loadFrom(account: string): void {
+export function loadFrom (account: string): void {
 	filePath = join(getCurrentDirectory(import.meta.url), "..", "..", "accounts", account, "config.json");
 
 	// Load the memory file
@@ -50,7 +50,7 @@ export function loadFrom(account: string): void {
 /**
  * @returns whether the given object has all properties of the Config type
  */
-function hasAllConfigProperties(json: unknown): boolean {
+function hasAllConfigProperties (json: unknown): boolean {
 	return Object.prototype.hasOwnProperty.call(json, "clientId") &&
 	Object.prototype.hasOwnProperty.call(json, "token") &&
 	Object.prototype.hasOwnProperty.call(json, "url");
@@ -59,14 +59,14 @@ function hasAllConfigProperties(json: unknown): boolean {
 /**
  * @returns the full config
  */
-export function getConfig(): Config {
+export function getConfig (): Config {
 	return config;
 }
 
 /**
  * @returns the user ID of the bot account
  */
-export function getClientID(): Snowflake {
+export function getClientID (): Snowflake {
 	return config.clientId;
 }
 
@@ -75,13 +75,13 @@ export function getClientID(): Snowflake {
  *
  * @returns the discord token necessary to log-in the client
  */
-export function getToken(): string {
+export function getToken (): string {
 	return config.token;
 }
 
 /**
  * @returns the URL for adding the bot to a server
  */
-export function getURL(): string {
+export function getURL (): string {
 	return config.url;
 }

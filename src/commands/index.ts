@@ -10,7 +10,7 @@ addCommandHandler(help);
 addCommandHandler(unwhitelist);
 addCommandHandler(whitelist);
 
-function addCommandHandler(command: CommandHandler): void {
+function addCommandHandler (command: CommandHandler): void {
 	const name = command.name;
 
 	if (commands.has(name)) {
@@ -20,10 +20,10 @@ function addCommandHandler(command: CommandHandler): void {
 	commands.set(name, command);
 }
 
-export function getCommandHandlers(): ReadonlyMap<string, CommandHandler> {
+export function getCommandHandlers (): ReadonlyMap<string, CommandHandler> {
 	return commands;
 }
 
-export function getCommandHandler(name: string): CommandHandler | undefined {
+export function getCommandHandler (name: string): CommandHandler | undefined {
 	return commands.get(name);
 }

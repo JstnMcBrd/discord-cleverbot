@@ -26,28 +26,28 @@ const maxContextLength = 50;
 /**
  * @returns the past messages of the channel
  */
-export function getContext(channel: Channel): Message[]|undefined {
+export function getContext (channel: Channel): Message[]|undefined {
 	return context.get(channel.id);
 }
 
 /**
  * @returns the past messages of the channel as formatted prompts
  */
-export function getContextAsFormattedPrompts(channel: Channel): string[]|undefined {
+export function getContextAsFormattedPrompts (channel: Channel): string[]|undefined {
 	return getContext(channel)?.map(formatPrompt);
 }
 
 /**
  * Checks whether the past messages of the channel have been recorded yet.
  */
-export function hasContext(channel: Channel): boolean {
+export function hasContext (channel: Channel): boolean {
 	return context.has(channel.id);
 }
 
 /**
  * Fetches and stores the past messages of the channel.
  */
-export async function generateContext(channel: TextBasedChannel, client: Client): Promise<void> {
+export async function generateContext (channel: TextBasedChannel, client: Client): Promise<void> {
 	const newContext: Message[] = [];
 
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
@@ -55,7 +55,9 @@ export async function generateContext(channel: TextBasedChannel, client: Client)
 	let done = false;
 	messages.forEach(message => {
 		// Do not generate context from before the channel was whitelisted
-		if (done) return;
+		if (done) {
+			return;
+		}
 		if (isEmpty(message) && isFromUser(message, client.user)) {
 			if (message.interaction !== null && message.interaction.commandName === whitelistCommand.name) {
 				done = true;
@@ -64,8 +66,12 @@ export async function generateContext(channel: TextBasedChannel, client: Client)
 		}
 
 		// Skip empty messages and ignored messages
-		if (isEmpty(message)) return;
-		if (isMarkedAsIgnore(message)) return;
+		if (isEmpty(message)) {
+			return;
+		}
+		if (isMarkedAsIgnore(message)) {
+			return;
+		}
 
 		// If there are two messages from other users in a row, skip the most recent one (like the bot normally would)
 		if (newContext[0] !== undefined && !isFromUser(message, client.user) && !isFromUser(newContext[0], client.user)) {
@@ -83,8 +89,10 @@ export async function generateContext(channel: TextBasedChannel, client: Client)
 	context.set(channel.id, newContext);
 }
 
-export function deleteContext(channel: Channel): void {
-	if (!hasContext(channel)) return;
+export function deleteContext (channel: Channel): void {
+	if (!hasContext(channel)) {
+		return;
+	}
 
 	context.delete(channel.id);
 }
@@ -92,11 +100,15 @@ export function deleteContext(channel: Channel): void {
 /**
  * Adds a message to the recorded past messages of a channel.
  */
-export function addToContext(channel: Channel, message: Message): void {
-	if (!hasContext(channel)) return;
+export function addToContext (channel: Channel, message: Message): void {
+	if (!hasContext(channel)) {
+		return;
+	}
 
 	const updatedContext = getContext(channel);
-	if (!updatedContext) return;
+	if (!updatedContext) {
+		return;
+	}
 
 	updatedContext.push(message);
 	// Make sure context doesn't go over the max length
@@ -110,11 +122,15 @@ export function addToContext(channel: Channel, message: Message): void {
 /**
  * Removes the most recent message from the recorded past messages of a channel.
  */
-export function removeLastMessageFromContext(channel: Channel): void {
-	if (!hasContext(channel)) return;
+export function removeLastMessageFromContext (channel: Channel): void {
+	if (!hasContext(channel)) {
+		return;
+	}
 
 	const updatedContext = getContext(channel);
-	if (!updatedContext) return;
+	if (!updatedContext) {
+		return;
+	}
 
 	updatedContext.pop();
 

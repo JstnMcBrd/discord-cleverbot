@@ -11,8 +11,8 @@ import type { Message, User } from "discord.js";
  * @param message the message to parse
  * @returns true if the message begins with '> ', false if otherwise
  */
-export function isMarkedAsIgnore(message: Message): boolean {
-	return message.cleanContent.substring(0, 2) === "> ";
+export function isMarkedAsIgnore (message: Message): boolean {
+	return message.cleanContent.startsWith("> ");
 }
 
 /**
@@ -21,7 +21,7 @@ export function isMarkedAsIgnore(message: Message): boolean {
  * @param user the user to check if the message came from
  * @returns true if the message came from the user, false if otherwise
  */
-export function isFromUser(message: Message, user: User|null): boolean {
+export function isFromUser (message: Message, user: User|null): boolean {
 	return user !== null && message.author.id === user.id;
 }
 
@@ -30,7 +30,7 @@ export function isFromUser(message: Message, user: User|null): boolean {
  * @param message the message to check
  * @returns true if the message has no text content, false if otherwise
  */
-export function isEmpty(message: Message): boolean {
+export function isEmpty (message: Message): boolean {
 	return message.cleanContent === "";
 }
 
@@ -40,6 +40,6 @@ export function isEmpty(message: Message): boolean {
  * @param user the user to see if the message mentions
  * @returns true if the message mentions the user, else if otherwise
  */
-export function isAMention(message: Message, user: User|null): boolean {
+export function isAMention (message: Message, user: User|null): boolean {
 	return user !== null && message.mentions.has(user);
 }

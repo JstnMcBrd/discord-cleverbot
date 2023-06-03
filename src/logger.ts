@@ -6,7 +6,7 @@ import colors from "@colors/colors/safe.js";
  */
 const logger: Console = console;
 
-export function error(message?: unknown): void {
+export function error (message?: unknown): void {
 	message = message ? message : "";
 
 	if (typeof message === "string") {
@@ -16,7 +16,7 @@ export function error(message?: unknown): void {
 	logger.error(message);
 }
 
-export function warn(message?: unknown): void {
+export function warn (message?: unknown): void {
 	message = message ? message : "";
 
 	if (typeof message === "string") {
@@ -26,7 +26,7 @@ export function warn(message?: unknown): void {
 	logger.warn(message);
 }
 
-export function info(message?: unknown): void {
+export function info (message?: unknown): void {
 	message = message ? message : "";
 
 	if (typeof message === "string") {
@@ -36,7 +36,7 @@ export function info(message?: unknown): void {
 	logger.info(message);
 }
 
-export function debug(message?: unknown): void {
+export function debug (message?: unknown): void {
 	message = message ? message : "";
 
 	if (typeof message === "string") {

@@ -12,7 +12,7 @@ export const help = new CommandHandler()
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 	});
 
-function createHelpEmbed(user: User): EmbedBuilder {
+function createHelpEmbed (user: User): EmbedBuilder {
 	const mention = userMention(user.id);
 	const avatarURL = user.avatarURL();
 	return new EmbedBuilder()

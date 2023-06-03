@@ -6,7 +6,7 @@ import { logEventError } from "./index.js";
 export const error: EventHandler<"error"> = {
 	name: "error",
 	once: false,
-	execute(err: Error) {
+	execute (err: Error) {
 		try {
 			onError(err);
 		}
@@ -19,7 +19,7 @@ export const error: EventHandler<"error"> = {
 /**
  * Called whenever the discord.js client encounters an error.
  */
-const onError = function(err: Error) {
+const onError = function (err: Error) {
 	logger.info();
 	logger.warn("Discord Client encountered error");
 	logger.error(err);
