@@ -3,6 +3,7 @@ import { EmbedBuilder, channelMention } from "discord.js";
 import { CommandHandler } from "../@types/CommandHandler.js";
 import { embedColors } from "../parameters.js";
 import { addChannel as whitelistChannel } from "../memory/whitelist.js";
+import { generateContext } from "../memory/context.js";
 
 export const whitelist = new CommandHandler()
 	.setName("whitelist")
@@ -12,8 +13,9 @@ export const whitelist = new CommandHandler()
 			throw new TypeError("Channel cannot be null");
 		}
 
-		let embed = {};
+		let embed: EmbedBuilder;
 		if (whitelistChannel(interaction.channel)) {
+			await generateContext(interaction.channel, interaction.client);
 			embed = createSuccessEmbed(interaction.channel.id);
 		}
 		else {

@@ -59,11 +59,8 @@ async function onMessage(message: Message) {
 	// Generate or update conversation context (but only for whitelisted channels)
 	if (isWhitelisted(message.channel) && !hasContext(message.channel)) {
 		logger.info("Generating new channel context");
-		await generateContext(client, message.channel);
+		await generateContext(message.channel, client);
 		removeLastMessageFromContext(message.channel);
-	}
-	else {
-		logger.info("Skipping channel context generation");
 	}
 
 	// Prevent bot from responding to anything else while it thinks

@@ -46,12 +46,12 @@ export function hasContext(channel: Channel): boolean {
 /**
  * Fetches and stores the past messages of the channel.
  */
-export async function generateContext(client: Client, channel: TextBasedChannel) {
+export async function generateContext(channel: TextBasedChannel, client: Client): Promise<void> {
 	const newContext: Message[] = [];
 
 	// Fetch past messages
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
-	messages.each(message => {
+	messages.forEach(message => {
 		// Skip empty messages and ignored messages
 		if (isEmpty(message)) return;
 		if (isMarkedAsIgnore(message)) return;
@@ -70,7 +70,12 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 	});
 
 	context.set(channel.id, newContext);
-	return newContext;
+}
+
+export function deleteContext(channel: Channel): void {
+	if (!hasContext(channel)) return;
+
+	context.delete(channel.id);
 }
 
 /**
@@ -79,7 +84,6 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 export function addToContext(channel: Channel, message: Message): void {
 	if (!hasContext(channel)) return;
 
-	// To make typescript happy
 	const updatedContext = getContext(channel);
 	if (!updatedContext) return;
 

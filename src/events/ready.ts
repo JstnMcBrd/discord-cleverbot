@@ -46,7 +46,7 @@ async function onceReady(client: Client): Promise<void> {
  */
 async function initializeContext(client: Client) {
 	for (const channel of getWhitelist()) {
-		await generateContext(client, channel);
+		await generateContext(channel, client);
 	}
 }
 
