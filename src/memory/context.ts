@@ -9,6 +9,7 @@ import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel 
 
 import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
+import { whitelist as whitelistCommand } from "../commands/whitelist.js";
 
 /**
  * Keeps track of the past conversation for each channel.
@@ -49,9 +50,19 @@ export function hasContext(channel: Channel): boolean {
 export async function generateContext(channel: TextBasedChannel, client: Client): Promise<void> {
 	const newContext: Message[] = [];
 
-	// Fetch past messages
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
+
+	let done = false;
 	messages.forEach(message => {
+		// Do not generate context from before the channel was whitelisted
+		if (done) return;
+		if (isEmpty(message) && isFromUser(message, client.user)) {
+			if (message.interaction !== null && message.interaction.commandName === whitelistCommand.name) {
+				done = true;
+				return;
+			}
+		}
+
 		// Skip empty messages and ignored messages
 		if (isEmpty(message)) return;
 		if (isMarkedAsIgnore(message)) return;
