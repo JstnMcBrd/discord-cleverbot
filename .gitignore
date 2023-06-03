@@ -1,6 +1,5 @@
 node_modules
 dist
-.vscode
 .misc
 todo
 accounts/*
