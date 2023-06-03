@@ -1,7 +1,7 @@
 import type { Client, Message } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
-import * as logger from "../logger.js";
+import { info } from "../logger.js";
 import { logEventError } from "./index.js";
 import { messageCreate } from "./messageCreate.js";
 import { populate as populateWhitelist, getWhitelist } from "../memory/whitelist.js";
@@ -10,9 +10,9 @@ import { start as manageActivity } from "../helpers/activityManager.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "../memory/context.js";
 
 /**
- * How often to look for missed messages (in seconds).
+ * How often to refresh the state (in seconds).
  */
-const missedMessageSearchFrequency = 30 * 60;
+const refreshStateFrequency = 1 * 60 * 60;
 
 export const ready: EventHandler<"ready"> = {
 	name: "ready",
@@ -31,60 +31,84 @@ export const ready: EventHandler<"ready"> = {
  * Called once the client successfully logs in.
  */
 async function onceReady(client: Client): Promise<void> {
-	logger.info("Client ready");
-	logger.info();
+	info("Client ready");
+	info();
 
 	manageActivity(client);
 
-	await populateWhitelist(client);
-	await initializeContext(client);
-	resumeConversations(client);
+	await refreshState(client);
 }
 
 /**
- * // TODO
+ * Completely refreshes the state of the bot. Is intended to have a similar effect to restarting.
+ * Generates (or re-generates) all local memory and caches.
+ *
+ * This helps the bot recover from anomalies, such as channel permissions changing,
+ * bugs in context updates, missing messages during Discord API outages, or crashes.
+ *
+ * This method will automatically repeat itself on a regular basis.
  */
-async function initializeContext(client: Client) {
+async function refreshState(client: Client): Promise<void> {
+	info("Refreshing state...");
+
+	await refreshWhitelist(client);
+	await refreshContext(client);
+	resumeConversations(client);
+
+	// Refresh the state at regular intervals
+	setTimeout(() => void refreshState(client), refreshStateFrequency * 1000);
+	info(`Refreshing again in ${refreshStateFrequency} seconds`);
+}
+
+/**
+ * Populates (or re-populates) the whitelist from a list of channel IDs from memory.
+ */
+async function refreshWhitelist(client: Client): Promise<void> {
+	info("\tRefreshing whitelist channels...");
+	await populateWhitelist(client);
+}
+
+/**
+ * Generates (or re-generates) context for every whitelisted channel.
+ */
+async function refreshContext(client: Client): Promise<void> {
+	info("\tRefreshing context...");
+
 	for (const channel of getWhitelist()) {
 		await generateContext(channel, client);
 	}
 }
 
 /**
- * Searchs for unread messages in whitelisted channels that were sent when the bot was offline, and responds to them.
+ * Searchs for unread messages in whitelisted channels and responds to them.
  */
 function resumeConversations(client: Client): void {
-	logger.info("Searching for missed messages...");
+	info("\tSearching for missed messages...");
 
 	const toRespondTo: Message[] = [];
-	for (const channel of getWhitelist()) {
+	getWhitelist().forEach(channel => {
 		// Get the context
 		const context = getContext(channel);
-		if (!context) continue;
+		if (!context) return;
 
 		// Get the last message
 		const lastMessage = context.at(context.length - 1);
-		if (!lastMessage) continue;
+		if (!lastMessage) return;
 
 		// If the last message isn't from the bot, then respond to it
 		if (!isFromUser(lastMessage, client.user)) {
 			toRespondTo.push(lastMessage);
 		}
-	}
+	});
 
 	// Respond to missed messages
 	if (toRespondTo.length !== 0) {
-		logger.info(`\tFound ${toRespondTo.length} missed messages`);
-		logger.info("\tForwarding messages to message handler");
-		logger.info();
+		info(`\t\tFound ${toRespondTo.length} missed messages`);
+		info("\t\tForwarding messages to message handler");
+		info();
 		toRespondTo.forEach(message => {
 			removeLastMessageFromContext(message.channel);
 			void messageCreate.execute(message);
 		});
 	}
-
-	// Check for missed messages at regular intervals
-	setTimeout(() => void resumeConversations(client), missedMessageSearchFrequency * 1000);
-	logger.info(`Searching again in ${missedMessageSearchFrequency} seconds`);
-	logger.info();
 }

@@ -10,7 +10,7 @@
  *
  * Before the whitelist can be used, the following methods must be called in this order:
  * 1. `loadFrom` - to load the channel IDs from the whitelist memory file
- * 2. `populate` - the fetch the channels from the Discord API
+ * 2. `populate` - to fetch the channels from the Discord API
 */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -36,7 +36,7 @@ let whitelist: TextBasedChannel[] = [];
  * A temporary list of channel IDs loaded from the whitelist memory file,
  * waiting to be fetched from the Discord API.
  */
-let channelIDsToPopulate: Snowflake[] = [];
+let whitelistAsChannelIDs: Snowflake[] = [];
 
 /**
  * Sets the account name and loads the whitelist from the memory file.
@@ -57,7 +57,7 @@ export function loadFrom(account: string): void {
 
 	// Validate the file formatting
 	if (Array.isArray(json) && allElementsAreStrings(json)) {
-		channelIDsToPopulate = json as Snowflake[];
+		whitelistAsChannelIDs = json as Snowflake[];
 	}
 	else {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
@@ -78,7 +78,7 @@ export async function populate(client: Client) {
 	// Fetch and validate channels
 	whitelist = [];
 	const invalidChannelIDs: Snowflake[] = [];
-	for (const channelID of channelIDsToPopulate) {
+	for (const channelID of whitelistAsChannelIDs) {
 		const channel = await fetchAndValidateChannel(channelID, client);
 		if (channel !== undefined) {
 			whitelist.push(channel);
@@ -139,6 +139,21 @@ async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Pr
 		return undefined;
 	}
 
+	try {
+		await channel.messages.fetch({ limit: 1 });
+	}
+	catch (error) {
+		if (error instanceof Error) {
+			if (error.message === "Missing Access") {
+				warn(`Found restricted channel in the whitelist with ID ${channelID}`);
+				return undefined;
+			}
+		}
+		else {
+			throw error;
+		}
+	}
+
 	return channel;
 }
 
@@ -168,8 +183,8 @@ export function getWhitelist(): readonly TextBasedChannel[] {
  * Writes the whitelist channel IDs to the memory file.
  */
 function save(): void {
-	const channelIDs = getWhitelist().map(channel => channel.id);
-	writeFileSync(filePath, JSON.stringify(channelIDs));
+	whitelistAsChannelIDs = getWhitelist().map(channel => channel.id);
+	writeFileSync(filePath, JSON.stringify(whitelistAsChannelIDs));
 }
 
 /**
