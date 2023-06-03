@@ -1,11 +1,11 @@
-# Discord-Cleverbot
+# discord-cleverbot
 
-## Cleverbot-free Status
+## cleverbot-free Status
 [![API Status](https://github.com/IntriguingTiles/cleverbot-free/workflows/API%20Status/badge.svg)](https://github.com/IntriguingTiles/cleverbot-free/actions/workflows/api.yml)
 
 ## About
 
-Discord-Cleverbot is a [Discord](https://discord.com/) bot developed in [TypeScript](https://www.typescriptlang.org/) that uses the [node.js](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free) to give Cleverbot a presence on Discord. Through the bot, users are able to converse with the [Cleverbot chat bot](https://www.cleverbot.com/). The bot also hosts other features that help integrate it with the Discord chat environment.
+discord-cleverbot is a [Discord](https://discord.com/) bot developed in [TypeScript](https://www.typescriptlang.org/) that uses the [node.js](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free) to give Cleverbot a presence on Discord. Through the bot, users are able to converse with the [Cleverbot chat bot](https://www.cleverbot.com/). The bot also hosts other features that help integrate it with the Discord chat environment.
 
 This project was started in December 2017 and developed periodically until January 2023. This included several ground-up rewrites to improve functionality, efficiency, and simplicity, resulting in a comparatively simple design today.
 
@@ -23,7 +23,7 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 
 ### Setting up the code
 
-3. Run `git pull https://github.com/JstnMcBrd/Discord-Cleverbot.git` to clone the repo
+3. Run `git pull https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo
 4. Go into the `/accounts` directory, duplicate the `ExampleUsername` folder, and rename it as the username of your bot
 5. Inside the new folder, edit `config.json` and replace `example-user-id` with the application ID and `example-token` with the access token
 
