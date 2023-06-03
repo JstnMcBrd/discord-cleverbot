@@ -7,7 +7,7 @@ import { messageCreate } from "./messageCreate.js";
 import { populate as populateWhitelist, getWhitelist } from "../memory/whitelist.js";
 import { isFromUser } from "../helpers/messageAnalyzer.js";
 import { start as manageActivity } from "../helpers/activityManager.js";
-import { generateContext, getContext } from "../memory/context.js";
+import { generateContext, getContext, removeLastMessageFromContext } from "../memory/context.js";
 
 /**
  * How often to look for missed messages (in seconds).
@@ -77,7 +77,10 @@ function resumeConversations(client: Client): void {
 		logger.info(`\tFound ${toRespondTo.length} missed messages`);
 		logger.info("\tForwarding messages to message handler");
 		logger.info();
-		toRespondTo.forEach(message => void messageCreate.execute(message));
+		toRespondTo.forEach(message => {
+			removeLastMessageFromContext(message.channel);
+			void messageCreate.execute(message);
+		});
 	}
 
 	// Check for missed messages at regular intervals

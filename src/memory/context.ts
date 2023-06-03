@@ -52,9 +52,9 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 	// Fetch past messages
 	const messages = await channel.messages.fetch({ limit: maxContextLength }) as Collection<string, Message>;
 	messages.each(message => {
-		// TODO abstract out this logic
 		// Skip empty messages and ignored messages
-		if (isEmpty(message) || isMarkedAsIgnore(message)) return;
+		if (isEmpty(message)) return;
+		if (isMarkedAsIgnore(message)) return;
 
 		// If there are two messages from other users in a row, skip the most recent one (like the bot normally would)
 		if (newContext[0] !== undefined && !isFromUser(message, client.user) && !isFromUser(newContext[0], client.user)) {
@@ -63,8 +63,8 @@ export async function generateContext(client: Client, channel: TextBasedChannel)
 
 		// DO NOT take message replies into account.
 		// While it could be useful to follow reply chains to map out a conversation,
-		// there is no guarantee that a reply message points to the other user and doesn't
-		// skip other valid messages.
+		// there is no guarantee that a reply message points to the other user
+		// and doesn't skip other valid messages.
 
 		newContext.unshift(message);
 	});
@@ -98,7 +98,6 @@ export function addToContext(channel: Channel, message: Message): void {
 export function removeLastMessageFromContext(channel: Channel): void {
 	if (!hasContext(channel)) return;
 
-	// To make typescript happy
 	const updatedContext = getContext(channel);
 	if (!updatedContext) return;
 

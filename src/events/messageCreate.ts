@@ -57,15 +57,10 @@ async function onMessage(message: Message) {
 	logger.debug(indent(`Prompt: ${prompt}`, 1));
 
 	// Generate or update conversation context (but only for whitelisted channels)
-	if (isWhitelisted(message.channel)) {
-		if (!hasContext(message.channel)) {
-			logger.info("Generating new channel context");
-			await generateContext(client, message.channel);
-		}
-		else {
-			logger.info("Updating channel context");
-			addToContext(message.channel, message);
-		}
+	if (isWhitelisted(message.channel) && !hasContext(message.channel)) {
+		logger.info("Generating new channel context");
+		await generateContext(client, message.channel);
+		removeLastMessageFromContext(message.channel);
 	}
 	else {
 		logger.info("Skipping channel context generation");
@@ -93,52 +88,43 @@ async function onMessage(message: Message) {
 		void message.channel.sendTyping();
 		// Will automatically stop typing when message sends
 
-		// Send the message once the typing time is over
 		logger.info("Sending message");
-		setTimeout(
-			function() {
-				// Respond normally if no extra messages have been sent in the meantime
-				if (message.channel.lastMessageId === message.id) {
-					message.channel.send(response).then(responseMessage => {
-						logger.info("Sent message successfully");
-						logger.info();
 
-						// Update conversation context (but only for whitelisted channels)
-						if (isWhitelisted(message.channel)) {
-							addToContext(message.channel, responseMessage);
-						}
-					}).catch(error => {
-						logger.error(error);
-						logger.warn("Failed to send message");
-					});
-				}
-				// Use reply to respond directly if extra messages are in the way
-				else {
-					message.reply(response).then(responseMessage => {
-						logger.info("Sent reply successfully");
-						logger.info();
+		function respond() {
+			let messagePromise: Promise<Message>;
 
-						// Update conversation context (but only for whitelisted channels)
-						if (isWhitelisted(message.channel)) {
-							addToContext(message.channel, responseMessage);
-						}
-					}).catch(error => {
-						logger.error(error);
-						logger.warn("Failed to send reply");
-					});
+			// Respond normally if no extra messages have been sent in the meantime
+			if (message.channel.lastMessageId === message.id) {
+				messagePromise = message.channel.send(response);
+			}
+			// Use reply if other messages are in the way
+			else {
+				messagePromise = message.reply(response);
+			}
+
+			messagePromise.then(responseMessage => {
+				logger.info("Sent message successfully");
+
+				// Update conversation context (but only for whitelisted channels)
+				if (isWhitelisted(message.channel)) {
+					logger.info("Updating channel context");
+					addToContext(message.channel, message);
+					addToContext(message.channel, responseMessage);
 				}
 
-				// Allow bot to think about new messages now
-				stopThinking(message.channel);
-			},
-			timeTypeSec * 1000,
-		);
-	}).catch(error => {
-		// Undo adding to context (but only for whitelisted channels)
-		if (isWhitelisted(message.channel)) {
-			removeLastMessageFromContext(message.channel);
+				logger.info();
+			}).catch(error => {
+				logger.error(error);
+				logger.warn("Failed to send message");
+			});
+
+			// Allow bot to think about new messages now
+			stopThinking(message.channel);
 		}
 
+		// Send the message once the typing time is over
+		setTimeout(respond, timeTypeSec * 1000);
+	}).catch(error => {
 		// Stop thinking so bot can respond in future
 		stopThinking(message.channel);
 
