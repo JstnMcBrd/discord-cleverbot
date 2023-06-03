@@ -25,7 +25,7 @@ export const messageCreate: EventHandler<"messageCreate"> = {
 			await onMessage(message);
 		}
 		catch (error) {
-			logEventError(this.name, error);
+			logEventError(messageCreate.name, error);
 		}
 	},
 };

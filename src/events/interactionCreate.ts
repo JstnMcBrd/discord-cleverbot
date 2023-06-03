@@ -14,7 +14,7 @@ export const interactionCreate: EventHandler<"interactionCreate"> = {
 			await onInteraction(interaction);
 		}
 		catch (error) {
-			logEventError(this.name, error);
+			logEventError(interactionCreate.name, error);
 		}
 	},
 };

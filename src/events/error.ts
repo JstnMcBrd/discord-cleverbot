@@ -11,7 +11,7 @@ export const error: EventHandler<"error"> = {
 			onError(err);
 		}
 		catch (err2) {
-			logEventError(this.name, err2);
+			logEventError(error.name, err2);
 		}
 	},
 };

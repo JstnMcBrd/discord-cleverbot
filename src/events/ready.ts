@@ -22,7 +22,7 @@ export const ready: EventHandler<"ready"> = {
 			await onceReady(client);
 		}
 		catch (error) {
-			logEventError(this.name, error);
+			logEventError(ready.name, error);
 		}
 	},
 };
