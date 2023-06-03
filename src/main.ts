@@ -6,8 +6,8 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events/index.js";
 import * as logger from "./logger.js";
-import { getToken, setAccount as setConfigAccount } from "./memory/config.js";
-import { setAccount as setWhitelistAccount } from "./memory/whitelist.js";
+import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
+import { loadFrom as loadWhitelistFrom } from "./memory/whitelist.js";
 import { getCurrentDirectory } from "./helpers/getCurrentDirectory.js";
 
 /**
@@ -44,8 +44,8 @@ if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
 
 /* Load memory files */
 
-setConfigAccount(accountName);
-setWhitelistAccount(accountName);
+loadConfigFrom(accountName);
+loadWhitelistFrom(accountName);
 
 /* Setup client */
 

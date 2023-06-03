@@ -1,11 +1,10 @@
-import { CategoryChannel, Client, Message, PartialGroupDMChannel, StageChannel } from "discord.js";
-import type { TextBasedChannel } from "discord.js";
+import type { Client, Message } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
 import * as logger from "../logger.js";
 import { logEventError } from "./index.js";
 import { messageCreate } from "./messageCreate.js";
-import { verify as verifyWhitelist, getWhitelist } from "../memory/whitelist.js";
+import { populate as populateWhitelist, getWhitelist } from "../memory/whitelist.js";
 import { isFromUser } from "../helpers/messageAnalyzer.js";
 import { start as manageActivity } from "../helpers/activityManager.js";
 import { generateContext, getContext } from "../memory/context.js";
@@ -37,49 +36,34 @@ async function onceReady(client: Client): Promise<void> {
 
 	manageActivity(client);
 
-	// Unlike setUserActivity and resumeConversations, verifyWhitelist will not repeat after startup
-	await verifyWhitelist(client);
+	await populateWhitelist(client);
 	await initializeContext(client);
-	await resumeConversations(client);
+	resumeConversations(client);
 }
 
 /**
- * // TODO make typescript-safe
- * // TODO jsdoc
+ * // TODO
  */
 async function initializeContext(client: Client) {
-	for (const channelID of getWhitelist()) {
-		const channel = await client.channels.fetch(channelID);
-		await generateContext(client, channel as TextBasedChannel);
+	for (const channel of getWhitelist()) {
+		await generateContext(client, channel);
 	}
 }
 
 /**
  * Searchs for unread messages in whitelisted channels that were sent when the bot was offline, and responds to them.
  */
-async function resumeConversations(client: Client): Promise<void> {
-	// Verify the whitelist first every time
-	// TODO This is a temporary solution
-	await verifyWhitelist(client);
-
+function resumeConversations(client: Client): void {
 	logger.info("Searching for missed messages...");
 
 	const toRespondTo: Message[] = [];
-	for (const channelID of getWhitelist()) {
-		// Fetch the channel
-		const channel = await client.channels.fetch(channelID);
-
-		if (!channel) continue;
-		if (channel instanceof CategoryChannel) continue;
-		if (channel instanceof StageChannel) continue;
-		if (channel instanceof PartialGroupDMChannel) continue;
-
+	for (const channel of getWhitelist()) {
 		// Get the context
 		const context = getContext(channel);
 		if (!context) continue;
 
 		// Get the last message
-		const lastMessage = context[context.length - 1];
+		const lastMessage = context.at(context.length - 1);
 		if (!lastMessage) continue;
 
 		// If the last message isn't from the bot, then respond to it

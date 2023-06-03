@@ -23,21 +23,22 @@ let filePath = "";
 let config: Config;
 
 /**
- * Sets the account name so the memory file can be loaded.
+ * Sets the account name and loads the config from the memory file.
+ *
  * Should be called before trying to access the config.
- * Assumes the account name is valid.
+ *
  * @param account a valid account name
+ * @throws if the account name is not valid, or if the memory file is improperly formatted
  */
-export function setAccount(account: string): void {
+export function loadFrom(account: string): void {
 	filePath = join(getCurrentDirectory(import.meta.url), "..", "..", "accounts", account, "config.json");
-	load();
-}
 
-/**
- * Loads the config from the memory file.
- */
-function load(): void {
-	const json: unknown = JSON.parse(readFileSync(filePath).toString());
+	// Load the memory file
+	const fileBuffer = readFileSync(filePath);
+	const fileStr = fileBuffer.toString();
+	const json: unknown = JSON.parse(fileStr);
+
+	// Validate the file formatting
 	if (json instanceof Object && hasAllConfigProperties(json)) {
 		config = json as Config;
 	}
@@ -47,7 +48,6 @@ function load(): void {
 }
 
 /**
- * There really should be a better way to do this with TypeScript, but whatever.
  * @returns whether the given object has all properties of the Config type
  */
 function hasAllConfigProperties(json: unknown): boolean {
@@ -57,7 +57,7 @@ function hasAllConfigProperties(json: unknown): boolean {
 }
 
 /**
- * @returns a read-only copy of the whitelist
+ * @returns the full config
  */
 export function getConfig(): Config {
 	return config;
@@ -72,6 +72,7 @@ export function getClientID(): Snowflake {
 
 /**
  * WARNING: do not store or log your token in any publicly available place, or your bot will get hacked!
+ *
  * @returns the discord token necessary to log-in the client
  */
 export function getToken(): string {

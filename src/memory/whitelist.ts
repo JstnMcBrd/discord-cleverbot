@@ -3,18 +3,24 @@
  *
  * The whitelist is the list of channels that the bot is allowed to speak in.
  * This global manager takes care of...
- * - loading the whitelist from memory
+ * - loading the whitelist channel IDs from memory
+ * - fetching and validating the channels
  * - adding and removing channels
- * - saving the whitelist to memory
+ * - saving the whitelist channel IDs to memory
+ *
+ * Before the whitelist can be used, the following methods must be called in this order:
+ * 1. `loadFrom` - to load the channel IDs from the whitelist memory file
+ * 2. `populate` - the fetch the channels from the Discord API
 */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import type { Channel, Client, Snowflake } from "discord.js";
+import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
+import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 
-import type { Whitelist } from "../@types/MemoryFiles.js";
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
+import { warn } from "../logger.js";
 
 /**
  * The file path of the whitelist memory file.
@@ -22,40 +28,71 @@ import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 let filePath = "";
 
 /**
- * The local copy of the whitelist.
+ * The validated list of channels included in the whitelist.
  */
-let whitelist: Whitelist = [];
+let whitelist: TextBasedChannel[] = [];
 
 /**
- * Sets the account name so the memory file can be loaded.
+ * A temporary list of channel IDs loaded from the whitelist memory file,
+ * waiting to be fetched from the Discord API.
+ */
+let channelIDsToPopulate: Snowflake[] = [];
+
+/**
+ * Sets the account name and loads the whitelist from the memory file.
+ * Saves the channel IDs for later to be fetched by calling `populate`.
+ *
  * Should be called before trying to use the whitelist.
- * Assumes the account name is valid.
+ *
  * @param account a valid account name
+ * @throws if the account name is not valid, or if the memory file is improperly formatted
  */
-export function setAccount(account: string): void {
+export function loadFrom(account: string): void {
 	filePath = join(getCurrentDirectory(import.meta.url), "..", "..", "accounts", account, "whitelist.json");
-	load();
-}
 
-/**
- * Only returns a copy of the whitelist to prevent illegal editing.
- * Use the `addChannel` and `removeChannel` methods for whitelist editing.
- * @returns a copy of the whitelist
- */
-export function getWhitelist(): Whitelist {
-	return whitelist.map(value => value);
-}
+	// Load the memory file
+	const fileBuffer = readFileSync(filePath);
+	const fileStr = fileBuffer.toString();
+	const json: unknown = JSON.parse(fileStr);
 
-/**
- * Loads the whitelist from the memory file.
- */
-function load(): void {
-	const json: unknown = JSON.parse(readFileSync(filePath).toString());
+	// Validate the file formatting
 	if (Array.isArray(json) && allElementsAreStrings(json)) {
-		whitelist = json as Whitelist;
+		channelIDsToPopulate = json as Snowflake[];
 	}
 	else {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
+	}
+}
+
+/**
+ * Uses the saved list of channel IDs from `loadFrom` and fetches the channels from the Discord API.
+ * Validates each channel and removes invalid channels by overwriting the whitelist memory file afterwards.
+ *
+ * Should be called after calling `loadFrom` and before trying to use the whitelist.
+ *
+ * Important: the client passed to this method must be logged in to the account that the whitelist is for.
+ *
+ * @param client a logged-in Discord client to use to fetch channels
+ */
+export async function populate(client: Client) {
+	// Fetch and validate channels
+	whitelist = [];
+	const invalidChannelIDs: Snowflake[] = [];
+	for (const channelID of channelIDsToPopulate) {
+		const channel = await fetchAndValidateChannel(channelID, client);
+		if (channel !== undefined) {
+			whitelist.push(channel);
+		}
+		else {
+			invalidChannelIDs.push(channelID);
+		}
+	}
+
+	// Overwrite memory file if there were any invalid channel IDs
+	if (invalidChannelIDs.length > 0) {
+		warn(`Removing invalid channels from whitelist: ${invalidChannelIDs.toString()}`);
+		warn();
+		save();
 	}
 }
 
@@ -67,61 +104,83 @@ function allElementsAreStrings(array: Array<unknown>): boolean {
 }
 
 /**
- * Verifies that all the channel IDs in the whitelist are accessable and removes invalid channels.
- * Important: the client passed to this method must be logged in to the account that the whitelist is for.
- * @param client a logged-in Discord client to use to access channels
+ * Fetches the given channel from the Discord API and validates it.
+ *
+ * @returns the channel, or undefined if the channel could not be found or is invalid
  */
-export async function verify(client: Client): Promise<void> {
-	for (const channelID of whitelist) {
-		// Verify the channel exists / is accessible
-		await client.channels.fetch(channelID).catch(error => {
-			// If the channel doesn't exist, remove it from the whitelist
-			if (error instanceof Error) {
-				if (error.message === "Unknown Channel" || error.message === "Missing Access") {
-					removeChannel(channelID);
-				}
-			}
-			// If there's some other kind of error, throw a fit
-			else {
-				throw error;
-			}
-		});
+async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
+	let channel = undefined;
+	try {
+		channel = await client.channels.fetch(channelID);
 	}
+	catch (error) {
+		if (error instanceof Error) {
+			if (error.message === "Unknown Channel") {
+				warn(`Found unknown channel in the whitelist with ID ${channelID}`);
+				return undefined;
+			}
+			else if (error.message === "Missing Access") {
+				warn(`Found restricted channel in the whitelist with ID ${channelID}`);
+				return undefined;
+			}
+		}
+		else {
+			throw error;
+		}
+	}
+
+	if (channel === undefined || channel === null) {
+		warn(`Could not find channel in the whitelist with ID ${channelID}`);
+		return undefined;
+	}
+
+	if (!isTextBasedChannel(channel)) {
+		warn(`Found channel of invalid type ${channel.constructor.name} in whitelist with ID ${channelID}`);
+		return undefined;
+	}
+
+	return channel;
 }
 
 /**
- * Writes the whitelist to the memory file.
+ * @returns whether the given channel is a text-based channel
+ */
+function isTextBasedChannel(channel: Channel): channel is TextBasedChannel {
+	return channel instanceof DMChannel
+	|| channel instanceof NewsChannel
+	|| channel instanceof StageChannel
+	|| channel instanceof TextChannel
+	|| channel instanceof ThreadChannel
+	|| channel instanceof VoiceChannel;
+}
+
+/**
+ * Only returns a read-only copy of the whitelist to prevent illegal editing.
+ * Use the `addChannel` and `removeChannel` methods for whitelist editing.
+ *
+ * @returns a read-only copy of the whitelist
+ */
+export function getWhitelist(): readonly TextBasedChannel[] {
+	return whitelist;
+}
+
+/**
+ * Writes the whitelist channel IDs to the memory file.
  */
 function save(): void {
-	writeFileSync(filePath, JSON.stringify(whitelist));
+	const channelIDs = getWhitelist().map(channel => channel.id);
+	writeFileSync(filePath, JSON.stringify(channelIDs));
 }
 
 /**
- * Used by other methods to standardize their input so they can accept discord.js channels or string channel IDs.
- * @param channel either a discord.js channel or the channel ID
- * @returns the channel ID
- */
-function getChannelID(channel: Snowflake|Channel): Snowflake {
-	if (typeof channel === "string") {
-		return channel;
-	}
-	else {
-		return channel.id;
-	}
-}
-
-/**
- * Adds a channel to the whitelist and saves to the memory file.
- * @param channel either a discord.js channel or the channel ID
+ * Adds a channel to the whitelist and saves the memory file.
+ *
+ * @param channel the channel to whitelist
  * @returns true if successful, false if the channel was already in the whitelist
  */
-export function addChannel(channel: Snowflake|Channel): boolean {
-	// Standardize the input
-	const channelID = getChannelID(channel);
-
-	// If the channel is not already in the whitelist, add it
-	if (!hasChannel(channelID)) {
-		whitelist.push(channelID);
+export function addChannel(channel: TextBasedChannel): boolean {
+	if (!hasChannel(channel)) {
+		whitelist.push(channel);
 		save();
 		return true;
 	}
@@ -129,17 +188,14 @@ export function addChannel(channel: Snowflake|Channel): boolean {
 }
 
 /**
- * Removes a channel from the whitelist and saves to the memory file.
- * @param channel either a discord.js channel or the channel ID
+ * Removes a channel from the whitelist and saves the memory file.
+ *
+ * @param channel the channel to unwhitelist
  * @returns true if successful, false if the whitelist doesn't have the channel
  */
-export function removeChannel(channel: Snowflake|Channel): boolean {
-	// Standardize the input
-	const channelID = getChannelID(channel);
-
-	// If the channel is in the whitelist, remove it
-	if (hasChannel(channelID)) {
-		whitelist.splice(whitelist.indexOf(channelID), 1);
+export function removeChannel(channel: TextBasedChannel): boolean {
+	if (hasChannel(channel)) {
+		whitelist.splice(whitelist.indexOf(channel), 1);
 		save();
 		return true;
 	}
@@ -148,12 +204,10 @@ export function removeChannel(channel: Snowflake|Channel): boolean {
 
 /**
  * Checks if a channel is in the whitelist.
- * @param channel either a discord.js channel or the channel ID
+ *
+ * @param channel the channel to check
  * @returns true if the channel is in the whitelist, false if not
  */
-export function hasChannel(channel: Snowflake|Channel): boolean {
-	// Standardize the input
-	const channelID = getChannelID(channel);
-
-	return whitelist.indexOf(channelID) !== -1;
+export function hasChannel(channel: TextBasedChannel): boolean {
+	return whitelist.indexOf(channel) !== -1;
 }
