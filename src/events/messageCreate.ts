@@ -1,8 +1,4 @@
-import cleverbot_badtype from "cleverbot-free";
-// cleverbot-free's types don't work with ESM and TypeScript Node16 resolution,
-// so I need to substitute them myself to make TypeScript happy.
-const cleverbot = cleverbot_badtype as unknown as (stimlus: string, context?: string[]) => Promise<string>;
-
+import cleverbot from "cleverbot-free";
 import type { Message } from "discord.js";
 
 import type { EventHandler } from "../@types/EventHandler.js";
