@@ -14,7 +14,7 @@
             "localRoot": "${workspaceFolder}\\dist",
             "program": "main.js",
             "args": [
-                "DumbBoi"
+                "ExampleUsername"
             ]
         }
     ]
