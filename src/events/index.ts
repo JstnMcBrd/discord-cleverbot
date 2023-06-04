@@ -7,16 +7,16 @@
 
 import type { Client } from "discord.js";
 
-import type { EventHandler } from "../@types/EventHandler.js";
-import { error as errorH } from "./error.js";
+import { EventHandler } from "../@types/EventHandler.js";
+import { error } from "./error.js";
 import { interactionCreate } from "./interactionCreate.js";
 import { messageCreate } from "./messageCreate.js";
 import { ready } from "./ready.js";
-import { debug, error, info } from "../logger.js";
+import { debug, info } from "../logger.js";
 
 const events = new Map<string, EventHandler>;
 
-addEventHandler(errorH as EventHandler);
+addEventHandler(error as EventHandler);
 addEventHandler(interactionCreate as EventHandler);
 addEventHandler(messageCreate as EventHandler);
 addEventHandler(ready as EventHandler);
@@ -30,27 +30,28 @@ function addEventHandler (event: EventHandler): void {
 	events.set(name, event);
 }
 
+/**
+ * // TODO
+ */
 export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
 	return events;
 }
 
+/**
+ * // TODO
+ */
 export function registerEventHandlers (client: Client) {
 	info("Setting client event handlers...");
 
-	getEventHandlers().forEach((event) => {
+	getEventHandlers().forEach(event => {
 		if (event.once) {
-			client.once(event.name, event.execute);
+			client.once(event.name, (...args) => event.execute(...args));
 		}
 		else {
-			client.on(event.name, event.execute);
+			client.on(event.name, (...args) => event.execute(...args));
 		}
 		debug(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
 	});
 
 	info();
-}
-
-export function logEventError (eventName: string, err: Error|unknown) {
-	error(`Error in event '${eventName}'`);
-	error(err);
 }

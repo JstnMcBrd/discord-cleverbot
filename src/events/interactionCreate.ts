@@ -1,46 +1,33 @@
 import type { Interaction } from "discord.js";
 
-import type { EventHandler } from "../@types/EventHandler.js";
+import { EventHandler } from "../@types/EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
-import { logEventError } from "./index.js";
 import { indent } from "../helpers/indent.js";
-import { replyWithError } from "../helpers/replyWithError.js";
-import { debug, error, info, warn } from "../logger.js";
-
-export const interactionCreate: EventHandler<"interactionCreate"> = {
-	name: "interactionCreate",
-	once: false,
-	async execute (interaction: Interaction) {
-		try {
-			await onInteraction(interaction);
-		}
-		catch (err) {
-			logEventError(interactionCreate.name, err);
-		}
-	},
-};
+import { debug, info } from "../logger.js";
 
 /**
  * Called whenever the discord.js client receives an interaction (usually means a slash command).
  */
-async function onInteraction (interaction: Interaction): Promise<void> {
-	// Ignore any interactions that are not commands
-	if (!interaction.isChatInputCommand()) {
-		return;
-	}
-	info("Received command interaction");
-	debug(indent(debugInteraction(interaction), 1));
+export const interactionCreate = new EventHandler("interactionCreate")
+	.setOnce(false)
+	.setExecution(async function (interaction: Interaction): Promise<void> {
+		// Ignore any interactions that are not commands
+		if (!interaction.isChatInputCommand()) {
+			return;
+		}
+		info("Received command interaction");
+		debug(indent(debugInteraction(interaction), 1));
 
-	// Ignore any commands that are not recognized
-	const command = getCommandHandler(interaction.commandName);
-	if (!command) {
-		return;
-	}
-	info("Command recognized");
+		// Ignore any commands that are not recognized
+		const command = getCommandHandler(interaction.commandName);
+		if (!command) {
+			return;
+		}
+		info("Command recognized");
 
-	// Execute the command script
-	await command.execute(interaction);
-}
+		// Execute the command script
+		await command.execute(interaction);
+	});
 
 /**
  * Formats important information about an interaction to a string.
