@@ -39,19 +39,7 @@ async function onInteraction (interaction: Interaction): Promise<void> {
 	info("Command recognized");
 
 	// Execute the command script
-	info("Executing command");
-	try {
-		await command.execute(interaction);
-	}
-	catch (err) {
-		error(err);
-		warn("Failed to execute command");
-		info();
-		replyWithError(interaction, err);
-		return;
-	}
-	info("Command executed successfully");
-	info();
+	await command.execute(interaction);
 }
 
 /**

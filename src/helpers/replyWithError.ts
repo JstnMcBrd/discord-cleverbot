@@ -27,6 +27,6 @@ export function replyWithError (message: Message|ChatInputCommandInteraction, in
 	}).catch(err => {
 		error(err);
 		warn("Failed to send error message");
-		info();
+		warn();
 	});
 }
