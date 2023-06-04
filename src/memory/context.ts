@@ -8,7 +8,7 @@
 import type { Channel, Client, Collection, Message, Snowflake, TextBasedChannel } from "discord.js";
 
 import { whitelist as whitelistCommand } from "../commands/whitelist.js";
-import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalyzer.js";
+import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalysis.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
 
 /**
@@ -89,6 +89,9 @@ export async function generateContext (channel: TextBasedChannel, client: Client
 	context.set(channel.id, newContext);
 }
 
+/**
+ * // TODO
+ */
 export function deleteContext (channel: Channel): void {
 	if (!hasContext(channel)) {
 		return;

@@ -10,7 +10,7 @@ export const version = getVersion();
 /**
  * When this code was last changed.
  */
-export const lastUpdated = new Date(2023, 0, 17, 10, 30);
+export const lastUpdated = new Date(2023, 5, 4, 5, 0);
 // Year, month (0-11), day of month, hour (0-23), minutes
 
 /**

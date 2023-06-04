@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import { isAMention } from "./messageAnalyzer.js";
+import { isAMention } from "./messageAnalysis.js";
 
 /**
  * // TODO

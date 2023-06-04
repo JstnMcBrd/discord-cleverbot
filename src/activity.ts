@@ -1,7 +1,16 @@
+/**
+ * Activity Manager
+ *
+ * This manager takes care of keeping the client user's activity regularly updated.
+ *
+ * This is necessary because after being set, the user's activity will disappear after
+ * a short period of time.
+ */
+
 import { ActivityType } from "discord.js";
 import type { ActivityOptions, Client } from "discord.js";
 
-import { error, info, warn } from "../logger.js";
+import { error, info, warn } from "./logger.js";
 
 /**
  * How often to update the activity (in seconds).
@@ -16,6 +25,7 @@ const activityOptions: ActivityOptions = {
 	type: ActivityType.Listening,
 	url: "https://www.cleverbot.com/",
 };
+
 // Wait until Discord supports custom statuses for bots
 //
 // const activityOptions: ActivityOptions = {

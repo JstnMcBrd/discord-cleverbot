@@ -5,7 +5,7 @@ import type { EventHandler } from "../@types/EventHandler.js";
 import { logEventError } from "./index.js";
 import { indent } from "../helpers/indent.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalyzer.js";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
 import { replyWithError } from "../helpers/replyWithError.js";
 import { addToContext, generateContext, getContextAsFormattedPrompts, hasContext, removeLastMessageFromContext } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
