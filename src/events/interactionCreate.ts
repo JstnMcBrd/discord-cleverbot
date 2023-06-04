@@ -47,7 +47,7 @@ async function onInteraction (interaction: Interaction): Promise<void> {
 		error(err);
 		warn("Failed to execute command");
 		info();
-		replyWithError(interaction, error);
+		replyWithError(interaction, err);
 		return;
 	}
 	info("Command executed successfully");
