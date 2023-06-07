@@ -1,6 +1,6 @@
 import type { Client } from "discord.js";
 
-import { EventHandler } from "../@types/EventHandler.js";
+import { EventHandler } from "./EventHandler.js";
 import { start as manageActivity } from "../activity.js";
 import { info } from "../logger.js";
 import { refresh } from "../refresh.js";

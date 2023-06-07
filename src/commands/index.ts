@@ -1,5 +1,4 @@
-import type { CommandHandler } from "../@types/CommandHandler.js";
-
+import type { CommandHandler } from "./CommandHandler.js";
 import { help } from "./help.js";
 import { unwhitelist } from "./unwhitelist.js";
 import { whitelist } from "./whitelist.js";

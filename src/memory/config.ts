@@ -10,8 +10,17 @@ import { join } from "node:path";
 
 import type { Snowflake } from "discord.js";
 
-import type { ConfigFile } from "../@types/MemoryFiles.js";
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
+
+/**
+ * The format of the config JSON file.
+ * See an example in [accounts/ExampleUsername/config.json](../../accounts/ExampleUsername/config.json).
+ */
+export interface ConfigFile {
+	clientId: Snowflake;
+	token: string;
+	url: string;
+}
 
 /**
  * The file path of the config memory file.

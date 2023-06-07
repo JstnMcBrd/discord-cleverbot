@@ -1,6 +1,6 @@
 import type { Interaction } from "discord.js";
 
-import { EventHandler } from "../@types/EventHandler.js";
+import { EventHandler } from "./EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
 import { indent } from "../helpers/indent.js";
 import { debug, info } from "../logger.js";

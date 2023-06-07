@@ -19,9 +19,14 @@ import { join } from "node:path";
 import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
 import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 
-import type { WhitelistFile } from "../@types/MemoryFiles.js";
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 import { warn } from "../logger.js";
+
+/**
+ * The format of the whitelist JSON file.
+ * See an example in [accounts/ExampleUsername/whitelist.json](../../accounts/ExampleUsername/whitelist.json).
+ */
+export type WhitelistFile = Snowflake[];
 
 /**
  * The file path of the whitelist memory file.

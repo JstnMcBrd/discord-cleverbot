@@ -1,7 +1,7 @@
 import cleverbot from "cleverbot-free";
 import type { Message } from "discord.js";
 
-import { EventHandler } from "../@types/EventHandler.js";
+import { EventHandler } from "./EventHandler.js";
 import { indent } from "../helpers/indent.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";

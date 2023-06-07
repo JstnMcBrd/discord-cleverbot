@@ -2,26 +2,21 @@ import type { Awaitable, ClientEvents } from "discord.js";
 
 import { error } from "../logger.js";
 
-/**
- * // TODO
- */
-type EventExecution<K extends keyof ClientEvents> = (...args: ClientEvents[K]) => Awaitable<void>;
-
-/**
- * // TODO
- */
 export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	public readonly name: K;
+
 	public readonly once: boolean = false;
 
-	private execution?: EventExecution<K>;
+	private execution?: typeof this.execute;
 
 	public constructor (name: K) {
 		this.name = name;
 	}
 
-	// Unnecessary, since the name is set when the type is set in the constructor
-	//
+	/**
+	 * Unnecessary because the name is set in the constructor and defines the generic class type.
+	 * Unsafe because the generic type should never change, so the name should never change.
+	 */
 	// public setName (name: K): this {
 	// 	Reflect.set(this, "name", name);
 	// 	return this;
@@ -32,15 +27,15 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 		return this;
 	}
 
-	public setExecution (execution: EventExecution<K>): this {
+	public setExecution (execution: typeof this.execute): this {
 		this.execution = execution;
 		return this;
 	}
 
-	public async execute (...args: ClientEvents[K]): Promise<void> {
+	public execute (...args: ClientEvents[K]): Awaitable<void> {
 		if (this.execution) {
 			try {
-				await this.execution(...args);
+				return this.execution(...args);
 			}
 			catch (err) {
 				error(err);

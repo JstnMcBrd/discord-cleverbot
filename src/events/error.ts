@@ -1,4 +1,4 @@
-import { EventHandler } from "../@types/EventHandler.js";
+import { EventHandler } from "./EventHandler.js";
 
 import { error as errorLog, warn } from "../logger.js";
 
