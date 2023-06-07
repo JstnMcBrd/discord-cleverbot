@@ -14,14 +14,20 @@ export const whitelist = new CommandHandler()
 		}
 
 		let embed: EmbedBuilder;
+		let ephemeral: boolean;
 		if (whitelistChannel(interaction.channel)) {
 			await generateContext(interaction.channel, interaction.client);
 			embed = createSuccessEmbed(interaction.channel.id);
+			ephemeral = false;
 		}
 		else {
 			embed = createRedundantEmbed(interaction.channel.id);
+			ephemeral = true;
 		}
-		await interaction.reply({ embeds: [embed] });
+		await interaction.reply({
+			embeds: [embed],
+			ephemeral,
+		});
 	});
 
 function createSuccessEmbed (channelID: string): EmbedBuilder {

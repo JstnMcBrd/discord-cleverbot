@@ -13,15 +13,21 @@ export const unwhitelist = new CommandHandler()
 			throw new TypeError("Channel cannot be null");
 		}
 
-		let embed = {};
+		let embed: EmbedBuilder;
+		let ephemeral: boolean;
 		if (unwhitelistChannel(interaction.channel)) {
 			deleteContext(interaction.channel);
 			embed = createSuccessEmbed(interaction.channel.id);
+			ephemeral = false;
 		}
 		else {
 			embed = createRedundantEmbed(interaction.channel.id);
+			ephemeral = true;
 		}
-		await interaction.reply({ embeds: [embed] });
+		await interaction.reply({
+			embeds: [embed],
+			ephemeral,
+		});
 	});
 
 function createSuccessEmbed (channelID: string): EmbedBuilder {

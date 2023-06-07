@@ -9,7 +9,10 @@ export const help = new CommandHandler()
 	.setDescription("Prints a simple guide about me")
 	.setExecution(async interaction => {
 		const embed = createHelpEmbed(interaction.client.user);
-		await interaction.reply({ embeds: [embed], ephemeral: true });
+		await interaction.reply({
+			embeds: [embed],
+			ephemeral: true,
+		});
 	});
 
 function createHelpEmbed (user: User): EmbedBuilder {
