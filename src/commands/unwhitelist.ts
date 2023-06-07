@@ -7,7 +7,7 @@ import { embedColors } from "../parameters.js";
 
 export const unwhitelist = new CommandHandler()
 	.setName("unwhitelist")
-	.setDescription("Disallows me from responding to messages in this channel")
+	.setDescription("Disallow me from responding to messages in this channel")
 	.setExecution(async interaction => {
 		if (interaction.channel === null) {
 			throw new TypeError("Channel cannot be null");

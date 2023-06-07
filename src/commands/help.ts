@@ -1,12 +1,12 @@
 import { EmbedBuilder, userMention } from "discord.js";
-import type { User } from "discord.js";
+import type { ClientUser } from "discord.js";
 
 import { CommandHandler } from "./CommandHandler.js";
 import { lastUpdated, embedColors, version } from "../parameters.js";
 
 export const help = new CommandHandler()
 	.setName("help")
-	.setDescription("Prints a simple guide about me")
+	.setDescription("Print a simple guide about me")
 	.setExecution(async interaction => {
 		const embed = createHelpEmbed(interaction.client.user);
 		await interaction.reply({
@@ -15,7 +15,7 @@ export const help = new CommandHandler()
 		});
 	});
 
-function createHelpEmbed (user: User): EmbedBuilder {
+function createHelpEmbed (user: ClientUser): EmbedBuilder {
 	const mention = userMention(user.id);
 	const avatarURL = user.avatarURL();
 	return new EmbedBuilder()
@@ -27,11 +27,11 @@ function createHelpEmbed (user: User): EmbedBuilder {
 			{ name: "Unwhitelisting", value: "If you would like me to stop responding to messages in a whitelisted channel, use the **/unwhitelist** command there. After that, I won't respond to any messages until you whitelist the channel again." },
 			{ name: "Mentioning", value: `If you would like me to reply to a single message, just include ${mention} in your message. I will always respond, even in unwhitelisted channels.` },
 			{ name: "Ignoring", value: "If you would like me to ignore a message in a whitelisted channel, begin the message with '> '. I will pretend I never saw it. You can use this to talk about me behind my back or laugh with your friends about something I said." },
-			{ name: "Adding To Other Servers", value: "For now, this feature is disabled. Please check with my developer if you would like to add me to your server." },
+			{ name: "Adding to Other Servers", value: "Use the **/invite** command to invite me to another server." },
 		)
 		.setFooter({
 			text: `Version ${version}\nLast Updated`,
-			iconURL: (avatarURL !== null) ? avatarURL : undefined,
+			iconURL: avatarURL ?? undefined,
 		})
 		.setTimestamp(lastUpdated);
 }

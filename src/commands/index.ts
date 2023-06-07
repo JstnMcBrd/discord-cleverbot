@@ -1,11 +1,13 @@
 import type { CommandHandler } from "./CommandHandler.js";
 import { help } from "./help.js";
+import { invite } from "./invite.js";
 import { unwhitelist } from "./unwhitelist.js";
 import { whitelist } from "./whitelist.js";
 
 const commands = new Map<string, CommandHandler>();
 
 addCommandHandler(help);
+addCommandHandler(invite);
 addCommandHandler(unwhitelist);
 addCommandHandler(whitelist);
 

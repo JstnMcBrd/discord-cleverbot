@@ -19,7 +19,6 @@ import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 export interface ConfigFile {
 	clientId: Snowflake;
 	token: string;
-	url: string;
 }
 
 /**
@@ -53,7 +52,7 @@ export function loadFrom (account: string): void {
 		config = json;
 	}
 	else {
-		throw new Error(`The config memory file at ${filePath} is not properly formatted`);
+		throw new Error(`The config memory file at ${filePath} is not properly formatted.`);
 	}
 }
 
@@ -63,8 +62,7 @@ export function loadFrom (account: string): void {
 function isValidConfigFile (json: unknown): json is ConfigFile {
 	return json instanceof Object
 		&& Object.prototype.hasOwnProperty.call(json, "clientId")
-		&& Object.prototype.hasOwnProperty.call(json, "token")
-		&& Object.prototype.hasOwnProperty.call(json, "url");
+		&& Object.prototype.hasOwnProperty.call(json, "token");
 }
 
 /**
@@ -88,11 +86,4 @@ export function getClientID (): Snowflake {
  */
 export function getToken (): string {
 	return config.token;
-}
-
-/**
- * @returns the URL for adding the bot to a server
- */
-export function getURL (): string {
-	return config.url;
 }
