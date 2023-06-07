@@ -8,8 +8,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import type { Snowflake } from "discord.js";
-
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
 
 /**
@@ -17,7 +15,6 @@ import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
  * See an example in [accounts/ExampleUsername/config.json](../../accounts/ExampleUsername/config.json).
  */
 export interface ConfigFile {
-	clientId: Snowflake;
 	token: string;
 }
 
@@ -61,7 +58,6 @@ export function loadFrom (account: string): void {
  */
 function isValidConfigFile (json: unknown): json is ConfigFile {
 	return json instanceof Object
-		&& Object.prototype.hasOwnProperty.call(json, "clientId")
 		&& Object.prototype.hasOwnProperty.call(json, "token");
 }
 
@@ -70,13 +66,6 @@ function isValidConfigFile (json: unknown): json is ConfigFile {
  */
 export function getConfig (): ConfigFile {
 	return config;
-}
-
-/**
- * @returns the user ID of the bot account
- */
-export function getClientID (): Snowflake {
-	return config.clientId;
 }
 
 /**

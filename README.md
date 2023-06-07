@@ -18,14 +18,14 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 
 ### Creating a bot
 
-1. Create a new bot account in the [Discord developer portal](https://discord.com/developers/applications/)
-2. Copy the access token and application ID of your bot for later
+1. Create a new bot account in the [Discord Developer Portal](https://discord.com/developers/applications/)
+2. Copy the access token of your bot for later
 
 ### Setting up the code
 
 3. Run `git pull https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo
 4. Go into the `/accounts` directory, duplicate the `ExampleUsername` folder, and rename it as the username of your bot
-5. Inside the new folder, edit `config.json` and replace `example-user-id` with the application ID and `example-token` with the access token
+5. Inside the new folder, edit `config.json` and replace `example-token` with the access token
 
 ### Running the code
 
@@ -36,6 +36,7 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 
 ### Interacting with the bot
 
-10. Use the URL in `/accounts/[bot username]/config.json` to add your bot to a server
-11. Use the `/whitelist` command in a channel to allow the bot to speak there
-12. Send messages in the whitelisted channel and watch the bot respond!
+10. In the **OAuth2**>**URL Generator** tab in the Discord Developer Portal, generate an invite URL with the `applications.commands` scope
+11. Use the invite URL to add the bot to a server
+12. Use the `/whitelist` command in a channel to allow the bot to speak there
+13. Send messages in the whitelisted channel and watch the bot respond!
