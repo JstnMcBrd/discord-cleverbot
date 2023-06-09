@@ -1,5 +1,5 @@
 /**
- * Indents strings that have more than one line
+ * Indents strings that have more than one line.
  */
 export function indent (str: string, numTabs: number): string {
 	let tabs = "";

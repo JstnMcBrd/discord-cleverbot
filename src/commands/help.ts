@@ -7,9 +7,7 @@ import { whitelist } from "./whitelist.js";
 import { unwhitelist } from "./unwhitelist.js";
 import { lastUpdated, embedColors, version } from "../parameters.js";
 
-/**
- * A command that gives the user a simple guide about the bot.
- */
+/** A command that gives the user a simple guide about the bot. */
 export const help = new CommandHandler()
 	.setName("help")
 	.setDescription("Print a simple guide about me")
@@ -38,9 +36,9 @@ async function getCommandIDs (client: Client<true>): Promise<Map<string, string>
 }
 
 /**
- * Creates an embed that provides a simple guide about the bot for the user.
- *
- * @returns The embed
+ * @param user The current logged-in user
+ * @param commandIDs A map of command names to command IDs, to generate command mentions
+ * @returns An embed that provides a simple guide about the bot for the user
  */
 function createHelpEmbed (user: ClientUser, commandIDs: Map<string, string>): EmbedBuilder {
 	const mention = userMention(user.id);

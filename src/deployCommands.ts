@@ -1,7 +1,7 @@
 /*
  * This is a simple and lightweight script to deploy slash commands to Discord.
  * It only needs to be run when commands are updated.
-*/
+ */
 
 import { Client } from "discord.js";
 import type { ApplicationCommandDataResolvable } from "discord.js";
@@ -10,7 +10,7 @@ import { getCommandHandlers } from "./commands/index.js";
 import { getToken, load as loadEnv } from "./memory/env.js";
 import { error, info } from "./logger.js";
 
-// Import token
+// Load environment variables
 loadEnv();
 const token = getToken();
 

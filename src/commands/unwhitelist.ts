@@ -5,12 +5,13 @@ import { deleteContext } from "../memory/context.js";
 import { removeChannel as unwhitelistChannel } from "../memory/whitelist.js";
 import { embedColors } from "../parameters.js";
 
+/** A command that removes a channel from the whitelist. */
 export const unwhitelist = new CommandHandler()
 	.setName("unwhitelist")
 	.setDescription("Disallow me from responding to messages in this channel")
 	.setExecution(async interaction => {
 		if (interaction.channel === null) {
-			throw new TypeError("Channel cannot be null");
+			throw new TypeError("Channel cannot be null.");
 		}
 
 		let embed: EmbedBuilder;
@@ -30,6 +31,10 @@ export const unwhitelist = new CommandHandler()
 		});
 	});
 
+/**
+ * @param channelID The ID of the channel that was unwhitelisted
+ * @returns An embed that says the channel was unwhitelisted
+ */
 function createSuccessEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
@@ -41,6 +46,10 @@ function createSuccessEmbed (channelID: string): EmbedBuilder {
 		);
 }
 
+/**
+ * @param channelID The ID of the channel that was not unwhitelisted
+ * @returns An embed that says the channel was already not whitelisted
+ */
 function createRedundantEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()

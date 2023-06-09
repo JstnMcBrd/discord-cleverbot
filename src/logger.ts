@@ -6,6 +6,11 @@ import colors from "@colors/colors/safe.js";
  */
 const logger: Console = console;
 
+/**
+ * Wrapper for `Console.error` that colors text red.
+ *
+ * @param message The message to print
+ */
 export function error (message?: unknown): void {
 	message = message ? message : "";
 
@@ -16,6 +21,11 @@ export function error (message?: unknown): void {
 	logger.error(message);
 }
 
+/**
+ * Wrpaper for `Console.warn` that colors text yellow.
+ *
+ * @param message The message to print
+ */
 export function warn (message?: unknown): void {
 	message = message ? message : "";
 
@@ -26,6 +36,11 @@ export function warn (message?: unknown): void {
 	logger.warn(message);
 }
 
+/**
+ * Wrapper for `Console.info` that colors text green.
+ *
+ * @param message The message to print
+ */
 export function info (message?: unknown): void {
 	message = message ? message : "";
 
@@ -36,6 +51,11 @@ export function info (message?: unknown): void {
 	logger.info(message);
 }
 
+/**
+ * Wrapper for `Console.debug` that colors text gray.
+ *
+ * @param message The message to print
+ */
 export function debug (message?: unknown): void {
 	message = message ? message : "";
 

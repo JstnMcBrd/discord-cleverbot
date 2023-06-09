@@ -4,14 +4,14 @@ import { join } from "node:path";
 import { getCurrentDirectory } from "./getCurrentDirectory.js";
 
 /**
- * // TODO
+ * @returns The relative file path of [package.json](../../package.json)
  */
 function getPackageFilePath (): string {
 	return join(getCurrentDirectory(import.meta.url), "..", "..", "package.json");
 }
 
 /**
- * Retrieves the version number from the npm [package.json](../../package.json) file.
+ * @returns The version number from the npm [package.json](../../package.json) file
  */
 export function getVersion (): string {
 	const filePath = getPackageFilePath();
@@ -24,6 +24,6 @@ export function getVersion (): string {
 		return npmPackage.version;
 	}
 	else {
-		throw new Error(`The npm package file at ${filePath} is missing the version number`);
+		throw new Error(`The npm package file at ${filePath} is missing the version number.`);
 	}
 }

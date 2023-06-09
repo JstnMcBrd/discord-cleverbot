@@ -7,20 +7,13 @@ import { error } from "../logger.js";
  * streamline event handler creation.
  */
 export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
-	/**
-	 * The name of this event.
-	 */
+	/** The name of this event. */
 	public readonly name: K;
 
-	/**
-	 * Whether this event can only fire once.
-	 * Determines whether the event is registered with `Client.on` or `Client.once`.
-	 */
+	/** Whether this event can only fire once. */
 	public readonly once: boolean = false;
 
-	/**
-	 * The method to call when the event fires.
-	 */
+	/** The method to call when the event fires. */
 	private execution?: typeof this.execute;
 
 	/**

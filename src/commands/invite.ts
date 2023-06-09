@@ -4,9 +4,7 @@ import type { ClientUser } from "discord.js";
 import { CommandHandler } from "./CommandHandler.js";
 import { embedColors } from "../parameters.js";
 
-/**
- * A command that allows the user to invite the bot to a new server.
- */
+/** A command that allows the user to invite the bot to a new server. */
 export const invite = new CommandHandler()
 	.setName("invite")
 	.setDescription("Add me to a new server")
@@ -28,9 +26,7 @@ export const invite = new CommandHandler()
 	});
 
 /**
- * Creates an embed that informs the user that the invite feature is disabled.
- *
- * @returns The embed
+ * @returns An embed that informs the user that the invite feature is disabled
  */
 function createDisabledEmbed (): EmbedBuilder {
 	return new EmbedBuilder()
@@ -39,11 +35,9 @@ function createDisabledEmbed (): EmbedBuilder {
 }
 
 /**
- * Creates a button that invites the bot to a new server.
- *
  * @param user The user account of the bot
  * @param disabled Whether the button should be disabled
- * @returns The invite button
+ * @returns A button that invites the bot to a new server
  */
 function createInviteButton (user: ClientUser, disabled: boolean): ButtonBuilder {
 	const inviteLink = createInviteLink(user);
@@ -55,10 +49,8 @@ function createInviteButton (user: ClientUser, disabled: boolean): ButtonBuilder
 }
 
 /**
- * Generates an invite link to add the bot to a new server with proper permissions.
- *
  * @param user The user account of the bot
- * @returns An invite link
+ * @returns An invite link to add the bot to a new server with proper permissions
  */
 function createInviteLink (user: ClientUser): string {
 	return `https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=277025459200&scope=bot%20applications.commands`;

@@ -1,7 +1,6 @@
 /**
- * Index for the events folder
- *
  * Loads all the event handlers and gives them to the Client.
+ *
  * Also contains other useful helper methods.
  */
 
@@ -14,6 +13,7 @@ import { messageCreate } from "./messageCreate.js";
 import { ready } from "./ready.js";
 import { debug, info } from "../logger.js";
 
+/** The list of all event handlers. */
 const events = new Map<string, EventHandler>;
 
 addEventHandler(error as EventHandler);
@@ -21,26 +21,34 @@ addEventHandler(interactionCreate as EventHandler);
 addEventHandler(messageCreate as EventHandler);
 addEventHandler(ready as EventHandler);
 
+/**
+ * Add the given event handler to the list of event handlers.
+ *
+ * @param event The event to add to the list
+ * @throws If there is already a handler for the same event in the list
+ */
 function addEventHandler (event: EventHandler): void {
 	const name = event.name;
 
 	if (events.has(name)) {
-		throw new TypeError(`Failed to add event handler '${name}' when an event with that name was already added`);
+		throw new TypeError(`Failed to add event handler '${name}' because an event with that name already exists.`);
 	}
 	events.set(name, event);
 }
 
 /**
- * // TODO
+ * @returns A read-only list of the event handlers
  */
 export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
 	return events;
 }
 
 /**
- * // TODO
+ * Registers all the event handlers with the client.
+ *
+ * @param client The client to register with
  */
-export function registerEventHandlers (client: Client) {
+export function registerEventHandlers (client: Client): void {
 	info("Setting client event handlers...");
 
 	getEventHandlers().forEach(event => {

@@ -1,16 +1,13 @@
 /*
- * Whitelist Manager
- *
  * The whitelist is the list of channels that the bot is allowed to speak in.
- * This global manager takes care of...
+ * This manager takes care of...
  * - loading the whitelist channel IDs from memory
  * - fetching and validating the channels
  * - adding and removing channels
  * - saving the whitelist channel IDs to memory
  *
- * Before the whitelist can be used, the following methods must be called in this order:
- * 1. `loadFrom` - to load the channel IDs from the whitelist memory file
- * 2. `populate` - to fetch the channels from the Discord API
+ * Before the whitelist can be used, `load()` must be called to read memory and fetch channels from
+ * the Discord API.
 */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -24,25 +21,15 @@ import { warn } from "../logger.js";
 
 /**
  * The format of the whitelist JSON file.
- * See an example in [accounts/ExampleUsername/whitelist.json](../../accounts/ExampleUsername/whitelist.json).
+ * See an example in [memory/example-user-id/whitelist.json](../../memory/example-user-id/whitelist.json).
  */
 type WhitelistFile = Snowflake[];
 
-/**
- * The file path of the whitelist memory file.
- */
+/** The file path of the whitelist memory file. */
 let filePath = "";
 
-/**
- * The validated list of channels included in the whitelist.
- */
-let whitelist: TextBasedChannel[] = [];
-
-/**
- * A temporary list of channel IDs loaded from the whitelist memory file,
- * waiting to be fetched from the Discord API.
- */
-let whitelistAsChannelIDs: WhitelistFile = [];
+/** The validated list of channels included in the whitelist. */
+const whitelist: TextBasedChannel[] = [];
 
 /**
  * Loads the whitelist from the memory file, and creates one if it does not yet exist.
@@ -73,16 +60,13 @@ export async function load (client: Client<true>): Promise<void> {
 	const json: unknown = JSON.parse(fileStr);
 
 	// Validate the file formatting
-	if (isValidWhitelistFile(json)) {
-		whitelistAsChannelIDs = json;
-	}
-	else {
+	if (!isValidWhitelistFile(json)) {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 
 	// Fetch and validate channels
-	whitelist = [];
-	for (const channelID of whitelistAsChannelIDs) {
+	whitelist.length = 0;
+	for (const channelID of json) {
 		const channel = await fetchAndValidateChannel(channelID, client);
 		if (channel !== undefined) {
 			whitelist.push(channel);
@@ -90,7 +74,7 @@ export async function load (client: Client<true>): Promise<void> {
 	}
 
 	// Overwrite memory file if there were any invalid channel IDs
-	if (whitelist.length < whitelistAsChannelIDs.length) {
+	if (whitelist.length < json.length) {
 		warn("Removing invalid channels from whitelist");
 		warn();
 		save();
@@ -111,49 +95,48 @@ function isValidWhitelistFile (json: unknown): json is WhitelistFile {
  * @returns The channel, or undefined if the channel could not be found or is invalid
  */
 async function fetchAndValidateChannel (channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
-	let channel = undefined;
+	// Test access
+	let channel: Channel | null;
 	try {
 		channel = await client.channels.fetch(channelID);
 	}
 	catch (error) {
-		if (error instanceof Error) {
-			if (error.message === "Unknown Channel") {
-				warn(`Found unknown channel in the whitelist with ID ${channelID}`);
-				return undefined;
-			}
-			else if (error.message === "Missing Access") {
-				warn(`Found restricted channel in the whitelist with ID ${channelID}`);
-				return undefined;
-			}
-		}
-		else {
+		if (!(error instanceof Error)) {
 			throw error;
 		}
-	}
 
-	if (channel === undefined || channel === null) {
+		if (error.message === "Unknown Channel") {
+			warn(`Found unknown channel in the whitelist with ID ${channelID}`);
+		}
+		else if (error.message === "Missing Access") {
+			warn(`Found restricted channel in the whitelist with ID ${channelID}`);
+		}
+		return undefined;
+	}
+	if (!channel) {
 		warn(`Could not find channel in the whitelist with ID ${channelID}`);
 		return undefined;
 	}
 
+	// Validate channel type
 	if (!isTextBasedChannel(channel)) {
 		warn(`Found channel of invalid type ${channel.constructor.name} in whitelist with ID ${channelID}`);
 		return undefined;
 	}
 
+	// Test message-reading permissions
 	try {
 		await channel.messages.fetch({ limit: 1 });
 	}
 	catch (error) {
-		if (error instanceof Error) {
-			if (error.message === "Missing Access") {
-				warn(`Found restricted channel in the whitelist with ID ${channelID}`);
-				return undefined;
-			}
-		}
-		else {
+		if (!(error instanceof Error)) {
 			throw error;
 		}
+
+		if (error.message === "Missing Access") {
+			warn(`Found restricted channel in the whitelist with ID ${channelID}`);
+		}
+		return undefined;
 	}
 
 	return channel;
@@ -185,8 +168,8 @@ export function getWhitelist (): readonly TextBasedChannel[] {
  * Writes the whitelist channel IDs to the memory file.
  */
 function save (): void {
-	whitelistAsChannelIDs = getWhitelist().map(channel => channel.id);
-	writeFileSync(filePath, JSON.stringify(whitelistAsChannelIDs));
+	const ids = getWhitelist().map(channel => channel.id);
+	writeFileSync(filePath, JSON.stringify(ids));
 }
 
 /**

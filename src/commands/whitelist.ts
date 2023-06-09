@@ -5,12 +5,13 @@ import { generateContext } from "../memory/context.js";
 import { addChannel as whitelistChannel } from "../memory/whitelist.js";
 import { embedColors } from "../parameters.js";
 
+/** A command that adds a channel to the whitelist. */
 export const whitelist = new CommandHandler()
 	.setName("whitelist")
 	.setDescription("Allow me to respond to messages in this channel")
 	.setExecution(async interaction => {
 		if (interaction.channel === null) {
-			throw new TypeError("Channel cannot be null");
+			throw new TypeError("Channel cannot be null.");
 		}
 
 		let embed: EmbedBuilder;
@@ -30,6 +31,10 @@ export const whitelist = new CommandHandler()
 		});
 	});
 
+/**
+ * @param channelID The ID of the channel that was whitelisted
+ * @returns An embed that says the channel was whitelisted
+ */
 function createSuccessEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
@@ -41,6 +46,10 @@ function createSuccessEmbed (channelID: string): EmbedBuilder {
 		);
 }
 
+/**
+ * @param channelID The ID of the channel that was not whitelisted
+ * @returns An embed that says the channel was already whitelisted
+ */
 function createRedundantEmbed (channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()

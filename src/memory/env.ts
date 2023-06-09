@@ -1,8 +1,5 @@
 /*
- * Environment Variable Manager
- *
- * This global manager takes care of loading environment variables from the `.env` file and
- * returning the values.
+ * This manager takes care of loading and returning environment variables from the `.env` file.
 */
 
 import { config } from "dotenv";
@@ -11,14 +8,12 @@ import { config } from "dotenv";
  * The expected format of the `.env` file.
  * See an example in [.env-example](../../.env-example).
  */
-interface Env {
+interface EnvironmentVariables {
 	TOKEN: string;
 }
 
-/**
- * The local copy of the environment.
- */
-let env: Env;
+/** The local copy of the environment variables. */
+let env: EnvironmentVariables;
 
 /**
  * Loads the environment from the `.env` file and validates the formatting.
@@ -43,7 +38,7 @@ export function load (): void {
 /**
  * WARNING: do not store or log your token in any publicly available place, or your bot will get hacked!
  *
- * @returns the discord token necessary to log-in the client
+ * @returns The discord token necessary to authenticate the client
  */
 export function getToken (): string {
 	return env.TOKEN;

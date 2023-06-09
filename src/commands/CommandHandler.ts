@@ -9,9 +9,7 @@ import { error } from "../logger.js";
  * method to streamline command handler creation.
  */
 export class CommandHandler extends SlashCommandBuilder {
-	/**
-	 * The method to call when the command is received.
-	 */
+	/** The method to call when the command is received. */
 	private execution?: typeof this.execute;
 
 	/**
@@ -37,7 +35,7 @@ export class CommandHandler extends SlashCommandBuilder {
 			}
 			catch (err) {
 				error(err);
-				replyWithError(interaction, err);
+				void replyWithError(interaction, err);
 			}
 		}
 	}

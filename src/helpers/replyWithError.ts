@@ -7,7 +7,7 @@ import { embedColors } from "../parameters.js";
 /**
  * Replies to a Discord message with an error message.
  */
-export function replyWithError (message: Message|ChatInputCommandInteraction, internalError: Error|unknown) {
+export async function replyWithError (message: Message|ChatInputCommandInteraction, internalError: Error|unknown): Promise<void> {
 	const stringifiedError = String(internalError);
 
 	// Format the message as an embed
@@ -21,12 +21,14 @@ export function replyWithError (message: Message|ChatInputCommandInteraction, in
 
 	// Send the error message as a reply
 	info("Sending error message");
-	message.reply({ embeds: [embed] }).then(() => {
+	try {
+		await message.reply({ embeds: [embed] });
 		info("Error message sent successfully");
 		info();
-	}).catch(err => {
+	}
+	catch (err) {
 		error(err);
 		warn("Failed to send error message");
 		warn();
-	});
+	}
 }

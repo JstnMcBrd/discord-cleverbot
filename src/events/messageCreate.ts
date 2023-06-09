@@ -12,9 +12,7 @@ import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { debug, error, info, warn } from "../logger.js";
 import { typingSpeed } from "../parameters.js";
 
-/**
- * Called whenever the discord.js client observes a new message.
- */
+/** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
 	.setExecution(async function (message: Message): Promise<void> {
@@ -138,7 +136,7 @@ export const messageCreate = new EventHandler("messageCreate")
 			else {
 				info("Replying with error message");
 				info();
-				replyWithError(message, error);
+				void replyWithError(message, error);
 			}
 		});
 	});
