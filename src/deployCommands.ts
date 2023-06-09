@@ -1,29 +1,17 @@
 /*
  * This is a simple and lightweight script to deploy slash commands to Discord.
  * It only needs to be run when commands are updated.
- *
- * Usage: node deploy-commands.js [account name]
 */
 
 import { Client } from "discord.js";
 import type { ApplicationCommandDataResolvable } from "discord.js";
 
 import { getCommandHandlers } from "./commands/index.js";
-import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
+import { getToken, load as loadEnv } from "./memory/env.js";
 import { error, info } from "./logger.js";
 
-// Verify input
-function usage (): void {
-	error("Usage: node deploy-commands.js [account name]");
-}
-if (process.argv[2] === undefined) {
-	usage();
-	process.exit(1);
-}
-const accountName = process.argv[2];
-
-// Import auth token
-loadConfigFrom(accountName);
+// Import token
+loadEnv();
 const token = getToken();
 
 // Get the JSON data of the commands

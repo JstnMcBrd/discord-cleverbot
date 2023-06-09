@@ -24,14 +24,14 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 ### Setting up the code
 
 3. Run `git pull https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo
-4. Go into the `/accounts` directory, duplicate the `ExampleUsername` folder, and rename it as the username of your bot
-5. Inside the new folder, edit `config.json` and replace `example-token` with the access token
+4. Create a new file called `.env` and add your access token, using `.env-example` as an example
+5. Go into the `/accounts` directory, duplicate the `ExampleUsername` folder, and rename it as the username of your bot
 
 ### Running the code
 
 6. In the top directory, run `npm install` to download all necessary packages
 7. Run `npm run build` to build the project
-8. Run `npm run commands [bot username]` to register slash commands with Discord
+8. Run `npm run commands` to register slash commands with Discord
 9. Run `npm start [bot username]` to start the bot
 
 ### Interacting with the bot

@@ -7,7 +7,7 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events/index.js";
 import { getCurrentDirectory } from "./helpers/getCurrentDirectory.js";
-import { getToken, loadFrom as loadConfigFrom } from "./memory/config.js";
+import { getToken, load as loadEnv } from "./memory/env.js";
 import { loadFrom as loadWhitelistFrom } from "./memory/whitelist.js";
 import { error, info, warn } from "./logger.js";
 
@@ -20,24 +20,20 @@ const connectionRetryWait = 10;
 /* Validate input */
 
 const accountName = process.argv[2];
-
 if (accountName === undefined) {
 	warn("usage: npm start [ACCOUNT NAME]");
 	process.exit(1);
 }
 
 const filePath = join(getCurrentDirectory(import.meta.url), "..", "accounts", accountName);
-
 if (!existsSync(filePath)) {
 	error(`Invalid account name: ${accountName}`);
 	error("Account directory does not exist");
 	process.exit(1);
 }
 
-const configFilePath = join(filePath, "config.json");
 const whitelistFilePath = join(filePath, "whitelist.json");
-
-if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
+if (!existsSync(whitelistFilePath)) {
 	error(`Invalid account name: ${accountName}`);
 	error("Account directory does not contain necessary memory files");
 	process.exit(1);
@@ -45,7 +41,7 @@ if (!existsSync(configFilePath) || !existsSync(whitelistFilePath)) {
 
 /* Load memory files */
 
-loadConfigFrom(accountName);
+loadEnv();
 loadWhitelistFrom(accountName);
 
 /* Setup client */
