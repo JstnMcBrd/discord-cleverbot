@@ -11,11 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "localRoot": "${workspaceFolder}\\dist",
-            "program": "main.js",
-            "args": [
-                "ExampleUsername"
-            ]
+            "program": "./dist/main.js",
         }
     ]
 }

@@ -3,5 +3,5 @@ dist
 .misc
 todo
 .env
-accounts/*
-!accounts/ExampleUsername
+memory/*
+!memory/example-user-id

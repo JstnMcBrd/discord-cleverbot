@@ -13,7 +13,7 @@
  * 2. `populate` - to fetch the channels from the Discord API
 */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
@@ -26,7 +26,7 @@ import { warn } from "../logger.js";
  * The format of the whitelist JSON file.
  * See an example in [accounts/ExampleUsername/whitelist.json](../../accounts/ExampleUsername/whitelist.json).
  */
-export type WhitelistFile = Snowflake[];
+type WhitelistFile = Snowflake[];
 
 /**
  * The file path of the whitelist memory file.
@@ -45,16 +45,26 @@ let whitelist: TextBasedChannel[] = [];
 let whitelistAsChannelIDs: WhitelistFile = [];
 
 /**
- * Sets the account name and loads the whitelist from the memory file.
+ * Loads the whitelist from the memory file, and creates one if it does not yet exist.
  * Saves the channel IDs for later to be fetched by calling `populate`.
  *
  * Should be called before trying to use the whitelist.
  *
- * @param account a valid account name
- * @throws if the account name is not valid, or if the memory file is improperly formatted
+ * @param userID The bot user's ID
+ * @throws If the memory file is improperly formatted
  */
-export function loadFrom (account: string): void {
-	filePath = join(getCurrentDirectory(import.meta.url), "..", "..", "accounts", account, "whitelist.json");
+export function loadFrom (userID: string): void {
+	// Create the user's memory directory if it does not exist
+	const directoryPath = join(getCurrentDirectory(import.meta.url), "..", "..", "memory", userID);
+	if (!existsSync(directoryPath)) {
+		mkdirSync(directoryPath, { recursive: true });
+	}
+
+	// Create the whitelist file if it does not exist
+	filePath = join(directoryPath, "whitelist.json");
+	if (!existsSync(filePath)) {
+		save();
+	}
 
 	// Load the memory file
 	const fileBuffer = readFileSync(filePath);
@@ -66,12 +76,12 @@ export function loadFrom (account: string): void {
 		whitelistAsChannelIDs = json;
 	}
 	else {
-		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted`);
+		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 }
 
 /**
- * @returns whether the given JSON is a properly formatted whitelist file
+ * @returns Whether the given JSON is a properly formatted whitelist file
  */
 function isValidWhitelistFile (json: unknown): json is WhitelistFile {
 	return Array.isArray(json)
@@ -86,7 +96,7 @@ function isValidWhitelistFile (json: unknown): json is WhitelistFile {
  *
  * Important: the client passed to this method must be logged in to the account that the whitelist is for.
  *
- * @param client a logged-in Discord client to use to fetch channels
+ * @param client A logged-in Discord client to use to fetch channels
  */
 export async function populate (client: Client) {
 	// Fetch and validate channels
@@ -109,7 +119,7 @@ export async function populate (client: Client) {
 /**
  * Fetches the given channel from the Discord API and validates it.
  *
- * @returns the channel, or undefined if the channel could not be found or is invalid
+ * @returns The channel, or undefined if the channel could not be found or is invalid
  */
 async function fetchAndValidateChannel (channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
 	let channel = undefined;
@@ -161,7 +171,7 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 }
 
 /**
- * @returns whether the given channel is a text-based channel
+ * @returns Whether the given channel is a text-based channel
  */
 function isTextBasedChannel (channel: Channel): channel is TextBasedChannel {
 	return channel instanceof DMChannel
@@ -176,7 +186,7 @@ function isTextBasedChannel (channel: Channel): channel is TextBasedChannel {
  * Only returns a read-only copy of the whitelist to prevent illegal editing.
  * Use the `addChannel` and `removeChannel` methods for whitelist editing.
  *
- * @returns a read-only copy of the whitelist
+ * @returns A read-only copy of the whitelist
  */
 export function getWhitelist (): readonly TextBasedChannel[] {
 	return whitelist;
@@ -193,8 +203,8 @@ function save (): void {
 /**
  * Adds a channel to the whitelist and saves the memory file.
  *
- * @param channel the channel to whitelist
- * @returns true if successful, false if the channel was already in the whitelist
+ * @param channel The channel to whitelist
+ * @returns `true` if successful, `false` if the channel was already in the whitelist
  */
 export function addChannel (channel: TextBasedChannel): boolean {
 	if (!hasChannel(channel)) {
@@ -208,8 +218,8 @@ export function addChannel (channel: TextBasedChannel): boolean {
 /**
  * Removes a channel from the whitelist and saves the memory file.
  *
- * @param channel the channel to unwhitelist
- * @returns true if successful, false if the whitelist doesn't have the channel
+ * @param channel The channel to unwhitelist
+ * @returns `true` if successful, `false` if the channel was already not in the whitelist
  */
 export function removeChannel (channel: TextBasedChannel): boolean {
 	if (hasChannel(channel)) {
@@ -223,8 +233,8 @@ export function removeChannel (channel: TextBasedChannel): boolean {
 /**
  * Checks if a channel is in the whitelist.
  *
- * @param channel the channel to check
- * @returns true if the channel is in the whitelist, false if not
+ * @param channel The channel to check
+ * @returns `true` if the channel is in the whitelist, `false` if not
  */
 export function hasChannel (channel: TextBasedChannel): boolean {
 	return whitelist.includes(channel);
