@@ -46,16 +46,17 @@ let whitelistAsChannelIDs: WhitelistFile = [];
 
 /**
  * Loads the whitelist from the memory file, and creates one if it does not yet exist.
- * Saves the channel IDs for later to be fetched by calling `populate`.
+ * Fetches the channels from the Discord API, validates each channel, and removes invalid channels
+ * by overwriting the whitelist memory file afterwards.
  *
  * Should be called before trying to use the whitelist.
  *
- * @param userID The bot user's ID
+ * @param client The current logged-in client
  * @throws If the memory file is improperly formatted
  */
-export function loadFrom (userID: string): void {
+export async function load (client: Client<true>): Promise<void> {
 	// Create the user's memory directory if it does not exist
-	const directoryPath = join(getCurrentDirectory(import.meta.url), "..", "..", "memory", userID);
+	const directoryPath = join(getCurrentDirectory(import.meta.url), "..", "..", "memory", client.user.id);
 	if (!existsSync(directoryPath)) {
 		mkdirSync(directoryPath, { recursive: true });
 	}
@@ -66,7 +67,7 @@ export function loadFrom (userID: string): void {
 		save();
 	}
 
-	// Load the memory file
+	// Load the whitelist file
 	const fileBuffer = readFileSync(filePath);
 	const fileStr = fileBuffer.toString();
 	const json: unknown = JSON.parse(fileStr);
@@ -78,27 +79,7 @@ export function loadFrom (userID: string): void {
 	else {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
-}
 
-/**
- * @returns Whether the given JSON is a properly formatted whitelist file
- */
-function isValidWhitelistFile (json: unknown): json is WhitelistFile {
-	return Array.isArray(json)
-		&& json.every(value => typeof value === "string");
-}
-
-/**
- * Uses the saved list of channel IDs from `loadFrom` and fetches the channels from the Discord API.
- * Validates each channel and removes invalid channels by overwriting the whitelist memory file afterwards.
- *
- * Should be called after calling `loadFrom` and before trying to use the whitelist.
- *
- * Important: the client passed to this method must be logged in to the account that the whitelist is for.
- *
- * @param client A logged-in Discord client to use to fetch channels
- */
-export async function populate (client: Client) {
 	// Fetch and validate channels
 	whitelist = [];
 	for (const channelID of whitelistAsChannelIDs) {
@@ -114,6 +95,14 @@ export async function populate (client: Client) {
 		warn();
 		save();
 	}
+}
+
+/**
+ * @returns Whether the given JSON is a properly formatted whitelist file
+ */
+function isValidWhitelistFile (json: unknown): json is WhitelistFile {
+	return Array.isArray(json)
+		&& json.every(value => typeof value === "string");
 }
 
 /**

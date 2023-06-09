@@ -3,7 +3,7 @@ import type { Client, Message } from "discord.js";
 import { messageCreate } from "./events/messageCreate.js";
 import { isFromUser } from "./helpers/messageAnalysis.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "./memory/context.js";
-import { populate as populateWhitelist, getWhitelist } from "./memory/whitelist.js";
+import { load as loadWhitelist, getWhitelist } from "./memory/whitelist.js";
 import { info } from "./logger.js";
 
 /**
@@ -21,12 +21,12 @@ const refreshFrequency = 1 * 60 * 60;
  *
  * This method will automatically repeat itself on a regular basis.
  */
-export async function refresh (client: Client): Promise<void> {
+export async function refresh (client: Client<true>): Promise<void> {
 	info("Refreshing...");
 
 	// Validate the whitelist
-	info("\tRefreshing whitelist channels...");
-	await populateWhitelist(client);
+	info("\tRefreshing whitelist...");
+	await loadWhitelist(client);
 
 	// Update context for all whitelisted channels
 	info("\tRefreshing context...");
