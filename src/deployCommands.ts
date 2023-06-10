@@ -8,7 +8,6 @@ import type { ApplicationCommandDataResolvable } from "discord.js";
 
 import { getCommandHandlers } from "./commands/index.js";
 import { getToken, load as loadEnv } from "./memory/env.js";
-import { error, info } from "./logger.js";
 
 // Load environment variables
 loadEnv();
@@ -18,21 +17,15 @@ const token = getToken();
 const commandJSONs: ApplicationCommandDataResolvable[] = [];
 getCommandHandlers().forEach(command => {
 	commandJSONs.push(command.toJSON());
-	info(`Retrieved /${command.name}`);
 });
 
 // Log in to the Client
 const client = new Client({ intents: [] });
-client.login(token)
-	.then(() => info("Client logged in"))
-	.catch(error);
+void client.login(token);
 
 // Register the commands with Discord
 client.once("ready", async c => {
-	const data = await c.application.commands.set(commandJSONs);
-	info(`Successfully deployed ${data.size} application commands`);
-
+	await c.application.commands.set(commandJSONs);
 	// Make sure to log out
-	info("Client logging out...");
 	c.destroy();
 });

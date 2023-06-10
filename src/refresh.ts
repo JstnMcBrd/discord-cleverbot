@@ -4,7 +4,6 @@ import { messageCreate } from "./events/messageCreate.js";
 import { isFromUser } from "./helpers/messageAnalysis.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "./memory/context.js";
 import { load as loadWhitelist, getWhitelist } from "./memory/whitelist.js";
-import { info } from "./logger.js";
 
 /** How often to refresh (in seconds). */
 const refreshFrequency = 1 * 60 * 60;
@@ -21,13 +20,9 @@ const refreshFrequency = 1 * 60 * 60;
  * @param client The current logged-in client
  */
 export async function refresh (client: Client<true>): Promise<void> {
-	info("Refreshing...");
-
 	// Validate the whitelist
-	info("\tRefreshing whitelist...");
 	await loadWhitelist(client);
 
-	info("\tRefreshing context...");
 	// Update context for all whitelisted channels (in parallel)
 	await Promise.all(
 		getWhitelist().map(
@@ -40,7 +35,6 @@ export async function refresh (client: Client<true>): Promise<void> {
 
 	// Repeat at regular intervals
 	setTimeout(() => void refresh(client), refreshFrequency * 1000);
-	info(`Refreshing again in ${refreshFrequency} seconds`);
 }
 
 /**
@@ -49,8 +43,6 @@ export async function refresh (client: Client<true>): Promise<void> {
  * @param client The current logged-in client
  */
 function resumeConversations (client: Client<true>): void {
-	info("\tSearching for missed messages...");
-
 	const toRespondTo: Message[] = [];
 	getWhitelist().forEach(channel => {
 		// Get the context
@@ -72,13 +64,8 @@ function resumeConversations (client: Client<true>): void {
 	});
 
 	// Respond to missed messages
-	if (toRespondTo.length !== 0) {
-		info(`\t\tFound ${toRespondTo.length} missed messages`);
-		info("\t\tForwarding messages to message handler");
-		info();
-		toRespondTo.forEach(message => {
-			removeLastMessageFromContext(message.channel);
-			void messageCreate.execute(message);
-		});
-	}
+	toRespondTo.forEach(message => {
+		removeLastMessageFromContext(message.channel);
+		void messageCreate.execute(message);
+	});
 }

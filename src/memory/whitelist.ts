@@ -17,7 +17,6 @@ import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, Voice
 import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 
 import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
-import { warn } from "../logger.js";
 
 /**
  * The format of the whitelist JSON file.
@@ -79,8 +78,6 @@ export async function load (client: Client<true>): Promise<void> {
 
 	// Overwrite memory file if there were any invalid channel IDs
 	if (whitelist.length < json.length) {
-		warn("Removing invalid channels from whitelist");
-		warn();
 		save();
 	}
 }
@@ -109,22 +106,18 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 			throw error;
 		}
 
-		if (error.message === "Unknown Channel") {
-			warn(`Found unknown channel in the whitelist with ID ${channelID}`);
-		}
-		else if (error.message === "Missing Access") {
-			warn(`Found restricted channel in the whitelist with ID ${channelID}`);
-		}
+		// if (error.message === "Unknown Channel") {
+		// }
+		// else if (error.message === "Missing Access") {
+		// }
 		return undefined;
 	}
 	if (!channel) {
-		warn(`Could not find channel in the whitelist with ID ${channelID}`);
 		return undefined;
 	}
 
 	// Validate channel type
 	if (!isTextBasedChannel(channel)) {
-		warn(`Found channel of invalid type ${channel.constructor.name} in whitelist with ID ${channelID}`);
 		return undefined;
 	}
 
@@ -137,9 +130,8 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 			throw error;
 		}
 
-		if (error.message === "Missing Access") {
-			warn(`Found restricted channel in the whitelist with ID ${channelID}`);
-		}
+		// if (error.message === "Missing Access") {
+		// }
 		return undefined;
 	}
 

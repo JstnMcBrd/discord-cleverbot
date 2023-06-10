@@ -8,8 +8,6 @@
 import { ActivityType } from "discord.js";
 import type { ActivityOptions, Client } from "discord.js";
 
-import { error, info, warn } from "./logger.js";
-
 /** How often to update the activity (in seconds). */
 const activityUpdateFrequency = 5 * 60;
 
@@ -38,19 +36,15 @@ const activityOptions: ActivityOptions = {
  * @param client The current logged-in client
  */
 export function start (client: Client): void {
-	info("Setting user activity...");
 	try {
 		setActivity(client);
 	}
 	catch (err) {
-		error(err);
-		warn("Failed to set user activity");
+		//
 	}
 
 	// Set user activity at regular intervals
-	setTimeout(start, activityUpdateFrequency * 1000, client);
-	info(`Setting again in ${activityUpdateFrequency} seconds`);
-	info();
+	setTimeout(() => start(client), activityUpdateFrequency * 1000);
 }
 
 /**

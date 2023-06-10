@@ -2,14 +2,12 @@ import cleverbot from "cleverbot-free";
 import type { Message } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
-import { indent } from "../helpers/indent.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
 import { replyWithError } from "../helpers/replyWithError.js";
 import { addToContext, generateContext, getContextAsFormattedPrompts, hasContext, removeLastMessageFromContext } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
-import { debug, error, info, warn } from "../logger.js";
 import { typingSpeed } from "../parameters.js";
 
 /** The error message to throw if the Cleverbot module returns an empty string. */
@@ -52,18 +50,12 @@ export const messageCreate = new EventHandler("messageCreate")
 			return;
 		}
 
-		info("Received new message");
-		debug(indent(debugMessage(message), 1));
-
 		// Format the prompt
-		info("Formatting prompt");
 		const prompt = formatPrompt(message);
-		debug(indent(`Prompt: ${prompt}`, 1));
 
 		// Generate or update conversation context (but only for whitelisted channels)
 		// TODO is this necessary anymore?
 		if (isWhitelisted(message.channel) && !hasContext(message.channel)) {
-			info("Generating new channel context");
 			await generateContext(message.channel, client);
 			removeLastMessageFromContext(message.channel);
 		}
@@ -72,22 +64,16 @@ export const messageCreate = new EventHandler("messageCreate")
 		startThinking(message.channel);
 
 		// Actually generate response
-		info("Generating response");
 		cleverbot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
 			// Sometimes cleverbot goofs and returns an empty response
 			if (response === "") {
 				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
 			}
 
-			info("Generated response successfully");
-			debug(`\tResponse: ${response}`);
-
 			// Determine how long to show the typing indicator before sending the message (seconds)
 			const timeTypeSec = response.length / typingSpeed;
 			void message.channel.sendTyping();
 			// Will automatically stop typing when message sends
-
-			info("Sending message");
 
 			function respond () {
 				let messagePromise: Promise<Message>;
@@ -102,19 +88,13 @@ export const messageCreate = new EventHandler("messageCreate")
 				}
 
 				messagePromise.then(responseMessage => {
-					info("Sent message successfully");
-
 					// Update conversation context (but only for whitelisted channels)
 					if (isWhitelisted(message.channel)) {
-						info("Updating channel context");
 						addToContext(message.channel, message);
 						addToContext(message.channel, responseMessage);
 					}
-
-					info();
 				}).catch(err => {
-					error(err);
-					warn("Failed to send message");
+					//
 				});
 
 				// Allow bot to think about new messages now
@@ -127,42 +107,17 @@ export const messageCreate = new EventHandler("messageCreate")
 			// Stop thinking so bot can respond in future
 			stopThinking(message.channel);
 
-			// Log the error
-			error(err);
-			warn("Failed to generate response");
-
 			// If error is timeout, then try again
 			const errorMessage: string|unknown = err instanceof Error ? err.message : err;
 
 			if (errorMessage === RESPONSE_TIMEOUT_ERROR_MESSAGE
 				|| errorMessage === MAX_TRIES_ERROR_MESSAGE
 				|| errorMessage === EMPTY_STRING_ERROR_MESSAGE) {
-				info("Trying again");
-				info();
 				void messageCreate.execute(message);
 			}
 			// If unknown error, then respond to message with error message
 			else {
-				info("Replying with error message");
-				info();
-				void replyWithError(message, error);
+				void replyWithError(message, err);
 			}
 		});
 	});
-
-/**
- * Formats important information about a message to a string.
- */
-function debugMessage (message: Message): string {
-	let str = "MESSAGE";
-	str += `\nContent: ${message.cleanContent}`;
-	str += `\nAuthor:  ${message.author.tag} (${message.author.id})`;
-	if (!message.channel.isDMBased()) {
-		str += `\nChannel: ${message.channel.name} (${message.channel.id})`;
-	}
-	// Compensate for DMs
-	if (message.guild !== null) {
-		str += `\nGuild:   ${message.guild.name} (${message.guild.id})`;
-	}
-	return str;
-}

@@ -11,7 +11,6 @@ import type { EventHandler } from "./EventHandler.js";
 import { interactionCreate } from "./interactionCreate.js";
 import { messageCreate } from "./messageCreate.js";
 import { ready } from "./ready.js";
-import { debug, info } from "../logger.js";
 
 /** The list of all event handlers. */
 const events = new Map<string, EventHandler>;
@@ -49,8 +48,6 @@ export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
  * @param client The client to register with
  */
 export function registerEventHandlers (client: Client): void {
-	info("Setting client event handlers...");
-
 	getEventHandlers().forEach(event => {
 		if (event.once) {
 			client.once(event.name, (...args) => event.execute(...args));
@@ -58,8 +55,5 @@ export function registerEventHandlers (client: Client): void {
 		else {
 			client.on(event.name, (...args) => event.execute(...args));
 		}
-		debug(`\tSet ${event.once ? "once" : "on"}(${event.name})`);
 	});
-
-	info();
 }
