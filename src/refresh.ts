@@ -27,11 +27,13 @@ export async function refresh (client: Client<true>): Promise<void> {
 	info("\tRefreshing whitelist...");
 	await loadWhitelist(client);
 
-	// Update context for all whitelisted channels
 	info("\tRefreshing context...");
-	for (const channel of getWhitelist()) {
-		await generateContext(channel, client);
-	}
+	// Update context for all whitelisted channels (in parallel)
+	await Promise.all(
+		getWhitelist().map(
+			async channel => await generateContext(channel, client),
+		),
+	);
 
 	// Follow-up on any missed messages
 	resumeConversations(client);

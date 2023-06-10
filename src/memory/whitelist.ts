@@ -64,14 +64,18 @@ export async function load (client: Client<true>): Promise<void> {
 		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 
-	// Fetch and validate channels
+	// Fetch and validate channels (in parallel)
 	whitelist.length = 0;
-	for (const channelID of json) {
-		const channel = await fetchAndValidateChannel(channelID, client);
-		if (channel !== undefined) {
-			whitelist.push(channel);
-		}
-	}
+	await Promise.all(
+		json.map(
+			async channelID => {
+				const channel = await fetchAndValidateChannel(channelID, client);
+				if (channel) {
+					whitelist.push(channel);
+				}
+			},
+		),
+	);
 
 	// Overwrite memory file if there were any invalid channel IDs
 	if (whitelist.length < json.length) {
