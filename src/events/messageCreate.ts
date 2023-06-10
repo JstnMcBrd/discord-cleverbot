@@ -12,6 +12,18 @@ import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { debug, error, info, warn } from "../logger.js";
 import { typingSpeed } from "../parameters.js";
 
+/** The error message to throw if the Cleverbot module returns an empty string. */
+const EMPTY_STRING_ERROR_MESSAGE = "Cleverbot returned an empty string";
+
+/** The error message the superagent throws if the HTTP request times out. */
+const RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms exceeded";
+
+/**
+ * The error messsage the Cleverbot module throws if it fails after 15 tries.
+ * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js)
+*/
+const MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries";
+
 /** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
@@ -64,10 +76,7 @@ export const messageCreate = new EventHandler("messageCreate")
 		cleverbot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
 			// Sometimes cleverbot goofs and returns an empty response
 			if (response === "") {
-				const err = new Error();
-				err.name = "Invalid Cleverbot Response";
-				err.message = "Response is an empty string";
-				throw err;
+				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
 			}
 
 			info("Generated response successfully");
@@ -125,9 +134,9 @@ export const messageCreate = new EventHandler("messageCreate")
 			// If error is timeout, then try again
 			const errorMessage: string|unknown = err instanceof Error ? err.message : err;
 
-			if (errorMessage === "Response timeout of 10000ms exceeded" ||
-			errorMessage === "Failed to get a response after 15 tries" ||
-			errorMessage === "Response is an empty string") {
+			if (errorMessage === RESPONSE_TIMEOUT_ERROR_MESSAGE
+				|| errorMessage === MAX_TRIES_ERROR_MESSAGE
+				|| errorMessage === EMPTY_STRING_ERROR_MESSAGE) {
 				info("Trying again");
 				info();
 				void messageCreate.execute(message);
