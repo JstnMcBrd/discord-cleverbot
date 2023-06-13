@@ -20,7 +20,7 @@ const RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms exceeded";
  * The error messsage the Cleverbot module throws if it fails after 15 tries.
  * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js)
 */
-const MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries";
+const MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
 
 /** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
@@ -107,12 +107,11 @@ export const messageCreate = new EventHandler("messageCreate")
 			// Stop thinking so bot can respond in future
 			stopThinking(message.channel);
 
-			// If error is timeout, then try again
-			const errorMessage: string|unknown = err instanceof Error ? err.message : err;
-
-			if (errorMessage === RESPONSE_TIMEOUT_ERROR_MESSAGE
-				|| errorMessage === MAX_TRIES_ERROR_MESSAGE
-				|| errorMessage === EMPTY_STRING_ERROR_MESSAGE) {
+			// If cleverbot goofed, then try again
+			if (err instanceof Error
+				&& (err.message === RESPONSE_TIMEOUT_ERROR_MESSAGE
+					|| err.message === MAX_TRIES_ERROR_MESSAGE
+					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
 			// If unknown error, then respond to message with error message
