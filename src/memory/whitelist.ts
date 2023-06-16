@@ -101,16 +101,15 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 	try {
 		channel = await client.channels.fetch(channelID);
 	}
-	catch (error) {
-		if (!(error instanceof Error)) {
-			throw error;
+	catch (err) {
+		if (err instanceof Error) {
+			if (err.message === "Unknown Channel"
+				|| err.message === "Missing Access") {
+				return undefined;
+			}
 		}
 
-		// if (error.message === "Unknown Channel") {
-		// }
-		// else if (error.message === "Missing Access") {
-		// }
-		return undefined;
+		throw err;
 	}
 	if (!channel) {
 		return undefined;
@@ -125,14 +124,14 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 	try {
 		await channel.messages.fetch({ limit: 1 });
 	}
-	catch (error) {
-		if (!(error instanceof Error)) {
-			throw error;
+	catch (err) {
+		if (err instanceof Error) {
+			if (err.message === "Missing Access") {
+				return undefined;
+			}
 		}
 
-		// if (error.message === "Missing Access") {
-		// }
-		return undefined;
+		throw err;
 	}
 
 	return channel;
