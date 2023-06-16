@@ -9,6 +9,7 @@ import { addToContext, getContextAsFormattedPrompts } from "../memory/context.js
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { typingSpeed } from "../parameters.js";
+import { debug, error, info } from "../logger.js";
 
 /** The error message to throw if the Cleverbot module returns an empty string. */
 const EMPTY_STRING_ERROR_MESSAGE = "Cleverbot returned an empty string";
@@ -86,9 +87,7 @@ export const messageCreate = new EventHandler("messageCreate")
 						addToContext(message.channel, message);
 						addToContext(message.channel, responseMessage);
 					}
-				}).catch(err => {
-					//
-				});
+				}).catch(error);
 
 				// Allow bot to think about new messages now
 				stopThinking(message.channel);
@@ -96,7 +95,18 @@ export const messageCreate = new EventHandler("messageCreate")
 
 			// Send the message once the typing time is over
 			setTimeout(respond, timeTypeSec * 1000);
+
+			info("Generated response");
+			debug(`\tChannel: ${
+				message.channel.isDMBased()
+					? `@${message.channel.recipient?.username ?? "unknown user"}`
+					: `#${message.channel.name}`
+			} (${message.channelId})`);
+			debug(`\tPrompt: ${prompt}`);
+			debug(`\tResponse: ${response}`);
 		}).catch(err => {
+			error(err);
+
 			// Stop thinking so bot can respond in future
 			stopThinking(message.channel);
 

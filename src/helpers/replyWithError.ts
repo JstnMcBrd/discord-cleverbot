@@ -2,6 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import type { ChatInputCommandInteraction, Message } from "discord.js";
 
 import { embedColors } from "../parameters.js";
+import { error } from "../logger.js";
 
 /**
  * Replies to a Discord message with an error message.
@@ -23,6 +24,6 @@ export async function replyWithError (message: Message|ChatInputCommandInteracti
 		await message.reply({ embeds: [embed] });
 	}
 	catch (err) {
-		//
+		error(err);
 	}
 }

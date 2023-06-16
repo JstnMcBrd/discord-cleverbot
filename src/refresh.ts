@@ -4,6 +4,7 @@ import { messageCreate } from "./events/messageCreate.js";
 import { isFromUser } from "./helpers/messageAnalysis.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "./memory/context.js";
 import { load as loadWhitelist, getWhitelist } from "./memory/whitelist.js";
+import { info } from "./logger.js";
 
 /** How often to refresh (in seconds). */
 const refreshFrequency = 1 * 60 * 60;
@@ -20,6 +21,8 @@ const refreshFrequency = 1 * 60 * 60;
  * @param client The current logged-in client
  */
 export async function refresh (client: Client<true>): Promise<void> {
+	info("Refreshing...");
+
 	// Validate the whitelist
 	await loadWhitelist(client);
 

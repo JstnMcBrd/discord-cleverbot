@@ -8,6 +8,8 @@
 import { ActivityType } from "discord.js";
 import type { ActivityOptions, Client } from "discord.js";
 
+import { error, info } from "./logger.js";
+
 /** How often to update the activity (in seconds). */
 const activityUpdateFrequency = 5 * 60;
 
@@ -36,11 +38,13 @@ const activityOptions: ActivityOptions = {
  * @param client The current logged-in client
  */
 export function start (client: Client): void {
+	info("Updating activity...");
+
 	try {
 		setActivity(client);
 	}
 	catch (err) {
-		//
+		error(err);
 	}
 
 	// Set user activity at regular intervals
@@ -53,11 +57,11 @@ export function start (client: Client): void {
  * @throws If the activity does not update correctly
  */
 function setActivity (client: Client<true>): void {
-	const presence = client.user.setActivity(activityOptions);
+	const { activities } = client.user.setActivity(activityOptions);
 
 	// Double check to see if it worked
 	// FIXME this currently always returns true, but discord.js doesn't have a better way to check
-	const activity = presence.activities.at(0);
+	const activity = activities.at(0);
 	if (activity?.name !== activityOptions.name
 		|| activity?.type !== activityOptions.type
 		|| activity?.url !== activityOptions.url) {

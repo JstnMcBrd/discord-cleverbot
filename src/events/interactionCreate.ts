@@ -2,6 +2,7 @@ import type { Interaction } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
+import { debug, info } from "../logger.js";
 
 /** Called whenever the discord.js client receives an interaction (usually a slash command). */
 export const interactionCreate = new EventHandler("interactionCreate")
@@ -19,5 +20,14 @@ export const interactionCreate = new EventHandler("interactionCreate")
 		}
 
 		// Execute the command script
+		info(`Executing command /${interaction.commandName}`);
+		if (interaction.channel) {
+			debug(`\tChannel: ${
+				interaction.channel.isDMBased()
+					? `@${interaction.channel.recipient?.username ?? "unknown user"}`
+					: `#${interaction.channel.name}`
+			} (${interaction.channelId})`);
+		}
+		debug(`\tUser: ${interaction.user.username} (${interaction.user.id})`);
 		await command.execute(interaction);
 	});

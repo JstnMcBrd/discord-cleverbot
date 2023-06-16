@@ -2,6 +2,7 @@ import { SlashCommandBuilder, type Awaitable } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import { replyWithError } from "../helpers/replyWithError.js";
+import { error } from "../logger.js";
 
 /**
  * An add-on to the `SlashCommandBuilder` class from discord.js that adds a command execution
@@ -33,6 +34,8 @@ export class CommandHandler extends SlashCommandBuilder {
 				return this.execution(interaction);
 			}
 			catch (err) {
+				error(`Command handler for /${this.name} encountered an error:`);
+				error(err);
 				void replyWithError(interaction, err);
 			}
 		}

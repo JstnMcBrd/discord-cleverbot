@@ -1,5 +1,7 @@
 import type { Awaitable, ClientEvents } from "discord.js";
 
+import { error } from "../logger.js";
+
 /**
  * Mimics the `SlashCommandBuilder` class from discord.js and the `CommandHandler` class to
  * streamline event handler creation.
@@ -69,7 +71,8 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 				return this.execution(...args);
 			}
 			catch (err) {
-				//
+				error(`Event handler for "${this.name}" encountered an error:`);
+				error(err);
 			}
 		}
 	}
