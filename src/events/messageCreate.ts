@@ -5,7 +5,7 @@ import { EventHandler } from "./EventHandler.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
 import { replyWithError } from "../helpers/replyWithError.js";
-import { addToContext, generateContext, getContextAsFormattedPrompts, hasContext, removeLastMessageFromContext } from "../memory/context.js";
+import { addToContext, getContextAsFormattedPrompts } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { typingSpeed } from "../parameters.js";
@@ -25,7 +25,7 @@ const MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
 /** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
-	.setExecution(async function (message: Message): Promise<void> {
+	.setExecution(function (message: Message): void {
 		const client = message.client;
 
 		// Ignore messages if they are...
@@ -53,18 +53,12 @@ export const messageCreate = new EventHandler("messageCreate")
 		// Format the prompt
 		const prompt = formatPrompt(message);
 
-		// Generate or update conversation context (but only for whitelisted channels)
-		// TODO is this necessary anymore?
-		if (isWhitelisted(message.channel) && !hasContext(message.channel)) {
-			await generateContext(message.channel, client);
-			removeLastMessageFromContext(message.channel);
-		}
-
 		// Prevent bot from responding to anything else while it thinks
 		startThinking(message.channel);
 
 		// Actually generate response
-		cleverbot(prompt, getContextAsFormattedPrompts(message.channel)).then(response => {
+		const context = getContextAsFormattedPrompts(message.channel);
+		cleverbot(prompt, context).then(response => {
 			// Sometimes cleverbot goofs and returns an empty response
 			if (response === "") {
 				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
@@ -73,7 +67,6 @@ export const messageCreate = new EventHandler("messageCreate")
 			// Determine how long to show the typing indicator before sending the message (seconds)
 			const timeTypeSec = response.length / typingSpeed;
 			void message.channel.sendTyping();
-			// Will automatically stop typing when message sends
 
 			function respond () {
 				let messagePromise: Promise<Message>;
