@@ -7,61 +7,41 @@ import colors from "@colors/colors/safe.js";
 const logger: Console = console;
 
 /**
- * Wrapper for `Console.error` that colors text red.
+ * Wrapper for `Console.error`.
  *
  * @param message The message to print
  */
-export function error (message?: unknown): void {
-	message = message ? message : "";
-
-	if (typeof message === "string") {
-		message = colors.red(message);
-	}
-
-	logger.error(message);
+export function error (...params: unknown[]): void {
+	params = params.map(p => typeof p === "string" ? colors.red(p) : p);
+	logger.error(...params);
 }
 
 /**
- * Wrpaper for `Console.warn` that colors text yellow.
+ * Wrapper for `Console.warn`.
  *
  * @param message The message to print
  */
-export function warn (message?: unknown): void {
-	message = message ? message : "";
-
-	if (typeof message === "string") {
-		message = colors.yellow(message);
-	}
-
-	logger.warn(message);
+export function warn (...params: unknown[]): void {
+	params = params.map(p => typeof p === "string" ? colors.yellow(p) : p);
+	logger.warn(...params);
 }
 
 /**
- * Wrapper for `Console.info` that colors text green.
+ * Wrapper for `Console.info`.
  *
  * @param message The message to print
  */
-export function info (message?: unknown): void {
-	message = message ? message : "";
-
-	if (typeof message === "string") {
-		message = colors.green(message);
-	}
-
-	logger.info(message);
+export function info (...params: unknown[]): void {
+	params = params.map(p => typeof p === "string" ? colors.white(p) : p);
+	logger.info(...params);
 }
 
 /**
- * Wrapper for `Console.debug` that colors text gray.
+ * Wrapper for `Console.debug`.
  *
  * @param message The message to print
  */
-export function debug (message?: unknown): void {
-	message = message ? message : "";
-
-	if (typeof message === "string") {
-		message = colors.gray(message);
-	}
-
-	logger.debug(message);
+export function debug (...params: unknown[]): void {
+	params = params.map(p => typeof p === "string" ? colors.gray(p) : p);
+	logger.debug(...params);
 }
