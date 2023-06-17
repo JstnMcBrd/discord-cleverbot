@@ -12,7 +12,7 @@
 		"commands": "node ./dist/deployCommands.js"
 	},
 	"engines": {
-		"node": "v18"
+		"node": "18"
 	},
 	"dependencies": {
 		"@colors/colors": "^1.5.0",
