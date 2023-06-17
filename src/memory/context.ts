@@ -12,7 +12,7 @@ import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.
 const context = new Map<Snowflake, Message[]>;
 
 /** Limits the length of each channel's context so memory isn't overburdened. */
-const maxContextLength = 50;
+const maxContextLength = 10;
 
 /**
  * @returns The past messages of the given channel, or undefined

@@ -6,7 +6,7 @@ import { getVersion } from "./utils/getVersion.js";
 export const version = getVersion();
 
 /** When this code was last changed. */
-export const lastUpdated = new Date(2023, 5, 17, 13, 0);
+export const lastUpdated = new Date(2023, 5, 17, 14, 0);
 // Year, month (0-11), day of month, hour (0-23), minutes
 
 /** How fast the bot sends messages (in characters per second). */
