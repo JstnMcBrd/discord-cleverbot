@@ -1,11 +1,11 @@
-import globals from "globals";
 import js from "@eslint/js";
 import typescriptParser from "@typescript-eslint/parser";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
+import globals from "globals";
 
 export default [
 	{
-		ignores: ["node_modules", "dist", ".misc"],
+		ignores: ["node_modules", "dist"],
 	},
 	{
 		files: ["**/*.js", "**/*.ts"],
@@ -13,7 +13,9 @@ export default [
 			sourceType: "module",
 			globals: {
 				...globals.node,
-				...globals.es2022,
+				// es2022 is not available
+				// https://github.com/sindresorhus/globals/issues/183
+				...globals.es2021,
 				"NodeJS": true,
 			},
 		},
@@ -63,8 +65,7 @@ export default [
 		languageOptions: {
 			parser: typescriptParser,
 			parserOptions: {
-				project: "./tsconfig.json",
-				tsconfigRootDir: "./",
+				project: true,
 			},
 		},
 		rules: {
