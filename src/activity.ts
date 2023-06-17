@@ -19,16 +19,18 @@ const activityOptions: ActivityOptions = {
 	url: "https://www.cleverbot.com/",
 };
 
-// Wait until Discord supports custom statuses for bots
-//
+/**
+ * Wait until Discord supports custom statuses for bots.
+ * https://github.com/discord/discord-api-docs/issues/1160#issuecomment-546549516
+ */
 // const activityOptions: ActivityOptions = {
-// 	name: "Use /help",
-// 	details: "Use /help",
+// 	name: "Custom Status",
+// 	state: "Use /help",
 // 	emoji: {
-// 		name: "robot"
+// 		name: "robot",
 // 	},
-// 	type: Discord.ActivityType.Custom,
-// 	url: "https://www.cleverbot.com/""
+// 	type: ActivityType.Custom,
+// 	url: "https://www.cleverbot.com/",
 // };
 
 /**
