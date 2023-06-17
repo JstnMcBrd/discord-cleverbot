@@ -16,8 +16,6 @@ import { join } from "node:path";
 import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
 import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 
-import { getCurrentDirectory } from "../helpers/getCurrentDirectory.js";
-
 /**
  * The format of the whitelist JSON file.
  * See an example in [memory/example-user-id/whitelist.json](../../memory/example-user-id/whitelist.json).
@@ -42,7 +40,7 @@ const whitelist: TextBasedChannel[] = [];
  */
 export async function load (client: Client<true>): Promise<void> {
 	// Create the user's memory directory if it does not exist
-	const directoryPath = join(getCurrentDirectory(import.meta.url), "..", "..", "memory", client.user.id);
+	const directoryPath = join(".", "memory", client.user.id);
 	if (!existsSync(directoryPath)) {
 		mkdirSync(directoryPath, { recursive: true });
 	}

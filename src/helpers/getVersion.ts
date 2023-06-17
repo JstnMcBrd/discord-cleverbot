@@ -1,13 +1,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { getCurrentDirectory } from "./getCurrentDirectory.js";
-
 /**
  * @returns The relative file path of [package.json](../../package.json)
  */
 function getPackageFilePath (): string {
-	return join(getCurrentDirectory(import.meta.url), "..", "..", "package.json");
+	return join(".", "package.json");
 }
 
 /**
