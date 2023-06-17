@@ -24,7 +24,7 @@ Please see GitHub's [guide](https://docs.github.com/en/repositories/managing-you
 ### Setting up the code
 
 3. Run `git pull https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo
-4. Create a new file called `.env` and add your access token, using `.env-example` as an example
+4. Create a new file called `.env` and add your access token, using `.env.example` as an example
 
 ### Running the code
 
