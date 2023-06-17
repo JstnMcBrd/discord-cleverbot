@@ -1,7 +1,7 @@
 import type { Client, Message } from "discord.js";
 
 import { messageCreate } from "./events/messageCreate.js";
-import { isFromUser } from "./helpers/messageAnalysis.js";
+import { isFromUser } from "./utils/messageAnalysis.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "./memory/context.js";
 import { load as loadWhitelist, getWhitelist } from "./memory/whitelist.js";
 import { info } from "./logger.js";

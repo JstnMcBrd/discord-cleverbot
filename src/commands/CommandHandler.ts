@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
-import { replyWithError } from "../helpers/replyWithError.js";
+import { replyWithError } from "../utils/replyWithError.js";
 import { error } from "../logger.js";
 
 /**

@@ -2,10 +2,10 @@ import cleverbot from "cleverbot-free";
 import type { Message, TextBasedChannel } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
-import { formatPrompt } from "../helpers/formatPrompt.js";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
-import { replyWithError } from "../helpers/replyWithError.js";
-import { sleep } from "../helpers/sleep.js";
+import { formatPrompt } from "../utils/formatPrompt.js";
+import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../utils/messageAnalysis.js";
+import { replyWithError } from "../utils/replyWithError.js";
+import { sleep } from "../utils/sleep.js";
 import { addToContext, getContext } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
