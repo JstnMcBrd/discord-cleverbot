@@ -5,29 +5,40 @@
 
 import type { Channel, Snowflake } from "discord.js";
 
-/** Keeps track of which channels the bot is already generating a response for. */
-const thinking: Snowflake[] = [];
+/**
+ * Keeps track of which channels the bot is already generating a response for, and maps them
+ * to Node timeout objects that will automatically remove them from the list.
+ */
+const thinking = new Map<Snowflake, NodeJS.Timeout>;
+
+/**
+ * How long a channel can be marked as "thinking" before being unmarked to prevent it from being
+ * blocked indefinitely (in seconds).
+ */
+const thinkingTimeout = 30;
 
 /**
  * @returns Whether the bot is currently generating a response in the given channel
  */
 export function isThinking (channel: Channel): boolean {
-	return thinking.includes(channel.id);
+	return thinking.has(channel.id);
 }
 
 /**
- * Records that the bot is currently generating a response in the given channel.
+ * Records that the bot is currently generating a response in the given channel, or restarts
+ * the timeout if it is already in the list.
  */
 export function startThinking (channel: Channel): void {
-	thinking.push(channel.id);
+	if (!isThinking(channel)) {
+		const timeout = setTimeout(() => stopThinking(channel), thinkingTimeout * 1000);
+		thinking.set(channel.id, timeout);
+	}
+	thinking.get(channel.id)?.refresh();
 }
 
 /**
  * Records that the bot has finished generating a response in the given channel.
  */
 export function stopThinking (channel: Channel) {
-	const index = thinking.indexOf(channel.id);
-	if (index !== -1) {
-		thinking.splice(index, 1);
-	}
+	thinking.delete(channel.id);
 }
