@@ -1,10 +1,11 @@
 import cleverbot from "cleverbot-free";
-import type { Message } from "discord.js";
+import type { Message, TextBasedChannel } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
 import { formatPrompt } from "../helpers/formatPrompt.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
 import { replyWithError } from "../helpers/replyWithError.js";
+import { sleep } from "../helpers/sleep.js";
 import { addToContext, getContextAsFormattedPrompts } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
@@ -14,112 +15,119 @@ import { debug, error, info } from "../logger.js";
 /** The error message to throw if the Cleverbot module returns an empty string. */
 const EMPTY_STRING_ERROR_MESSAGE = "Cleverbot returned an empty string";
 
-/** The error message the superagent throws if the HTTP request times out. */
-const RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms exceeded";
+/** The error message superagent throws if the HTTP request times out. */
+const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms exceeded";
 
 /**
  * The error messsage the Cleverbot module throws if it fails after 15 tries.
  * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js)
-*/
-const MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
+ */
+const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
 
 /** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
-	.setExecution(function (message: Message): void {
-		const client = message.client;
-
-		// Ignore messages if they are...
-		// ... from the user
-		if (isFromUser(message, client.user)) {
+	.setExecution(async function (message: Message): Promise<void> {
+		// Ignore certain messages
+		if (isFromUser(message, message.client.user)) {
 			return;
 		}
-		// ... empty (images, embeds, interactions)
 		if (isEmpty(message)) {
 			return;
 		}
-		// ... marked as ignore
 		if (isMarkedAsIgnore(message)) {
 			return;
 		}
-		// ... in a channel already responding to
 		if (isThinking(message.channel)) {
 			return;
 		}
-		// ... not whitelisted or forced reply
-		if (!isWhitelisted(message.channel) && !isAMention(message, client.user)) {
+		if (!isWhitelisted(message.channel) && !isAMention(message, message.client.user)) {
 			return;
 		}
 
-		// Format the prompt
-		const prompt = formatPrompt(message);
+		try {
+			// Prevent bot from responding to anything else while it thinks
+			startThinking(message.channel);
 
-		// Prevent bot from responding to anything else while it thinks
-		startThinking(message.channel);
+			// Format the prompt and context
+			const prompt = formatPrompt(message);
+			const context = getContextAsFormattedPrompts(message.channel);
 
-		// Actually generate response
-		const context = getContextAsFormattedPrompts(message.channel);
-		cleverbot(prompt, context).then(response => {
-			// Sometimes cleverbot goofs and returns an empty response
+			// Generate response
+			const response = await cleverbot(prompt, context);
 			if (response === "") {
 				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
 			}
+			logResponse(message.channel, prompt, response);
 
-			// Determine how long to show the typing indicator before sending the message (seconds)
+			// Pause to pretend to "type" the message
 			const timeTypeSec = response.length / typingSpeed;
-			void message.channel.sendTyping();
+			await message.channel.sendTyping();
+			await sleep(timeTypeSec * 1000);
 
-			function respond () {
-				let messagePromise: Promise<Message>;
+			// Send the message
+			const responseMessage = await sendOrReply(message, response);
 
-				// Respond normally if no extra messages have been sent in the meantime
-				if (message.channel.lastMessageId === message.id) {
-					messagePromise = message.channel.send(response);
-				}
-				// Use reply if other messages are in the way
-				else {
-					messagePromise = message.reply(response);
-				}
-
-				messagePromise.then(responseMessage => {
-					// Update conversation context (but only for whitelisted channels)
-					if (isWhitelisted(message.channel)) {
-						addToContext(message.channel, message);
-						addToContext(message.channel, responseMessage);
-					}
-				}).catch(error);
-
-				// Allow bot to think about new messages now
-				stopThinking(message.channel);
+			// Update conversation context
+			if (isWhitelisted(message.channel)) {
+				addToContext(message.channel, message);
+				addToContext(message.channel, responseMessage);
 			}
 
-			// Send the message once the typing time is over
-			setTimeout(respond, timeTypeSec * 1000);
-
-			info("Generated response");
-			debug(`\tChannel: ${
-				message.channel.isDMBased()
-					? `@${message.channel.recipient?.username ?? "unknown user"}`
-					: `#${message.channel.name}`
-			} (${message.channelId})`);
-			debug(`\tPrompt: ${prompt}`);
-			debug(`\tResponse: ${response}`);
-		}).catch(err => {
+			// Allow bot to receive new messages now
+			stopThinking(message.channel);
+		}
+		catch (err) {
 			error(err);
 
-			// Stop thinking so bot can respond in future
 			stopThinking(message.channel);
 
 			// If cleverbot goofed, then try again
 			if (err instanceof Error
-				&& (err.message === RESPONSE_TIMEOUT_ERROR_MESSAGE
-					|| err.message === MAX_TRIES_ERROR_MESSAGE
+				&& (err.message === SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE
+					|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
 					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
-			// If unknown error, then respond to message with error message
+			// If unknown error, then respond with error message
 			else {
-				void replyWithError(message, err);
+				await replyWithError(message, err);
 			}
-		});
+		}
 	});
+
+/**
+ * Logs the given channel, prompt, and response.
+ */
+function logResponse (channel: TextBasedChannel, prompt: string, response: string): void {
+	info("Generated response");
+	debug(`\tChannel: ${
+		channel.isDMBased()
+			? `@${channel.recipient?.username ?? "unknown user"}`
+			: `#${channel.name}`
+	} (${channel.id})`);
+	debug(`\tPrompt: ${prompt}`);
+	debug(`\tResponse: ${response}`);
+}
+
+/**
+ * Sends the given response, either using the channel's `send` method or the message's `reply`
+ * method, depending on whether the message is the latest message in the channel.
+ *
+ * @param message The message to reply to
+ * @param response The response to send
+ * @returns The response as a `Message` object
+ */
+async function sendOrReply (message: Message, response: string): Promise<Message> {
+	// Use reply if message is not the latest message
+	return isLatestMessage(message)
+		? message.channel.send(response)
+		: message.reply(response);
+}
+
+/**
+ * @returns Whether the given message is the latest message in its channel
+ */
+function isLatestMessage (message: Message): boolean {
+	return message.channel.lastMessageId === message.id;
+}
