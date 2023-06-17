@@ -7,7 +7,6 @@ import type { Channel, Client, Message, Snowflake, TextBasedChannel } from "disc
 
 import { whitelist as whitelistCommand } from "../commands/whitelist.js";
 import { isEmpty, isFromUser, isMarkedAsIgnore } from "../helpers/messageAnalysis.js";
-import { formatPrompt } from "../helpers/formatPrompt.js";
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
 const context = new Map<Snowflake, Message[]>;
@@ -20,13 +19,6 @@ const maxContextLength = 50;
  */
 export function getContext (channel: Channel): Message[]|undefined {
 	return context.get(channel.id);
-}
-
-/**
- * @returns The past messages of the given channel as formatted prompts, or undefined
- */
-export function getContextAsFormattedPrompts (channel: Channel): string[]|undefined {
-	return getContext(channel)?.map(formatPrompt);
 }
 
 /**

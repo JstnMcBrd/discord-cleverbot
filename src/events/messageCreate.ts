@@ -6,7 +6,7 @@ import { formatPrompt } from "../helpers/formatPrompt.js";
 import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../helpers/messageAnalysis.js";
 import { replyWithError } from "../helpers/replyWithError.js";
 import { sleep } from "../helpers/sleep.js";
-import { addToContext, getContextAsFormattedPrompts } from "../memory/context.js";
+import { addToContext, getContext } from "../memory/context.js";
 import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
 import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
 import { typingSpeed } from "../parameters.js";
@@ -51,7 +51,7 @@ export const messageCreate = new EventHandler("messageCreate")
 
 			// Format the prompt and context
 			const prompt = formatPrompt(message);
-			const context = getContextAsFormattedPrompts(message.channel);
+			const context = getContext(message.channel)?.map(formatPrompt);
 
 			// Generate response
 			const response = await cleverbot(prompt, context);
