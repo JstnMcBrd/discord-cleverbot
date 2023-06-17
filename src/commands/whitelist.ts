@@ -1,6 +1,7 @@
 import { EmbedBuilder, channelMention } from "discord.js";
 
 import { CommandHandler } from "./CommandHandler.js";
+import { unwhitelist } from "./unwhitelist.js";
 import { generateContext } from "../memory/context.js";
 import { addChannel } from "../memory/whitelist.js";
 import { embedColors } from "../parameters.js";
@@ -40,9 +41,9 @@ function createSuccessEmbed (channelID: string): EmbedBuilder {
 	return new EmbedBuilder()
 		.setColor(embedColors.whitelist)
 		.setTitle("Whitelisted")
-		.setDescription(`You have enabled me for ${mention}. This means that I will respond to all future messages sent in ${mention}.`)
+		.setDescription(`You have enabled me for ${mention}. This means that I will respond to all future messages sent in this channel.`)
 		.addFields(
-			{ name: "Disabling", value: `If you wish for me to stop responding to messages in ${mention} in the future, use the **/unwhitelist** command.` },
+			{ name: "Disabling", value: `If you want me to stop responding to messages here, you can use the ${unwhitelist.getMention()} command.` },
 		);
 }
 

@@ -1,5 +1,6 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 
+import type { CommandHandler } from "../commands/CommandHandler.js";
 import { EventHandler } from "./EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
 import { debug, info } from "../logger.js";
@@ -19,7 +20,7 @@ export const interactionCreate = new EventHandler("interactionCreate")
 			return;
 		}
 
-		logInteraction(interaction);
+		logInteraction(interaction, command);
 
 		// Execute the command script
 		await command.execute(interaction);
@@ -28,8 +29,8 @@ export const interactionCreate = new EventHandler("interactionCreate")
 /**
  * Logs the current interaction.
  */
-function logInteraction (interaction: ChatInputCommandInteraction): void {
-	info(`Executing command /${interaction.commandName}`);
+function logInteraction (interaction: ChatInputCommandInteraction, command: CommandHandler): void {
+	info(`Executing command ${command.getSlashName()}`);
 	if (interaction.channel) {
 		debug(`\tChannel: ${
 			interaction.channel.isDMBased()

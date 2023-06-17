@@ -7,7 +7,7 @@ import { messageCreate } from "./messageCreate.js";
 import { ready } from "./ready.js";
 
 /** The list of all event handlers. */
-const events = new Map<string, EventHandler>;
+const eventHandlers = new Map<string, EventHandler>;
 
 addEventHandler(error as EventHandler);
 addEventHandler(interactionCreate as EventHandler);
@@ -23,17 +23,17 @@ addEventHandler(ready as EventHandler);
 function addEventHandler (event: EventHandler): void {
 	const name = event.name;
 
-	if (events.has(name)) {
+	if (eventHandlers.has(name)) {
 		throw new TypeError(`Failed to add event handler '${name}' because an event with that name already exists.`);
 	}
-	events.set(name, event);
+	eventHandlers.set(name, event);
 }
 
 /**
  * @returns A read-only map of the event handlers
  */
 export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
-	return events;
+	return eventHandlers;
 }
 
 /**
