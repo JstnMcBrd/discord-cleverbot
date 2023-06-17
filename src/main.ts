@@ -4,7 +4,6 @@ import { Client, Partials, GatewayIntentBits } from "discord.js";
 
 import { registerEventHandlers } from "./events/index.js";
 import { getToken, load as loadEnv } from "./memory/env.js";
-import { connect } from "./connect.js";
 import { info } from "./logger.js";
 
 info("discord-cleverbot");
@@ -34,4 +33,4 @@ registerEventHandlers(client);
 
 // Login
 info("Logging in...");
-void connect(client, token);
+await client.login(token);

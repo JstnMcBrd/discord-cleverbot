@@ -37,4 +37,4 @@ client.once("ready", async c => {
 
 // Login
 info("Logging in...");
-void client.login(token).catch(error);
+await client.login(token);
