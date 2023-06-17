@@ -1,32 +1,27 @@
 import type { Message } from "discord.js";
 
-import { isAMention } from "./messageAnalysis.js";
-
 /**
  * @returns The content of the message, formatted for Cleverbot to understand
  */
 export function formatPrompt (message: Message): string {
-	const user = message.client.user;
 	let content = message.cleanContent;
-
-	if (isAMention(message, user)) {
-		content = replaceMentions(user.username, content);
-	}
+	content = replaceMentions(message.client.user.username, content);
 	content = replaceCustomEmojis(content);
 	content = content.trim();
-
 	return content;
 }
 
 /**
  * Replaces @ mentions of the user with 'Cleverbot' to avoid confusing the Cleverbot AI.
+ *
+ * @param username The username of the client user
  */
 function replaceMentions (username: string, content: string): string {
 	return content.replaceAll(`@${username}`, "Cleverbot");
 }
 
 /**
- * Replaces unknown discord emojis with the name of the emoji as *emphasized* text to avoid
+ * Replaces unknown Discord emojis with the name of the emoji as *emphasized* text to avoid
  * confusing the Cleverbot AI.
  *
  * Example: `<:test_emoji:999999999999999999>` => `*test emoji*`

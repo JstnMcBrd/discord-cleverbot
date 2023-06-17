@@ -5,12 +5,14 @@ import { embedColors } from "../parameters.js";
 import { error } from "../logger.js";
 
 /**
- * Replies to a Discord message with an error message.
+ * Replies to a Discord message or interaction with an error message.
+ *
+ * @param message The message or interaction to reply to
+ * @param internalError The error to send
  */
 export async function replyWithError (message: Message|ChatInputCommandInteraction, internalError: Error|unknown): Promise<void> {
 	const stringifiedError = String(internalError);
 
-	// Format the message as an embed
 	const embed = new EmbedBuilder()
 		.setColor(embedColors.error)
 		.setTitle("Error")
@@ -19,7 +21,6 @@ export async function replyWithError (message: Message|ChatInputCommandInteracti
 			{ name: "Message", value: `\`\`${stringifiedError}\`\`` },
 		);
 
-	// Send the error message as a reply
 	try {
 		await message.reply({ embeds: [embed] });
 	}

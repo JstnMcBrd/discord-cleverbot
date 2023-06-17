@@ -1,5 +1,5 @@
 /*
- * This manager takes care of loading and returning environment variables from the `.env` file.
+ * Takes care of loading and returning environment variables from the `.env` file.
 */
 
 import { config } from "dotenv";
@@ -45,7 +45,7 @@ function isValidEnvironment (env: unknown): env is Environment {
 /**
  * WARNING: do not store or log your token in any publicly available place, or your bot will get hacked!
  *
- * @returns The discord token necessary to authenticate the client
+ * @returns The Discord token necessary to authenticate the client
  */
 export function getToken (): string {
 	return environment.TOKEN;

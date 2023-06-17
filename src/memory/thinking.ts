@@ -1,13 +1,12 @@
 /**
- * This manager keeps track of which channels the bot is already generating a message for, so the
- * bot doesn't reply to several messages at the same time.
+ * Keeps track of which channels the bot is already generating a message for, so the
+ * bot doesn't reply to several messages in the same channel at the same time.
  */
 
 import type { Channel, Snowflake } from "discord.js";
 
 /**
- * Keeps track of which channels the bot is already generating a response for, and maps them
- * to Node timeout objects that will automatically remove them from the list.
+ * Maps channel IDs to Node timeout objects that will automatically remove them from the map.
  */
 const thinking = new Map<Snowflake, NodeJS.Timeout>;
 

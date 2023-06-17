@@ -3,7 +3,7 @@ import type { Message, TextBasedChannel } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
 import { formatPrompt } from "../utils/formatPrompt.js";
-import { isMarkedAsIgnore, isFromSelf, isEmpty, isAMention } from "../utils/messageAnalysis.js";
+import { doesMentionSelf, isMarkedAsIgnore, isFromSelf, isEmpty } from "../utils/messageAnalysis.js";
 import { replyWithError } from "../utils/replyWithError.js";
 import { sleep } from "../utils/sleep.js";
 import { addToContext, getContext } from "../memory/context.js";
@@ -20,11 +20,11 @@ const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms e
 
 /**
  * The error messsage the Cleverbot module throws if it fails after 15 tries.
- * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js)
+ * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js).
  */
 const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
 
-/** Called whenever the discord.js client observes a new message. */
+/** Called whenever the client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
 	.setExecution(async message => {
@@ -41,12 +41,12 @@ export const messageCreate = new EventHandler("messageCreate")
 		if (isThinking(message.channel)) {
 			return;
 		}
-		if (!isWhitelisted(message.channel) && !isAMention(message, message.client.user)) {
+		if (!isWhitelisted(message.channel) && !doesMentionSelf(message)) {
 			return;
 		}
 
 		try {
-			// Prevent bot from responding to anything else while it thinks
+			// Prevent bot from responding to anything else in this channel while it thinks
 			startThinking(message.channel);
 
 			// Format the prompt and context
@@ -58,7 +58,8 @@ export const messageCreate = new EventHandler("messageCreate")
 			if (response === "") {
 				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
 			}
-			logResponse(message.channel, prompt, response);
+
+			logExchange(message.channel, context ?? [], prompt, response);
 
 			// Pause to pretend to "type" the message
 			const timeTypeSec = response.length / typingSpeed;
@@ -74,7 +75,7 @@ export const messageCreate = new EventHandler("messageCreate")
 				addToContext(message.channel, responseMessage);
 			}
 
-			// Allow bot to receive new messages now
+			// Allow bot to receive new messages in this channel
 			stopThinking(message.channel);
 		}
 		catch (err) {
@@ -82,14 +83,14 @@ export const messageCreate = new EventHandler("messageCreate")
 
 			stopThinking(message.channel);
 
-			// If cleverbot goofed, then try again
+			// If Cleverbot goofed, try again
 			if (err instanceof Error
 				&& (err.message === SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE
 					|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
 					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
-			// If unknown error, then respond with error message
+			// If unknown error, respond with error message
 			else {
 				await replyWithError(message, err);
 			}
@@ -97,17 +98,20 @@ export const messageCreate = new EventHandler("messageCreate")
 	});
 
 /**
- * Logs the given channel, prompt, and response.
+ * Logs the current exchange.
  */
-function logResponse (channel: TextBasedChannel, prompt: string, response: string): void {
+function logExchange (channel: TextBasedChannel, context: string[], prompt: string, response: string): void {
+	const prevMessage = context.at(context.length - 1) ?? "";
+
 	info("Generated response");
 	debug(`\tChannel: ${
 		channel.isDMBased()
 			? `@${channel.recipient?.username ?? "unknown user"}`
 			: `#${channel.name}`
 	} (${channel.id})`);
-	debug(`\tPrompt: ${prompt}`);
-	debug(`\tResponse: ${response}`);
+	debug(`\t... ${prevMessage}`);
+	debug(`\t──> ${prompt}`);
+	debug(`\t<── ${response}`);
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { Client, Message } from "discord.js";
+import type { Client } from "discord.js";
 
 import { messageCreate } from "./events/messageCreate.js";
 import { isFromSelf } from "./utils/messageAnalysis.js";
@@ -16,7 +16,7 @@ const refreshFrequency = 1 * 60 * 60;
  * This helps the bot recover from anomalies, such as channel permissions changing, bugs in context
  * updates, missing messages during Discord API outages, or crashes.
  *
- * This method will automatically repeat itself on a regular basis.
+ * This process will automatically repeat itself regularly.
  *
  * @param client The current logged-in client
  */
@@ -28,9 +28,7 @@ export async function refresh (client: Client<true>): Promise<void> {
 
 	// Update context for all whitelisted channels (in parallel)
 	await Promise.all(
-		getWhitelist().map(
-			async channel => await generateContext(channel),
-		),
+		getWhitelist().map(generateContext),
 	);
 
 	// Follow-up on any missed messages
@@ -46,7 +44,6 @@ export async function refresh (client: Client<true>): Promise<void> {
  * @param client The current logged-in client
  */
 function resumeConversations (): void {
-	const toRespondTo: Message[] = [];
 	getWhitelist().forEach(channel => {
 		// Get the context
 		const context = getContext(channel);
@@ -62,13 +59,8 @@ function resumeConversations (): void {
 
 		// If the last message isn't from the bot, then respond to it
 		if (!isFromSelf(lastMessage)) {
-			toRespondTo.push(lastMessage);
+			removeLastMessageFromContext(lastMessage.channel);
+			void messageCreate.execute(lastMessage);
 		}
-	});
-
-	// Respond to missed messages
-	toRespondTo.forEach(message => {
-		removeLastMessageFromContext(message.channel);
-		void messageCreate.execute(message);
 	});
 }

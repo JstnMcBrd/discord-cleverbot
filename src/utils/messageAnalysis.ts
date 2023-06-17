@@ -1,7 +1,7 @@
-import type { Message, User } from "discord.js";
+import type { Message } from "discord.js";
 
 /**
- * Recognizes when a message is prepended with '> ', which tells the bot not to respond.
+ * Recognizes when a message is prefixed with '> ', which tells the bot not to respond.
  *
  * @param message The message to parse
  * @returns `true` if the message begins with '> ', `false` if otherwise
@@ -27,16 +27,15 @@ export function isFromSelf (message: Message): boolean {
  * @returns `true` if the message has no text content, `false` if otherwise
  */
 export function isEmpty (message: Message): boolean {
-	return message.cleanContent === "";
+	return message.cleanContent.length === 0;
 }
 
 /**
- * Recognizes when a message @ mentions the specified user.
+ * Recognizes when a message @ mentions the client user.
  *
  * @param message The message to check
- * @param user The user to see if the message mentions
- * @returns `true` if the message mentions the user, `false` if otherwise
+ * @returns `true` if the message mentions the client user, `false` if otherwise
  */
-export function isAMention (message: Message, user: User): boolean {
-	return message.mentions.has(user);
+export function doesMentionSelf (message: Message): boolean {
+	return message.mentions.has(message.client.user);
 }

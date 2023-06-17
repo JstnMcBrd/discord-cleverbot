@@ -27,7 +27,7 @@ function addCommandHandler (command: CommandHandler): void {
 }
 
 /**
- * @returns A read-only list of the command handlers
+ * @returns A read-only map of the command handlers
  */
 export function getCommandHandlers (): ReadonlyMap<string, CommandHandler> {
 	return commands;

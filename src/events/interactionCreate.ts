@@ -1,8 +1,10 @@
+import type { ChatInputCommandInteraction } from "discord.js";
+
 import { EventHandler } from "./EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
 import { debug, info } from "../logger.js";
 
-/** Called whenever the discord.js client receives an interaction (usually a slash command). */
+/** Called whenever the client receives an interaction (usually a slash command). */
 export const interactionCreate = new EventHandler("interactionCreate")
 	.setOnce(false)
 	.setExecution(async interaction => {
@@ -17,15 +19,23 @@ export const interactionCreate = new EventHandler("interactionCreate")
 			return;
 		}
 
+		logInteraction(interaction);
+
 		// Execute the command script
-		info(`Executing command /${interaction.commandName}`);
-		if (interaction.channel) {
-			debug(`\tChannel: ${
-				interaction.channel.isDMBased()
-					? `@${interaction.channel.recipient?.username ?? "unknown user"}`
-					: `#${interaction.channel.name}`
-			} (${interaction.channelId})`);
-		}
-		debug(`\tUser: ${interaction.user.username} (${interaction.user.id})`);
 		await command.execute(interaction);
 	});
+
+/**
+ * Logs the current interaction.
+ */
+function logInteraction (interaction: ChatInputCommandInteraction): void {
+	info(`Executing command /${interaction.commandName}`);
+	if (interaction.channel) {
+		debug(`\tChannel: ${
+			interaction.channel.isDMBased()
+				? `@${interaction.channel.recipient?.username ?? "unknown user"}`
+				: `#${interaction.channel.name}`
+		} (${interaction.channelId})`);
+	}
+	debug(`\tUser: ${interaction.user.username} (${interaction.user.id})`);
+}

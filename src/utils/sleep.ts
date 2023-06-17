@@ -1,5 +1,5 @@
 /**
- * Waits `ms` milliseconds before continuing.
+ * Sleeps for `ms` milliseconds before resolving.
  *
  * @param ms The number of milliseconds to sleep
  * @returns A promise that resolves in `ms` milliseconds

@@ -17,14 +17,16 @@ const token = getToken();
 const client = new Client({
 	partials: [
 		// Necessary to receive DMs
+		// https://discordjs.guide/additional-info/changes-in-v13.html#dm-channels
 		Partials.Channel,
 	],
 	intents: [
+		// Necessary for channels to be cached
 		GatewayIntentBits.Guilds,
+		// Necessary to receive messageCreate events
 		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.GuildMessageTyping,
 		GatewayIntentBits.DirectMessages,
-		GatewayIntentBits.DirectMessageTyping,
+		// Necessary to read message content
 		GatewayIntentBits.MessageContent,
 	],
 });

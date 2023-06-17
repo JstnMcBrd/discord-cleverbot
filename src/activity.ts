@@ -1,8 +1,7 @@
 /**
  * This manager takes care of keeping the client user's activity regularly updated.
  *
- * This is necessary because after being set, the user's activity will disappear after a short
- * period of time.
+ * This is necessary because after being set, the user's activity eventually expire.
  */
 
 import { ActivityType } from "discord.js";
@@ -47,7 +46,6 @@ export function start (client: Client): void {
 		error(err);
 	}
 
-	// Set user activity at regular intervals
 	setTimeout(() => start(client), activityUpdateFrequency * 1000);
 }
 
@@ -58,13 +56,14 @@ export function start (client: Client): void {
  */
 function setActivity (client: Client<true>): void {
 	const { activities } = client.user.setActivity(activityOptions);
+	const activity = activities.at(0);
 
 	// Double check to see if it worked
 	// FIXME this currently always returns true, but discord.js doesn't have a better way to check
-	const activity = activities.at(0);
-	if (activity?.name !== activityOptions.name
-		|| activity?.type !== activityOptions.type
-		|| activity?.url !== activityOptions.url) {
-		throw new Error("Client presence did not update correctly.");
+	if (!activity
+		|| activity.name !== activityOptions.name
+		|| activity.type !== activityOptions.type
+		|| activity.url !== activityOptions.url) {
+		throw new Error("User presence did not update correctly.");
 	}
 }

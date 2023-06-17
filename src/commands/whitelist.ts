@@ -2,7 +2,7 @@ import { EmbedBuilder, channelMention } from "discord.js";
 
 import { CommandHandler } from "./CommandHandler.js";
 import { generateContext } from "../memory/context.js";
-import { addChannel as whitelistChannel } from "../memory/whitelist.js";
+import { addChannel } from "../memory/whitelist.js";
 import { embedColors } from "../parameters.js";
 
 /** A command that adds a channel to the whitelist. */
@@ -16,7 +16,7 @@ export const whitelist = new CommandHandler()
 
 		let embed: EmbedBuilder;
 		let ephemeral: boolean;
-		if (whitelistChannel(interaction.channel)) {
+		if (addChannel(interaction.channel)) {
 			await generateContext(interaction.channel);
 			embed = createSuccessEmbed(interaction.channel.id);
 			ephemeral = false;

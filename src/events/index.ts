@@ -1,9 +1,3 @@
-/**
- * Loads all the event handlers and gives them to the Client.
- *
- * Also contains other useful helper methods.
- */
-
 import type { Client } from "discord.js";
 
 import { error } from "./error.js";
@@ -36,7 +30,7 @@ function addEventHandler (event: EventHandler): void {
 }
 
 /**
- * @returns A read-only list of the event handlers
+ * @returns A read-only map of the event handlers
  */
 export function getEventHandlers (): ReadonlyMap<string, EventHandler> {
 	return events;

@@ -1,10 +1,11 @@
 /*
- * The whitelist is the list of channels that the bot is allowed to speak in.
- * This manager takes care of...
+ * Takes care of...
  * - loading the whitelist channel IDs from memory
  * - fetching and validating the channels
  * - adding and removing channels
  * - saving the whitelist channel IDs to memory
+ *
+ * The whitelist is the list of channels that the bot is allowed to speak in.
  *
  * Before the whitelist can be used, `load()` must be called to read memory and fetch channels from
  * the Discord API.
@@ -92,6 +93,7 @@ function isValidWhitelistFile (json: unknown): json is WhitelistFile {
  * Fetches the given channel from the Discord API and validates it.
  *
  * @returns The channel, or undefined if the channel could not be found or is invalid
+ * @throws Any unrecognized errors from the Discord API
  */
 async function fetchAndValidateChannel (channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
 	// Test access
@@ -148,9 +150,6 @@ function isTextBasedChannel (channel: Channel): channel is TextBasedChannel {
 }
 
 /**
- * Only returns a read-only copy of the whitelist to prevent illegal editing.
- * Use the `addChannel` and `removeChannel` methods for whitelist editing.
- *
  * @returns A read-only copy of the whitelist
  */
 export function getWhitelist (): readonly TextBasedChannel[] {

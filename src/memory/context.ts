@@ -1,6 +1,6 @@
 /**
- * This manager records past messages in each chat, so the Cleverbot API can understand the past
- * conversation context when generating a new reply.
+ * Records past messages in each chat, so the Cleverbot API can understand the past conversation
+ * context when generating a new reply.
  */
 
 import type { Channel, Message, Snowflake, TextBasedChannel } from "discord.js";
@@ -12,7 +12,7 @@ import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.
 const context = new Map<Snowflake, Message[]>;
 
 /** Limits the length of each channel's context so memory isn't overburdened. */
-const maxContextLength = 10;
+const maxContextLength = 50;
 
 /**
  * @returns The past messages of the given channel, or undefined
@@ -32,7 +32,6 @@ export function hasContext (channel: Channel): boolean {
  * Fetches and stores the past messages of the given channel.
  *
  * @param channel The channel to fetch messages from
- * @param client The current logged-in client
  */
 export async function generateContext (channel: TextBasedChannel): Promise<void> {
 	const newContext: Message[] = [];
