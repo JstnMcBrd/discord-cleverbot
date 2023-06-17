@@ -1,0 +1,16 @@
+{
+	"include": ["**/*.ts"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "Node16",
+		"outDir": "./dist",
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"sourceMap": true,
+		"verbatimModuleSyntax": true,
+	}
+}

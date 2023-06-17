@@ -1,0 +1,6 @@
+{
+	"eslint.experimental.useFlatConfig": true,
+	"files.associations": {
+		".env.example": "properties"
+	},
+}

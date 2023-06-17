@@ -1,4 +1,6 @@
 node_modules
-.outdated/
-accounts/*
-!accounts/ExampleUsername
+dist
+memory/*
+!memory/example-user-id
+.env
+todo
