@@ -3,16 +3,17 @@
  * conversation context when generating a new reply.
  */
 
-import type { Channel, Client, Message, Snowflake, TextBasedChannel } from "discord.js";
+import type { Channel, Message, Snowflake, TextBasedChannel } from "discord.js";
 
 import { whitelist as whitelistCommand } from "../commands/whitelist.js";
-import { isEmpty, isFromUser, isMarkedAsIgnore } from "../utils/messageAnalysis.js";
+import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.js";
+import { formatPrompt } from "../utils/formatPrompt.js";
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
 const context = new Map<Snowflake, Message[]>;
 
 /** Limits the length of each channel's context so memory isn't overburdened. */
-const maxContextLength = 50;
+const maxContextLength = 10;
 
 /**
  * @returns The past messages of the given channel, or undefined
@@ -34,7 +35,7 @@ export function hasContext (channel: Channel): boolean {
  * @param channel The channel to fetch messages from
  * @param client The current logged-in client
  */
-export async function generateContext (channel: TextBasedChannel, client: Client<true>): Promise<void> {
+export async function generateContext (channel: TextBasedChannel): Promise<void> {
 	const newContext: Message[] = [];
 
 	const messages = await channel.messages.fetch({ limit: maxContextLength });
@@ -45,7 +46,7 @@ export async function generateContext (channel: TextBasedChannel, client: Client
 		if (done) {
 			return;
 		}
-		if (isEmpty(message) && isFromUser(message, client.user)) {
+		if (isEmpty(message) && isFromSelf(message)) {
 			if (message.interaction !== null && message.interaction.commandName === whitelistCommand.name) {
 				done = true;
 				return;
@@ -61,7 +62,7 @@ export async function generateContext (channel: TextBasedChannel, client: Client
 		}
 
 		// If there are two messages from other users in a row, skip the most recent one (like the bot normally would)
-		if (newContext[0] !== undefined && !isFromUser(message, client.user) && !isFromUser(newContext[0], client.user)) {
+		if (newContext[0] !== undefined && !isFromSelf(message) && !isFromSelf(newContext[0])) {
 			newContext.shift();
 		}
 
@@ -74,6 +75,9 @@ export async function generateContext (channel: TextBasedChannel, client: Client
 	});
 
 	context.set(channel.id, newContext);
+
+	console.log(channel.id);
+	console.log(newContext.map(formatPrompt));
 }
 
 /**

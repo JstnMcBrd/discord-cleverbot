@@ -1,7 +1,7 @@
 import type { Client, Message } from "discord.js";
 
 import { messageCreate } from "./events/messageCreate.js";
-import { isFromUser } from "./utils/messageAnalysis.js";
+import { isFromSelf } from "./utils/messageAnalysis.js";
 import { generateContext, getContext, removeLastMessageFromContext } from "./memory/context.js";
 import { load as loadWhitelist, getWhitelist } from "./memory/whitelist.js";
 import { info } from "./logger.js";
@@ -29,12 +29,12 @@ export async function refresh (client: Client<true>): Promise<void> {
 	// Update context for all whitelisted channels (in parallel)
 	await Promise.all(
 		getWhitelist().map(
-			async channel => await generateContext(channel, client),
+			async channel => await generateContext(channel),
 		),
 	);
 
 	// Follow-up on any missed messages
-	resumeConversations(client);
+	resumeConversations();
 
 	// Repeat at regular intervals
 	setTimeout(() => void refresh(client), refreshFrequency * 1000);
@@ -45,7 +45,7 @@ export async function refresh (client: Client<true>): Promise<void> {
  *
  * @param client The current logged-in client
  */
-function resumeConversations (client: Client<true>): void {
+function resumeConversations (): void {
 	const toRespondTo: Message[] = [];
 	getWhitelist().forEach(channel => {
 		// Get the context
@@ -61,7 +61,7 @@ function resumeConversations (client: Client<true>): void {
 		}
 
 		// If the last message isn't from the bot, then respond to it
-		if (!isFromUser(lastMessage, client.user)) {
+		if (!isFromSelf(lastMessage)) {
 			toRespondTo.push(lastMessage);
 		}
 	});

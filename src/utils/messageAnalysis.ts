@@ -11,14 +11,13 @@ export function isMarkedAsIgnore (message: Message): boolean {
 }
 
 /**
- * Recognizes when a message is from the specified user.
+ * Recognizes when a message is from the client user.
  *
  * @param message The message whose author to check
- * @param user The user to check if the message came from
- * @returns `true` if the message came from the user, `false` if otherwise
+ * @returns `true` if the message came from the client user, `false` if otherwise
  */
-export function isFromUser (message: Message, user: User): boolean {
-	return message.author.id === user.id;
+export function isFromSelf (message: Message): boolean {
+	return message.author.id === message.client.user.id;
 }
 
 /**

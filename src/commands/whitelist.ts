@@ -17,7 +17,7 @@ export const whitelist = new CommandHandler()
 		let embed: EmbedBuilder;
 		let ephemeral: boolean;
 		if (whitelistChannel(interaction.channel)) {
-			await generateContext(interaction.channel, interaction.client);
+			await generateContext(interaction.channel);
 			embed = createSuccessEmbed(interaction.channel.id);
 			ephemeral = false;
 		}

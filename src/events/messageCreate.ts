@@ -3,7 +3,7 @@ import type { Message, TextBasedChannel } from "discord.js";
 
 import { EventHandler } from "./EventHandler.js";
 import { formatPrompt } from "../utils/formatPrompt.js";
-import { isMarkedAsIgnore, isFromUser, isEmpty, isAMention } from "../utils/messageAnalysis.js";
+import { isMarkedAsIgnore, isFromSelf, isEmpty, isAMention } from "../utils/messageAnalysis.js";
 import { replyWithError } from "../utils/replyWithError.js";
 import { sleep } from "../utils/sleep.js";
 import { addToContext, getContext } from "../memory/context.js";
@@ -29,7 +29,7 @@ export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
 	.setExecution(async message => {
 		// Ignore certain messages
-		if (isFromUser(message, message.client.user)) {
+		if (isFromSelf(message)) {
 			return;
 		}
 		if (isEmpty(message)) {
