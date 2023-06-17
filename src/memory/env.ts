@@ -3,7 +3,6 @@
 */
 
 import { config } from "dotenv";
-import type { DotenvConfigOptions } from "dotenv";
 
 /**
  * The expected format of the `.env` file.
@@ -25,8 +24,7 @@ let environment: Environment;
  */
 export function load (): void {
 	const processEnv = {};
-	// FIXME remove this typecast once "dotenv" fixes their types
-	config({ processEnv } as DotenvConfigOptions);
+	config({ processEnv });
 
 	if (!isValidEnvironment(processEnv)) {
 		throw new Error("The .env file at is missing the required variables.");
