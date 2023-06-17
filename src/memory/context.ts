@@ -5,7 +5,7 @@
 
 import type { Channel, Message, Snowflake, TextBasedChannel } from "discord.js";
 
-import { whitelist as whitelistCommand } from "../commands/whitelist.js";
+import { whitelist } from "../commands/whitelist.js";
 import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.js";
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
@@ -81,7 +81,7 @@ function isWhitelistCommandReply (message: Message): boolean {
 	return isEmpty(message)
 		&& isFromSelf(message)
 		&& message.interaction !== null
-		&& message.interaction.commandName === whitelistCommand.name;
+		&& message.interaction.commandName === whitelist.name;
 }
 
 /**

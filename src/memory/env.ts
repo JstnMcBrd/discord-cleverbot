@@ -25,6 +25,7 @@ let environment: Environment;
  */
 export function load (): void {
 	const processEnv = {};
+	// FIXME remove this typecast once "dotenv" fixes their types
 	config({ processEnv } as DotenvConfigOptions);
 
 	if (!isValidEnvironment(processEnv)) {

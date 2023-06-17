@@ -11,11 +11,18 @@ export function getVersion (): string {
 	const fileContents = file.toString();
 	const json: unknown = JSON.parse(fileContents);
 
-	if (json instanceof Object && Object.hasOwn(json, "version")) {
-		const npmPackage = json as { version: string };
-		return npmPackage.version;
+	if (hasVersionField(json)) {
+		return json.version;
 	}
 	else {
 		throw new TypeError("The npm package file is missing the version number.");
 	}
+}
+
+/**
+ * @returns Whether the given JSON has the necessary "version" field
+ */
+function hasVersionField (json: unknown): json is { version: string } {
+	return json instanceof Object
+		&& Object.hasOwn(json, "version");
 }
