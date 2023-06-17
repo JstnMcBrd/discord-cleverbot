@@ -5,6 +5,8 @@ import { help } from "./help.js";
 import { invite } from "./invite.js";
 import { unwhitelist } from "./unwhitelist.js";
 import { whitelist } from "./whitelist.js";
+import { error } from "../logger.js";
+import { areCommandsInSync } from "../utils/areCommandsInSync.js";
 
 /** The list of all command handlers. */
 const commandHandlers = new Map<string, CommandHandler>();
@@ -49,9 +51,15 @@ export function getCommandHandler (name: string): CommandHandler | undefined {
  * @param client The current logged-in client
  */
 export async function syncCommands (client: Client<true>) {
-	const deployedCommands = await client.application.commands.fetch();
+	const result = await client.application.commands.fetch();
 
-	// TODO throw an error if the commands are not the same and need to be re-deployed
+	const deployedCommands = Array.from(result.values());
+	const localCommands = Array.from(getCommandHandlers().values());
 
-	deployedCommands.forEach(command => commandHandlers.get(command.name)?.setId(command.id));
+	if (!areCommandsInSync(deployedCommands, localCommands)) {
+		error("Deployed commands are outdated. Please run the deployment script to update them.");
+		process.exit();
+	}
+
+	deployedCommands.forEach(command => getCommandHandler(command.name)?.setId(command.id));
 }
