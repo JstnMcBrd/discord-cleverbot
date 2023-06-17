@@ -7,7 +7,6 @@ import type { Channel, Message, Snowflake, TextBasedChannel } from "discord.js";
 
 import { whitelist as whitelistCommand } from "../commands/whitelist.js";
 import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.js";
-import { formatPrompt } from "../utils/formatPrompt.js";
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
 const context = new Map<Snowflake, Message[]>;
@@ -46,11 +45,9 @@ export async function generateContext (channel: TextBasedChannel): Promise<void>
 		if (done) {
 			return;
 		}
-		if (isEmpty(message) && isFromSelf(message)) {
-			if (message.interaction !== null && message.interaction.commandName === whitelistCommand.name) {
-				done = true;
-				return;
-			}
+		if (isWhitelistCommandReply(message)) {
+			done = true;
+			return;
 		}
 
 		// Skip empty messages and ignored messages
@@ -61,8 +58,9 @@ export async function generateContext (channel: TextBasedChannel): Promise<void>
 			return;
 		}
 
-		// If there are two messages from other users in a row, skip the most recent one (like the bot normally would)
-		if (newContext[0] !== undefined && !isFromSelf(message) && !isFromSelf(newContext[0])) {
+		// If there are 2 messages from other users in a row, or 2 messages from the bot in a row,
+		// skip the most recent one (like the bot normally would)
+		if (newContext[0] && (isFromSelf(message) === isFromSelf(newContext[0]))) {
 			newContext.shift();
 		}
 
@@ -75,9 +73,16 @@ export async function generateContext (channel: TextBasedChannel): Promise<void>
 	});
 
 	context.set(channel.id, newContext);
+}
 
-	console.log(channel.id);
-	console.log(newContext.map(formatPrompt));
+/**
+ * @returns Whether the given message is a reply to a /whitelist command
+ */
+function isWhitelistCommandReply (message: Message): boolean {
+	return isEmpty(message)
+		&& isFromSelf(message)
+		&& message.interaction !== null
+		&& message.interaction.commandName === whitelistCommand.name;
 }
 
 /**
