@@ -1,4 +1,4 @@
-import type { Awaitable, ClientEvents } from "discord.js";
+import type { ClientEvents } from "discord.js";
 
 import { error } from "../logger.js";
 
@@ -65,10 +65,10 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	 *
 	 * @param args The arguments provided to the callback method (depends on the event)
 	 */
-	public execute (...args: ClientEvents[K]): Awaitable<void> {
+	public async execute (...args: ClientEvents[K]): Promise<void> {
 		if (this.execution) {
 			try {
-				return this.execution(...args);
+				return await this.execution(...args);
 			}
 			catch (err) {
 				error(`Event handler for "${this.name}" encountered an error:`);

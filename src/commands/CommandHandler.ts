@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, type Awaitable } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import { replyWithError } from "../helpers/replyWithError.js";
@@ -28,10 +28,10 @@ export class CommandHandler extends SlashCommandBuilder {
 	 *
 	 * @param interaction The command interaction received
 	 */
-	public execute (interaction: ChatInputCommandInteraction): Awaitable<void> {
+	public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
 		if (this.execution) {
 			try {
-				return this.execution(interaction);
+				return await this.execution(interaction);
 			}
 			catch (err) {
 				error(`Command handler for /${this.name} encountered an error:`);

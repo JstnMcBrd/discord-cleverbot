@@ -4,7 +4,8 @@ import { error as errorLog } from "../logger.js";
 /** Called whenever the discord.js client encounters an error. */
 export const error = new EventHandler("error")
 	.setOnce(false)
-	.setExecution(function (err: Error): void {
+	.setExecution(async err => {
 		errorLog("Client encountered an error:");
 		errorLog(err);
+		return Promise.resolve();
 	});

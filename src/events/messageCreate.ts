@@ -27,7 +27,7 @@ const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tri
 /** Called whenever the discord.js client observes a new message. */
 export const messageCreate = new EventHandler("messageCreate")
 	.setOnce(false)
-	.setExecution(async function (message: Message): Promise<void> {
+	.setExecution(async message => {
 		// Ignore certain messages
 		if (isFromUser(message, message.client.user)) {
 			return;

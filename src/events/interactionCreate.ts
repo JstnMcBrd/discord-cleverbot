@@ -1,5 +1,3 @@
-import type { Interaction } from "discord.js";
-
 import { EventHandler } from "./EventHandler.js";
 import { getCommandHandler } from "../commands/index.js";
 import { debug, info } from "../logger.js";
@@ -7,7 +5,7 @@ import { debug, info } from "../logger.js";
 /** Called whenever the discord.js client receives an interaction (usually a slash command). */
 export const interactionCreate = new EventHandler("interactionCreate")
 	.setOnce(false)
-	.setExecution(async function (interaction: Interaction): Promise<void> {
+	.setExecution(async interaction => {
 		// Ignore any interactions that are not commands
 		if (!interaction.isChatInputCommand()) {
 			return;
