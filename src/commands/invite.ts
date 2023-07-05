@@ -53,5 +53,5 @@ function createInviteButton (user: ClientUser, disabled: boolean): ButtonBuilder
  * @returns An invite link to add the bot to a new server with proper permissions
  */
 function createInviteLink (user: ClientUser): string {
-	return `https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=277025459200&scope=bot%20applications.commands`;
+	return `https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=274877975552&scope=bot%20applications.commands`;
 }
