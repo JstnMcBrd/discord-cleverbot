@@ -81,6 +81,7 @@ export const messageCreate = new EventHandler("messageCreate")
 		catch (err) {
 			error(err);
 
+			// We need to stop blocking this channel before we can try again
 			stopThinking(message.channel);
 
 			// If Cleverbot goofed, try again
