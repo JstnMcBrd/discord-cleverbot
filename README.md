@@ -5,9 +5,9 @@
 
 ## About
 
-discord-cleverbot is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/) and relies on the [node.js](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
+`discord-cleverbot` is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/) and relies on the [node.js](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
 
-It was originally started in December 2017 and has undergone several ground-up rewrites to improve functionality, efficiency, modernity, and simplicity.
+The project was started in December 2017 and has undergone several ground-up rewrites to improve functionality, efficiency, modernity, and simplicity.
 
 ## Licensing
 
@@ -24,7 +24,7 @@ Please see [GitHub's guide on licensing](https://docs.github.com/en/repositories
 ### Setting up the code
 
 - You will need an environment with [node.js v18](https://nodejs.org/en/download) installed (or use the Dev Container - see the [Development](#development) section below).
-- Run `git pull https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo.
+- Run `git clone https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo.
 - Create a new file called `.env` and add your access token, using [`.env.example`](./.env.example) as an example.
 
 ### Running the code
