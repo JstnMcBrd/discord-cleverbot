@@ -40,6 +40,8 @@ const whitelist: TextBasedChannel[] = [];
  * @throws If the memory file is improperly formatted
  */
 export async function load (client: Client<true>): Promise<void> {
+	whitelist.length = 0;
+
 	// Create the user's memory directory if it does not exist
 	const directoryPath = join(".", "memory", client.user.id);
 	if (!existsSync(directoryPath)) {
@@ -63,7 +65,6 @@ export async function load (client: Client<true>): Promise<void> {
 	}
 
 	// Fetch and validate channels (in parallel)
-	whitelist.length = 0;
 	await Promise.all(
 		json.map(
 			async channelID => {

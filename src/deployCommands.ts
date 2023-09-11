@@ -17,7 +17,9 @@ const token = getToken();
 info("Retrieving commands...");
 const commandHandlers = Array.from(getCommandHandlers().values());
 const commandJSONs = commandHandlers.map(command => command.toJSON());
-commandHandlers.forEach(command => debug(`\t${command.getSlashName()}`));
+commandHandlers.forEach(command => {
+	debug(`\t${command.getSlashName()}`);
+});
 
 // Setup client
 const client = new Client({ intents: [] });
@@ -29,7 +31,7 @@ client.once("ready", async c => {
 	await c.application.commands.set(commandJSONs);
 
 	info("Logging out...");
-	c.destroy();
+	await c.destroy();
 });
 
 // Login

@@ -40,8 +40,6 @@ export async function refresh (client: Client<true>): Promise<void> {
 
 /**
  * Searchs for unread messages in whitelisted channels and responds to them.
- *
- * @param client The current logged-in client
  */
 function resumeConversations (): void {
 	getWhitelist().forEach(channel => {

@@ -46,7 +46,7 @@ export class CommandHandler extends SlashCommandBuilder {
 	public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
 		if (this.execution) {
 			try {
-				return await this.execution(interaction);
+				await this.execution(interaction);
 			}
 			catch (err) {
 				error(`Command handler for /${this.name} encountered an error:`);

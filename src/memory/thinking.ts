@@ -29,7 +29,9 @@ export function isThinking (channel: Channel): boolean {
  */
 export function startThinking (channel: Channel): void {
 	if (!isThinking(channel)) {
-		const timeout = setTimeout(() => stopThinking(channel), thinkingTimeout * 1000);
+		const timeout = setTimeout(() => {
+			stopThinking(channel);
+		}, thinkingTimeout * 1000);
 		thinking.set(channel.id, timeout);
 	}
 	thinking.get(channel.id)?.refresh();
