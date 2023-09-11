@@ -11,6 +11,7 @@ export default [
 		files: ["**/*.js", "**/*.ts"],
 		languageOptions: {
 			sourceType: "module",
+			ecmaVersion: 2022,
 			globals: {
 				...globals.node,
 				// es2022 is not available
