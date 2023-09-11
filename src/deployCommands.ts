@@ -31,7 +31,7 @@ client.once("ready", async c => {
 	await c.application.commands.set(commandJSONs);
 
 	info("Logging out...");
-	c.destroy();
+	await c.destroy();
 });
 
 // Login
