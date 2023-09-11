@@ -54,7 +54,7 @@ export function debug (...params: unknown[]): void {
 }
 
 /**
- * @returns The given parameter as a string, using node's built-in `utils.inspect()` method.
+ * @returns The given parameter as a string, using node's built-in `util.inspect()` method.
  */
 function stringify (param: unknown): string {
 	if (typeof param === "string") {
