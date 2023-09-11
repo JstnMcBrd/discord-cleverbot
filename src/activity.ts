@@ -48,7 +48,9 @@ export function start (client: Client): void {
 		error(err);
 	}
 
-	setTimeout(() => start(client), activityUpdateFrequency * 1000);
+	setTimeout(() => {
+		start(client);
+	}, activityUpdateFrequency * 1000);
 }
 
 /**

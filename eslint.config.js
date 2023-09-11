@@ -17,7 +17,7 @@ export default [
 				// es2022 is not available
 				// https://github.com/sindresorhus/globals/issues/183
 				...globals.es2021,
-				"NodeJS": true,
+				NodeJS: true,
 			},
 		},
 		rules: {
@@ -70,9 +70,9 @@ export default [
 			},
 		},
 		rules: {
-			...typescriptPlugin.configs.recommended.rules,
-			...typescriptPlugin.configs["recommended-requiring-type-checking"].rules,
-			...typescriptPlugin.configs.strict.rules,
+			...typescriptPlugin.configs["recommended-type-checked"].rules,
+			...typescriptPlugin.configs["strict-type-checked"].rules,
+			...typescriptPlugin.configs["stylistic-type-checked"].rules,
 		},
 	},
 ];

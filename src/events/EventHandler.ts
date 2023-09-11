@@ -68,7 +68,7 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	public async execute (...args: ClientEvents[K]): Promise<void> {
 		if (this.execution) {
 			try {
-				return await this.execution(...args);
+				await this.execution(...args);
 			}
 			catch (err) {
 				error(`Event handler for "${this.name}" encountered an error:`);
