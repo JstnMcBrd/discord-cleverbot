@@ -10,7 +10,7 @@ import { error } from "../logger.js";
  * @param message The message or interaction to reply to
  * @param internalError The error to send
  */
-export async function replyWithError (message: Message|ChatInputCommandInteraction, internalError: Error|unknown): Promise<void> {
+export async function replyWithError (message: Message|ChatInputCommandInteraction, internalError: unknown): Promise<void> {
 	const stringifiedError = String(internalError);
 
 	const embed = new EmbedBuilder()
