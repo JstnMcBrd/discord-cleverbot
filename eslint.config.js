@@ -66,7 +66,7 @@ export default [
 		languageOptions: {
 			parser: typescriptParser,
 			parserOptions: {
-				project: true,
+				project: "./tsconfig.eslint.json",
 			},
 		},
 		rules: {
