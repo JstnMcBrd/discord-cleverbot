@@ -124,7 +124,6 @@ function logExchange (channel: TextBasedChannel, context: string[], prompt: stri
  * @returns The response as a `Message` object
  */
 async function sendOrReply (message: Message, response: string): Promise<Message> {
-	// Use reply if message is not the latest message
 	return isLatestMessage(message)
 		? message.channel.send(response)
 		: message.reply(response);
