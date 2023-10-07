@@ -20,7 +20,7 @@ const activityOptions: ActivityOptions = {
 };
 
 /**
- * Wait until Discord supports custom statuses for bots.
+ * // FIXME wait until Discord supports custom statuses for bots.
  * https://github.com/discord/discord-api-docs/issues/1160#issuecomment-546549516
  */
 // const activityOptions: ActivityOptions = {
