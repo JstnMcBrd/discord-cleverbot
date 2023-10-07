@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
-		"cleverbot-free": "^2.0.0",
+		"cleverbot-free": "^2.0.1",
 		"discord.js": "^14.13.0",
 		"dotenv": "^16.3.1"
 	},
