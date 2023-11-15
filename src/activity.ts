@@ -38,7 +38,7 @@ const activityOptions: ActivityOptions = {
  *
  * @param client The current logged-in client
  */
-export function start (client: Client): void {
+export function start (client: Client<true>): void {
 	info("Updating activity...");
 
 	try {
