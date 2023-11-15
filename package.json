@@ -12,9 +12,6 @@
 		"start": "node ./dist/main.js",
 		"commands": "node ./dist/deployCommands.js"
 	},
-	"engines": {
-		"node": "18"
-	},
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
 		"cleverbot-free": "^2.0.1",
