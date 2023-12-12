@@ -23,7 +23,7 @@ Please see [GitHub's guide on licensing](https://docs.github.com/en/repositories
 
 ### Setting up the code
 
-- You will need an environment with [node.js v18](https://nodejs.org/en/download) installed (or use the Dev Container - see the [Development](#development) section below).
+- You will need an environment with [Node](https://nodejs.org/en/download) installed (or use the Dev Container - see the [Development](#development) section below).
 - Run `git clone https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo.
 - Create a new file called `.env` and add your access token, using [`.env.example`](./.env.example) as an example.
 
