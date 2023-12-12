@@ -1,6 +1,6 @@
 {
 	"name": "discord-cleverbot",
-	"version": "5.0.1",
+	"version": "5.0.2-alpha",
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
 	"type": "module",
