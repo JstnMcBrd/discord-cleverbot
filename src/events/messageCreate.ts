@@ -1,33 +1,33 @@
-import cleverbot from "cleverbot-free";
-import type { Message, TextBasedChannel } from "discord.js";
+import cleverbot from 'cleverbot-free';
+import type { Message, TextBasedChannel } from 'discord.js';
 
-import { EventHandler } from "./EventHandler.js";
-import { formatPrompt } from "../utils/formatPrompt.js";
-import { doesMentionSelf, isMarkedAsIgnore, isFromSelf, isEmpty } from "../utils/messageAnalysis.js";
-import { replyWithError } from "../utils/replyWithError.js";
-import { sleep } from "../utils/sleep.js";
-import { addToContext, getContext } from "../memory/context.js";
-import { isThinking, startThinking, stopThinking } from "../memory/thinking.js";
-import { hasChannel as isWhitelisted } from "../memory/whitelist.js";
-import { typingSpeed } from "../parameters.js";
-import { debug, error, info } from "../logger.js";
+import { EventHandler } from './EventHandler.js';
+import { formatPrompt } from '../utils/formatPrompt.js';
+import { doesMentionSelf, isMarkedAsIgnore, isFromSelf, isEmpty } from '../utils/messageAnalysis.js';
+import { replyWithError } from '../utils/replyWithError.js';
+import { sleep } from '../utils/sleep.js';
+import { addToContext, getContext } from '../memory/context.js';
+import { isThinking, startThinking, stopThinking } from '../memory/thinking.js';
+import { hasChannel as isWhitelisted } from '../memory/whitelist.js';
+import { typingSpeed } from '../parameters.js';
+import { debug, error, info } from '../logger.js';
 
 /** The error message to throw if the Cleverbot module returns an empty string. */
-const EMPTY_STRING_ERROR_MESSAGE = "Cleverbot returned an empty string";
+const EMPTY_STRING_ERROR_MESSAGE = 'Cleverbot returned an empty string';
 
 /** The error message superagent throws if the HTTP request times out. */
-const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = "Response timeout of 10000ms exceeded";
+const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = 'Response timeout of 10000ms exceeded';
 
 /**
  * The error messsage the Cleverbot module throws if it fails after 15 tries.
  * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js).
  */
-const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = "Failed to get a response after 15 tries.";
+const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = 'Failed to get a response after 15 tries.';
 
 /** Called whenever the client observes a new message. */
-export const messageCreate = new EventHandler("messageCreate")
+export const messageCreate = new EventHandler('messageCreate')
 	.setOnce(false)
-	.setExecution(async message => {
+	.setExecution(async (message) => {
 		// Ignore certain messages
 		if (isFromSelf(message)) {
 			return;
@@ -55,7 +55,7 @@ export const messageCreate = new EventHandler("messageCreate")
 
 			// Generate response
 			const response = await cleverbot(prompt, context);
-			if (response === "") {
+			if (response === '') {
 				throw new TypeError(EMPTY_STRING_ERROR_MESSAGE);
 			}
 
@@ -87,8 +87,8 @@ export const messageCreate = new EventHandler("messageCreate")
 			// If Cleverbot goofed, try again
 			if (err instanceof Error
 				&& (err.message === SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE
-					|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
-					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
+				|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
+				|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
 			// If unknown error, respond with error message
@@ -101,13 +101,13 @@ export const messageCreate = new EventHandler("messageCreate")
 /**
  * Logs the current exchange.
  */
-function logExchange (channel: TextBasedChannel, context: string[], prompt: string, response: string): void {
-	const prevMessage = context.at(context.length - 1) ?? "";
+function logExchange(channel: TextBasedChannel, context: string[], prompt: string, response: string): void {
+	const prevMessage = context.at(context.length - 1) ?? '';
 
-	info("Generated response");
+	info('Generated response');
 	debug(`\tChannel: ${
 		channel.isDMBased()
-			? `@${channel.recipient?.username ?? "unknown user"}`
+			? `@${channel.recipient?.username ?? 'unknown user'}`
 			: `#${channel.name}`
 	} (${channel.id})`);
 	debug(`\t... ${prevMessage}`);
@@ -123,7 +123,7 @@ function logExchange (channel: TextBasedChannel, context: string[], prompt: stri
  * @param response The response to send
  * @returns The response as a `Message` object
  */
-async function sendOrReply (message: Message, response: string): Promise<Message> {
+async function sendOrReply(message: Message, response: string): Promise<Message> {
 	return isLatestMessage(message)
 		? message.channel.send(response)
 		: message.reply(response);
@@ -132,6 +132,6 @@ async function sendOrReply (message: Message, response: string): Promise<Message
 /**
  * @returns Whether the given message is the latest message in its channel
  */
-function isLatestMessage (message: Message): boolean {
+function isLatestMessage(message: Message): boolean {
 	return message.channel.lastMessageId === message.id;
 }

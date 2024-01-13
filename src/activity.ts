@@ -4,19 +4,19 @@
  * This is necessary because after being set, the user's activity eventually expire.
  */
 
-import { ActivityType } from "discord.js";
-import type { ActivityOptions, Client } from "discord.js";
+import { ActivityType } from 'discord.js';
+import type { ActivityOptions, Client } from 'discord.js';
 
-import { error, info } from "./logger.js";
+import { error, info } from './logger.js';
 
 /** How often to update the activity (in seconds). */
 const activityUpdateFrequency = 5 * 60;
 
 /** The activity the bot should use. */
 const activityOptions: ActivityOptions = {
-	name: "/help",
+	name: '/help',
 	type: ActivityType.Listening,
-	url: "https://www.cleverbot.com/",
+	url: 'https://www.cleverbot.com/',
 };
 
 /**
@@ -38,8 +38,8 @@ const activityOptions: ActivityOptions = {
  *
  * @param client The current logged-in client
  */
-export function start (client: Client<true>): void {
-	info("Updating activity...");
+export function start(client: Client<true>): void {
+	info('Updating activity...');
 
 	try {
 		setActivity(client);
@@ -58,7 +58,7 @@ export function start (client: Client<true>): void {
  *
  * @throws If the activity does not update correctly
  */
-function setActivity (client: Client<true>): void {
+function setActivity(client: Client<true>): void {
 	const { activities } = client.user.setActivity(activityOptions);
 	const activity = activities.at(0);
 
@@ -68,6 +68,6 @@ function setActivity (client: Client<true>): void {
 		|| activity.name !== activityOptions.name
 		|| activity.type !== activityOptions.type
 		|| activity.url !== activityOptions.url) {
-		throw new Error("User presence did not update correctly.");
+		throw new Error('User presence did not update correctly.');
 	}
 }

@@ -3,13 +3,13 @@
  * context when generating a new reply.
  */
 
-import type { Channel, Message, Snowflake, TextBasedChannel } from "discord.js";
+import type { Channel, Message, Snowflake, TextBasedChannel } from 'discord.js';
 
-import { whitelist } from "../commands/whitelist.js";
-import { isEmpty, isFromSelf, isMarkedAsIgnore } from "../utils/messageAnalysis.js";
+import { whitelist } from '../commands/whitelist.js';
+import { isEmpty, isFromSelf, isMarkedAsIgnore } from '../utils/messageAnalysis.js';
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
-const context = new Map<Snowflake, Message[]>;
+const context = new Map<Snowflake, Message[]>();
 
 /** Limits the length of each channel's context so memory isn't overburdened. */
 const maxContextLength = 10;
@@ -17,14 +17,14 @@ const maxContextLength = 10;
 /**
  * @returns The past messages of the given channel, or undefined
  */
-export function getContext (channel: Channel): Message[]|undefined {
+export function getContext(channel: Channel): Message[] | undefined {
 	return context.get(channel.id);
 }
 
 /**
  * @returns Whether the past messages of the given channel have been recorded yet
  */
-export function hasContext (channel: Channel): boolean {
+export function hasContext(channel: Channel): boolean {
 	return context.has(channel.id);
 }
 
@@ -33,13 +33,13 @@ export function hasContext (channel: Channel): boolean {
  *
  * @param channel The channel to fetch messages from
  */
-export async function generateContext (channel: TextBasedChannel): Promise<void> {
+export async function generateContext(channel: TextBasedChannel): Promise<void> {
 	const newContext: Message[] = [];
 
 	const messages = await channel.messages.fetch({ limit: maxContextLength });
 
 	let done = false;
-	messages.forEach(message => {
+	messages.forEach((message) => {
 		// Do not generate context from before the channel was whitelisted
 		if (done) {
 			return;
@@ -77,7 +77,7 @@ export async function generateContext (channel: TextBasedChannel): Promise<void>
 /**
  * @returns Whether the given message is a reply to a /whitelist command
  */
-function isWhitelistCommandReply (message: Message): boolean {
+function isWhitelistCommandReply(message: Message): boolean {
 	return isEmpty(message)
 		&& isFromSelf(message)
 		&& message.interaction !== null
@@ -87,7 +87,7 @@ function isWhitelistCommandReply (message: Message): boolean {
 /**
  * Deletes the past messages of the given channel from the records.
  */
-export function deleteContext (channel: Channel): void {
+export function deleteContext(channel: Channel): void {
 	if (!hasContext(channel)) {
 		return;
 	}
@@ -98,7 +98,7 @@ export function deleteContext (channel: Channel): void {
 /**
  * Adds the given message to the recorded past messages of the given channel.
  */
-export function addToContext (channel: Channel, message: Message): void {
+export function addToContext(channel: Channel, message: Message): void {
 	if (!hasContext(channel)) {
 		return;
 	}
@@ -120,7 +120,7 @@ export function addToContext (channel: Channel, message: Message): void {
 /**
  * Removes the most recent message from the recorded past messages of the given channel.
  */
-export function removeLastMessageFromContext (channel: Channel): void {
+export function removeLastMessageFromContext(channel: Channel): void {
 	if (!hasContext(channel)) {
 		return;
 	}

@@ -1,4 +1,4 @@
-import type { Message } from "discord.js";
+import type { Message } from 'discord.js';
 
 /**
  * Recognizes when a message is prefixed with '> ', which tells the bot not to respond.
@@ -6,8 +6,8 @@ import type { Message } from "discord.js";
  * @param message The message to parse
  * @returns `true` if the message begins with '> ', `false` if otherwise
  */
-export function isMarkedAsIgnore (message: Message): boolean {
-	return message.cleanContent.startsWith("> ");
+export function isMarkedAsIgnore(message: Message): boolean {
+	return message.cleanContent.startsWith('> ');
 }
 
 /**
@@ -16,7 +16,7 @@ export function isMarkedAsIgnore (message: Message): boolean {
  * @param message The message whose author to check
  * @returns `true` if the message came from the client user, `false` if otherwise
  */
-export function isFromSelf (message: Message): boolean {
+export function isFromSelf(message: Message): boolean {
 	return message.author.id === message.client.user.id;
 }
 
@@ -26,7 +26,7 @@ export function isFromSelf (message: Message): boolean {
  * @param message The message to check
  * @returns `true` if the message has no text content, `false` if otherwise
  */
-export function isEmpty (message: Message): boolean {
+export function isEmpty(message: Message): boolean {
 	return message.cleanContent.length === 0;
 }
 
@@ -36,6 +36,6 @@ export function isEmpty (message: Message): boolean {
  * @param message The message to check
  * @returns `true` if the message mentions the client user, `false` if otherwise
  */
-export function doesMentionSelf (message: Message): boolean {
+export function doesMentionSelf(message: Message): boolean {
 	return message.mentions.has(message.client.user);
 }

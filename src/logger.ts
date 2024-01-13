@@ -1,6 +1,6 @@
-import { inspect } from "node:util";
+import { inspect } from 'node:util';
 
-import colors from "@colors/colors/safe.js";
+import colors from '@colors/colors/safe.js';
 
 /** The default logger for this application. Set to the console for now. */
 const logger: Console = console;
@@ -12,7 +12,7 @@ const logger: Console = console;
  *
  * @param message The message to print
  */
-export function error (...params: unknown[]): void {
+export function error(...params: unknown[]): void {
 	params = params.map(stringify).map(p => colors.red(p));
 	logger.error(...params);
 }
@@ -24,7 +24,7 @@ export function error (...params: unknown[]): void {
  *
  * @param message The message to print
  */
-export function warn (...params: unknown[]): void {
+export function warn(...params: unknown[]): void {
 	params = params.map(stringify).map(p => colors.yellow(p));
 	logger.warn(...params);
 }
@@ -36,7 +36,7 @@ export function warn (...params: unknown[]): void {
  *
  * @param message The message to print
  */
-export function info (...params: unknown[]): void {
+export function info(...params: unknown[]): void {
 	params = params.map(stringify).map(p => colors.white(p));
 	logger.info(...params);
 }
@@ -48,7 +48,7 @@ export function info (...params: unknown[]): void {
  *
  * @param message The message to print
  */
-export function debug (...params: unknown[]): void {
+export function debug(...params: unknown[]): void {
 	params = params.map(stringify).map(p => colors.gray(p));
 	logger.debug(...params);
 }
@@ -56,8 +56,8 @@ export function debug (...params: unknown[]): void {
 /**
  * @returns The given parameter as a string, using node's built-in `util.inspect()` method.
  */
-function stringify (param: unknown): string {
-	if (typeof param === "string") {
+function stringify(param: unknown): string {
+	if (typeof param === 'string') {
 		return param;
 	}
 	return inspect(param, undefined, undefined, false);

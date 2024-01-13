@@ -3,37 +3,37 @@
  * Only needs to be run when commands are updated.
  */
 
-import { Client } from "discord.js";
+import { Client } from 'discord.js';
 
-import { getCommandHandlers } from "./commands/index.js";
-import { getToken, load as loadEnv } from "./memory/env.js";
-import { debug, error, info } from "./logger.js";
+import { getCommandHandlers } from './commands/index.js';
+import { getToken, load as loadEnv } from './memory/env.js';
+import { debug, error, info } from './logger.js';
 
 // Load environment variables
 loadEnv();
 const token = getToken();
 
 // Get the JSON data of the commands
-info("Retrieving commands...");
+info('Retrieving commands...');
 const commandHandlers = Array.from(getCommandHandlers().values());
 const commandJSONs = commandHandlers.map(command => command.toJSON());
-commandHandlers.forEach(command => {
+commandHandlers.forEach((command) => {
 	debug(`\t${command.getSlashName()}`);
 });
 
 // Setup client
 const client = new Client({ intents: [] });
-client.on("error", error);
-client.once("ready", async c => {
+client.on('error', error);
+client.once('ready', async (c) => {
 	debug(`\tUser: ${c.user.username} (${c.user.id})`);
 
-	info("Deploying commands...");
+	info('Deploying commands...');
 	await c.application.commands.set(commandJSONs);
 
-	info("Logging out...");
+	info('Logging out...');
 	await c.destroy();
 });
 
 // Login
-info("Logging in...");
+info('Logging in...');
 await client.login(token);

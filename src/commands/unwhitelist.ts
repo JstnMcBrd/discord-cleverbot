@@ -1,18 +1,18 @@
-import { EmbedBuilder, channelMention } from "discord.js";
+import { EmbedBuilder, channelMention } from 'discord.js';
 
-import { CommandHandler } from "./CommandHandler.js";
-import { whitelist } from "./whitelist.js";
-import { deleteContext } from "../memory/context.js";
-import { removeChannel } from "../memory/whitelist.js";
-import { embedColors } from "../parameters.js";
+import { CommandHandler } from './CommandHandler.js';
+import { whitelist } from './whitelist.js';
+import { deleteContext } from '../memory/context.js';
+import { removeChannel } from '../memory/whitelist.js';
+import { embedColors } from '../parameters.js';
 
 /** A command that removes a channel from the whitelist. */
 export const unwhitelist = new CommandHandler()
-	.setName("unwhitelist")
-	.setDescription("Disallow me from responding to messages in this channel")
-	.setExecution(async interaction => {
+	.setName('unwhitelist')
+	.setDescription('Disallow me from responding to messages in this channel')
+	.setExecution(async (interaction) => {
 		if (interaction.channel === null) {
-			throw new TypeError("Channel cannot be null.");
+			throw new TypeError('Channel cannot be null.');
 		}
 
 		let embed: EmbedBuilder;
@@ -36,14 +36,14 @@ export const unwhitelist = new CommandHandler()
  * @param channelID The ID of the channel that was unwhitelisted
  * @returns An embed that says the channel was unwhitelisted
  */
-function createSuccessEmbed (channelID: string): EmbedBuilder {
+function createSuccessEmbed(channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.unwhitelist)
-		.setTitle("Unwhitelisted")
+		.setTitle('Unwhitelisted')
 		.setDescription(`You have disabled me for ${mention}. This means that I will no longer respond to future messages sent in this channel.`)
 		.addFields(
-			{ name: "Enabling", value: `If you want me to start responding to messages here, you can use the ${whitelist.getMention()} command.` },
+			{ name: 'Enabling', value: `If you want me to start responding to messages here, you can use the ${whitelist.getMention()} command.` },
 		);
 }
 
@@ -51,10 +51,10 @@ function createSuccessEmbed (channelID: string): EmbedBuilder {
  * @param channelID The ID of the channel that was not unwhitelisted
  * @returns An embed that says the channel was already not whitelisted
  */
-function createRedundantEmbed (channelID: string): EmbedBuilder {
+function createRedundantEmbed(channelID: string): EmbedBuilder {
 	const mention = channelMention(channelID);
 	return new EmbedBuilder()
 		.setColor(embedColors.info)
-		.setTitle("Already Unwhitelisted")
+		.setTitle('Already Unwhitelisted')
 		.setDescription(`You have already disabled me for ${mention}.`);
 }
