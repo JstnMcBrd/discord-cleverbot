@@ -1,78 +1,62 @@
-import js from "@eslint/js";
-import typescriptParser from "@typescript-eslint/parser";
-import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import globals from "globals";
+import js from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import globals from 'globals';
 
 export default [
 	{
-		ignores: ["node_modules", "dist"],
+		ignores: ['dist'],
 	},
 	{
-		files: ["**/*.js", "**/*.ts"],
+		// All JavaScript-esque files
+		files: ['**/*.{m,c,}{js,ts}'],
+		plugins: {
+			'@stylistic': stylistic,
+		},
 		languageOptions: {
-			sourceType: "module",
+			sourceType: 'module',
 			ecmaVersion: 2022,
 			globals: {
 				...globals.node,
-				// es2022 is not available
-				// https://github.com/sindresorhus/globals/issues/183
-				...globals.es2021,
+				...globals.es2021, // es2022 is not available (https://github.com/sindresorhus/globals/issues/183)
 				NodeJS: true,
 			},
 		},
 		rules: {
 			// Recommended
 			...js.configs.recommended.rules,
+			...stylistic.configs['recommended-flat'].rules,
 
-			// Defaults
-			"array-bracket-spacing": "error",
-			"arrow-spacing": "error",
-			"comma-spacing": "error",
-			"comma-style": "error",
-			"curly": "error",
-			"eol-last": "error",
-			"keyword-spacing": "error",
-			"max-statements-per-line": "error",
-			"no-floating-decimal": "error",
-			"no-inline-comments": "error",
-			"no-multi-spaces": "error",
-			"no-multiple-empty-lines": "error",
-			"no-shadow": "error",
-			"no-trailing-spaces": "error",
-			"no-var": "error",
-			"prefer-const": "error",
-			"quotes": "error",
-			"semi": "error",
-			"space-before-blocks": "error",
-			"space-before-function-paren": "error",
-			"space-in-parens": "error",
-			"space-infix-ops": "error",
-			"space-unary-ops": "error",
-			"spaced-comment": "error",
+			// Overrides
+			'@stylistic/indent': ['error', 'tab'],
+			'@stylistic/indent-binary-ops': ['error', 'tab'],
+			'@stylistic/no-tabs': 0,
+			'@stylistic/semi': ['error', 'always'],
+			'@stylistic/member-delimiter-style': 'error',
 
-			// Custom
-			"brace-style": ["error", "stroustrup"],
-			"comma-dangle": ["error", "always-multiline"],
-			"dot-location": ["error", "property"],
-			"indent": ["error", "tab"],
-			"object-curly-spacing": ["error", "always"],
+			// Additions
+			'curly': 'error',
+			'no-shadow': 'error',
+			'no-var': 'error',
+			'prefer-const': 'error',
 		},
 	},
 	{
-		files: ["**/*.ts"],
+		// TypeScript files
+		files: ['**/*.{m,c,}ts'],
 		plugins: {
-			"@typescript-eslint": typescriptPlugin,
+			'@typescript-eslint': typescriptPlugin,
 		},
 		languageOptions: {
 			parser: typescriptParser,
 			parserOptions: {
-				project: true,
+				project: './tsconfig.eslint.json',
 			},
 		},
 		rules: {
-			...typescriptPlugin.configs["recommended-type-checked"].rules,
-			...typescriptPlugin.configs["strict-type-checked"].rules,
-			...typescriptPlugin.configs["stylistic-type-checked"].rules,
+			...typescriptPlugin.configs['strict-type-checked'].rules,
+			...typescriptPlugin.configs['stylistic-type-checked'].rules,
 		},
 	},
 ];

@@ -1,6 +1,6 @@
-import { Colors } from "discord.js";
+import { Colors } from 'discord.js';
 
-import { getVersion } from "./utils/getVersion.js";
+import { getVersion } from './utils/getVersion.js';
 
 /** The version number of this project. */
 export const version = getVersion();

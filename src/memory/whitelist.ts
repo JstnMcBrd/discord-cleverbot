@@ -11,11 +11,11 @@
  * the Discord API.
 */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from "discord.js";
-import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
+import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from 'discord.js';
+import type { Channel, Client, Snowflake, TextBasedChannel } from 'discord.js';
 
 /**
  * The format of the whitelist JSON file.
@@ -24,7 +24,7 @@ import type { Channel, Client, Snowflake, TextBasedChannel } from "discord.js";
 type WhitelistFile = Snowflake[];
 
 /** The file path of the whitelist memory file. */
-let filePath = "";
+let filePath = '';
 
 /** The validated list of channels included in the whitelist. */
 const whitelist: TextBasedChannel[] = [];
@@ -39,17 +39,17 @@ const whitelist: TextBasedChannel[] = [];
  * @param client The current logged-in client
  * @throws If the memory file is improperly formatted
  */
-export async function load (client: Client<true>): Promise<void> {
+export async function load(client: Client<true>): Promise<void> {
 	whitelist.length = 0;
 
 	// Create the user's memory directory if it does not exist
-	const directoryPath = join(".", "memory", client.user.id);
+	const directoryPath = join('.', 'memory', client.user.id);
 	if (!existsSync(directoryPath)) {
 		mkdirSync(directoryPath, { recursive: true });
 	}
 
 	// Create the whitelist file if it does not exist
-	filePath = join(directoryPath, "whitelist.json");
+	filePath = join(directoryPath, 'whitelist.json');
 	if (!existsSync(filePath)) {
 		save();
 	}
@@ -67,7 +67,7 @@ export async function load (client: Client<true>): Promise<void> {
 	// Fetch and validate channels (in parallel)
 	await Promise.all(
 		json.map(
-			async channelID => {
+			async (channelID) => {
 				const channel = await fetchAndValidateChannel(channelID, client);
 				if (channel) {
 					whitelist.push(channel);
@@ -85,9 +85,9 @@ export async function load (client: Client<true>): Promise<void> {
 /**
  * @returns Whether the given JSON is a properly formatted whitelist file
  */
-function isValidWhitelistFile (json: unknown): json is WhitelistFile {
+function isValidWhitelistFile(json: unknown): json is WhitelistFile {
 	return Array.isArray(json)
-		&& json.every(value => typeof value === "string");
+		&& json.every(value => typeof value === 'string');
 }
 
 /**
@@ -96,7 +96,7 @@ function isValidWhitelistFile (json: unknown): json is WhitelistFile {
  * @returns The channel, or undefined if the channel could not be found or is invalid
  * @throws Any unrecognized errors from the Discord API
  */
-async function fetchAndValidateChannel (channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
+async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
 	// Test access
 	let channel: Channel | null;
 	try {
@@ -104,8 +104,8 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 	}
 	catch (err) {
 		if (err instanceof Error) {
-			if (err.message === "Unknown Channel"
-				|| err.message === "Missing Access") {
+			if (err.message === 'Unknown Channel'
+				|| err.message === 'Missing Access') {
 				return undefined;
 			}
 		}
@@ -127,7 +127,7 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 	}
 	catch (err) {
 		if (err instanceof Error) {
-			if (err.message === "Missing Access") {
+			if (err.message === 'Missing Access') {
 				return undefined;
 			}
 		}
@@ -141,26 +141,26 @@ async function fetchAndValidateChannel (channelID: Snowflake, client: Client): P
 /**
  * @returns Whether the given channel is a text-based channel
  */
-function isTextBasedChannel (channel: Channel): channel is TextBasedChannel {
+function isTextBasedChannel(channel: Channel): channel is TextBasedChannel {
 	return channel instanceof DMChannel
-	|| channel instanceof NewsChannel
-	|| channel instanceof StageChannel
-	|| channel instanceof TextChannel
-	|| channel instanceof ThreadChannel
-	|| channel instanceof VoiceChannel;
+		|| channel instanceof NewsChannel
+		|| channel instanceof StageChannel
+		|| channel instanceof TextChannel
+		|| channel instanceof ThreadChannel
+		|| channel instanceof VoiceChannel;
 }
 
 /**
  * @returns A read-only copy of the whitelist
  */
-export function getWhitelist (): readonly TextBasedChannel[] {
+export function getWhitelist(): readonly TextBasedChannel[] {
 	return whitelist;
 }
 
 /**
  * Writes the whitelist channel IDs to the memory file.
  */
-function save (): void {
+function save(): void {
 	const ids = getWhitelist().map(channel => channel.id);
 	writeFileSync(filePath, JSON.stringify(ids));
 }
@@ -171,7 +171,7 @@ function save (): void {
  * @param channel The channel to whitelist
  * @returns `true` if successful, `false` if the channel was already in the whitelist
  */
-export function addChannel (channel: TextBasedChannel): boolean {
+export function addChannel(channel: TextBasedChannel): boolean {
 	if (!hasChannel(channel)) {
 		whitelist.push(channel);
 		save();
@@ -186,7 +186,7 @@ export function addChannel (channel: TextBasedChannel): boolean {
  * @param channel The channel to unwhitelist
  * @returns `true` if successful, `false` if the channel was already not in the whitelist
  */
-export function removeChannel (channel: TextBasedChannel): boolean {
+export function removeChannel(channel: TextBasedChannel): boolean {
 	if (hasChannel(channel)) {
 		whitelist.splice(whitelist.indexOf(channel), 1);
 		save();
@@ -201,6 +201,6 @@ export function removeChannel (channel: TextBasedChannel): boolean {
  * @param channel The channel to check
  * @returns `true` if the channel is in the whitelist, `false` if not
  */
-export function hasChannel (channel: TextBasedChannel): boolean {
+export function hasChannel(channel: TextBasedChannel): boolean {
 	return whitelist.includes(channel);
 }

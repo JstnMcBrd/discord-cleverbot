@@ -1,15 +1,15 @@
-import { isDeepStrictEqual } from "node:util";
+import { isDeepStrictEqual } from 'node:util';
 
-import type { ApplicationCommand } from "discord.js";
+import type { ApplicationCommand } from 'discord.js';
 
-import { CommandHandler } from "../commands/CommandHandler.js";
+import { CommandHandler } from '../commands/CommandHandler.js';
 
 /**
  * @param deployedCommands A list of commands currently deployed, pulled from the Discord API
  * @param localCommands A list of command handlers from local definitions
  * @returns Whether the deployed and local command definitions are in sync
  */
-export function areCommandsInSync (deployedCommands: ApplicationCommand[], localCommands: CommandHandler[]): boolean {
+export function areCommandsInSync(deployedCommands: ApplicationCommand[], localCommands: CommandHandler[]): boolean {
 	if (deployedCommands.length !== localCommands.length) {
 		return false;
 	}
@@ -33,7 +33,7 @@ export function areCommandsInSync (deployedCommands: ApplicationCommand[], local
 /**
  * @returns An object of the comparable values between `ApplicationCommand` and `CommandHandler`
  */
-function getCommandComparableValues (command: ApplicationCommand|CommandHandler) {
+function getCommandComparableValues(command: ApplicationCommand | CommandHandler) {
 	const options = command instanceof CommandHandler
 		? command.options.map(opt => opt.toJSON())
 		: command.options;

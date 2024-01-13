@@ -2,7 +2,7 @@
  * Takes care of loading and returning environment variables from the `.env` file.
 */
 
-import { config } from "dotenv";
+import { config } from 'dotenv';
 
 /**
  * The expected format of the `.env` file.
@@ -22,12 +22,12 @@ let environment: Environment;
  *
  * @throws If the `.env` file is improperly formatted
  */
-export function load (): void {
+export function load(): void {
 	const processEnv = {};
 	config({ processEnv });
 
 	if (!isValidEnvironment(processEnv)) {
-		throw new Error("The .env file at is missing the required variables.");
+		throw new Error('The .env file at is missing the required variables.');
 	}
 
 	environment = processEnv;
@@ -36,9 +36,9 @@ export function load (): void {
 /**
  * @returns Whether the given environment has all of the required variables.
  */
-function isValidEnvironment (env: unknown): env is Environment {
+function isValidEnvironment(env: unknown): env is Environment {
 	return env instanceof Object
-		&& Object.prototype.hasOwnProperty.call(env, "TOKEN");
+		&& Object.prototype.hasOwnProperty.call(env, 'TOKEN');
 }
 
 /**
@@ -46,6 +46,6 @@ function isValidEnvironment (env: unknown): env is Environment {
  *
  * @returns The Discord token necessary to authenticate the client
  */
-export function getToken (): string {
+export function getToken(): string {
 	return environment.TOKEN;
 }

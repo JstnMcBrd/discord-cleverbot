@@ -1,6 +1,6 @@
-import type { ClientEvents } from "discord.js";
+import type { ClientEvents } from 'discord.js';
 
-import { error } from "../logger.js";
+import { error } from '../logger.js';
 
 /**
  * Mimics the `SlashCommandBuilder` class from discord.js and the `CommandHandler` class to
@@ -21,7 +21,7 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	 *
 	 * @param name The event that this handler is for
 	 */
-	public constructor (name: K) {
+	public constructor(name: K) {
 		this.name = name;
 	}
 
@@ -44,8 +44,8 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	 *
 	 * @param once Whether this event can only fire once
 	 */
-	public setOnce (once: boolean): this {
-		Reflect.set(this, "once", once);
+	public setOnce(once: boolean): this {
+		Reflect.set(this, 'once', once);
 		return this;
 	}
 
@@ -54,7 +54,7 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	 *
 	 * @param execution The method to call
 	 */
-	public setExecution (execution: typeof this.execute): this {
+	public setExecution(execution: typeof this.execute): this {
 		this.execution = execution;
 		return this;
 	}
@@ -65,7 +65,7 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	 *
 	 * @param args The arguments provided to the callback method (depends on the event)
 	 */
-	public async execute (...args: ClientEvents[K]): Promise<void> {
+	public async execute(...args: ClientEvents[K]): Promise<void> {
 		if (this.execution) {
 			try {
 				await this.execution(...args);
