@@ -16,7 +16,7 @@ export default [
 		},
 		languageOptions: {
 			sourceType: 'module',
-			ecmaVersion: 2022,
+			ecmaVersion: 'latest',
 			globals: {
 				...globals.nodeBuiltin,
 			},
