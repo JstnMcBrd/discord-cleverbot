@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "Node16",
-		"outDir": "./dist",
+		"outDir": "dist",
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
