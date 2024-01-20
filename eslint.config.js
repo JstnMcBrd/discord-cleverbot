@@ -58,6 +58,8 @@ export default [
 		rules: {
 			...typescriptPlugin.configs['strict-type-checked'].rules,
 			...typescriptPlugin.configs['stylistic-type-checked'].rules,
+
+			'no-undef': 0, // handled by TypeScript
 		},
 	},
 ];
