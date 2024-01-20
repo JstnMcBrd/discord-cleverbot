@@ -16,12 +16,13 @@ export default [
 		},
 		languageOptions: {
 			sourceType: 'module',
-			ecmaVersion: 2022,
+			ecmaVersion: 'latest',
 			globals: {
-				...globals.node,
-				...globals.es2021, // es2022 is not available (https://github.com/sindresorhus/globals/issues/183)
-				NodeJS: true,
+				...globals.nodeBuiltin,
 			},
+		},
+		linterOptions: {
+			reportUnusedDisableDirectives: 'error',
 		},
 		rules: {
 			// Recommended
@@ -57,6 +58,8 @@ export default [
 		rules: {
 			...typescriptPlugin.configs['strict-type-checked'].rules,
 			...typescriptPlugin.configs['stylistic-type-checked'].rules,
+
+			'no-undef': 0, // handled by TypeScript
 		},
 	},
 ];

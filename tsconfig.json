@@ -1,16 +1,16 @@
 {
 	"include": ["src"],
 	"compilerOptions": {
-		"target": "ES2022",
+		"target": "ESNext",
 		"module": "Node16",
-		"outDir": "./dist",
+		"outDir": "dist",
+		"sourceMap": true,
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
 		"noImplicitReturns": true,
 		"noPropertyAccessFromIndexSignature": true,
 		"noUncheckedIndexedAccess": true,
-		"sourceMap": true,
 		"verbatimModuleSyntax": true,
 	},
 }
