@@ -1,27 +1,28 @@
 {
 	"name": "discord-cleverbot",
 	"version": "5.0.2-alpha",
+	"private": true,
 	"description": "Chatbot for Discord",
+	"license": "UNLICENSED",
 	"author": "Justin McBride",
 	"type": "module",
-	"private": true,
 	"scripts": {
 		"build": "tsc",
+		"commands": "node ./dist/deployCommands.js",
 		"lint": "eslint .",
-		"test": "echo \"No tests\"",
 		"start": "node ./dist/main.js",
-		"commands": "node ./dist/deployCommands.js"
+		"test": "echo \"No tests\""
 	},
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
-		"cleverbot-free": "^2.0.1",
+		"cleverbot-free": "^2.0.2",
 		"discord.js": "^14.14.1",
-		"dotenv": "^16.3.1"
+		"dotenv": "^16.4.1"
 	},
 	"devDependencies": {
 		"@stylistic/eslint-plugin": "^1.5.4",
-		"@typescript-eslint/eslint-plugin": "^6.19.0",
-		"@typescript-eslint/parser": "^6.19.0",
+		"@typescript-eslint/eslint-plugin": "^6.20.0",
+		"@typescript-eslint/parser": "^6.20.0",
 		"eslint": "^8.56.0",
 		"typescript": "^5.3.3"
 	}
