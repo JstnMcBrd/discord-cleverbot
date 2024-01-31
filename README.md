@@ -43,10 +43,4 @@ Please see [GitHub's guide on licensing](https://docs.github.com/en/repositories
 
 ## Development
 
-- [Visual Studio Code](https://code.visualstudio.com/) is the recommended IDE for development.
-- All settings are included as artifacts in the [`.vscode`](./.vscode) folder and will automatically apply.
-- You can use the built-in debugger and set breakpoints to troubleshoot the code.
-
-> If you want a standardized development environment, you can use the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) with the given [`devcontainer.json`](./.devcontainer/devcontainer.json) config to develop inside a [Docker](https://www.docker.com/) container with all dependencies and recommended extensions pre-installed.
->
-> Simply install the extension and use the **Dev Containers: Open Folder in Container** command.
+[Visual Studio Code](https://code.visualstudio.com/) is the recommended IDE for development. All settings are included as artifacts in the [`.vscode`](./.vscode) folder and will automatically apply. You can use the built-in debugger and set breakpoints to troubleshoot the code.
