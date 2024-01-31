@@ -1,16 +1,16 @@
 {
 	"name": "discord-cleverbot",
 	"version": "5.0.2-alpha",
+	"private": true,
 	"description": "Chatbot for Discord",
 	"author": "Justin McBride",
 	"type": "module",
-	"private": true,
 	"scripts": {
 		"build": "tsc",
+		"commands": "node ./dist/deployCommands.js",
 		"lint": "eslint .",
-		"test": "echo \"No tests\"",
 		"start": "node ./dist/main.js",
-		"commands": "node ./dist/deployCommands.js"
+		"test": "echo \"No tests\""
 	},
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
