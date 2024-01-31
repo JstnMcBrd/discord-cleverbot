@@ -3,6 +3,7 @@
 	"version": "5.0.2-alpha",
 	"private": true,
 	"description": "Chatbot for Discord",
+	"license": "UNLICENSED",
 	"author": "Justin McBride",
 	"type": "module",
 	"scripts": {
