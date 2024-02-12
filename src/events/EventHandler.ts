@@ -35,7 +35,7 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	//  * @param name The name to use
 	//  */
 	// public setName (name: K): this {
-	// 	Reflect.set(this, "name", name);
+	// 	Reflect.set(this, 'name', name);
 	// 	return this;
 	// }
 

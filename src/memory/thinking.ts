@@ -11,7 +11,7 @@ import type { Channel, Snowflake } from 'discord.js';
 const thinking = new Map<Snowflake, NodeJS.Timeout>();
 
 /**
- * How long a channel can be marked as "thinking" before being unmarked to prevent it from being
+ * How long a channel can be marked as 'thinking' before being unmarked to prevent it from being
  * blocked indefinitely (in seconds).
  */
 const thinkingTimeout = 30;

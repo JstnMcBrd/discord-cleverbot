@@ -61,7 +61,7 @@ export const messageCreate = new EventHandler('messageCreate')
 
 			logExchange(message.channel, context ?? [], prompt, response);
 
-			// Pause to pretend to "type" the message
+			// Pause to pretend to 'type' the message
 			const timeTypeSec = response.length / typingSpeed;
 			await message.channel.sendTyping();
 			await sleep(timeTypeSec * 1000);
