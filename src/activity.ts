@@ -24,13 +24,13 @@ const activityOptions: ActivityOptions = {
  * https://github.com/discord/discord-api-docs/issues/1160#issuecomment-546549516
  */
 // const activityOptions: ActivityOptions = {
-// 	name: "Custom Status",
-// 	state: "Use /help",
+// 	name: 'Custom Status',
+// 	state: 'Use /help',
 // 	emoji: {
-// 		name: "robot",
+// 		name: 'robot',
 // 	},
 // 	type: ActivityType.Custom,
-// 	url: "https://www.cleverbot.com/",
+// 	url: 'https://www.cleverbot.com/',
 // };
 
 /**
