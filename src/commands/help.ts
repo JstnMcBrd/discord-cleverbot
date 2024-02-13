@@ -17,7 +17,7 @@ export const help = new CommandHandler()
 		const button = createSourceCodeButton();
 		const row = new ActionRowBuilder<ButtonBuilder>()
 			.addComponents(button);
-		
+
 		await interaction.reply({
 			embeds: [embed],
 			components: [row],
