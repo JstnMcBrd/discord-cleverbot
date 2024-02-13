@@ -3,6 +3,19 @@
 	"version": "5.0.2-alpha",
 	"private": true,
 	"description": "Chatbot for Discord",
+	"keywords": [
+		"bot",
+		"ai",
+		"discord",
+		"chatbot",
+		"discord-js"
+	],
+	"homepage": "https://github.com/JstnMcBrd/discord-cleverbot",
+	"bugs": "https://github.com/JstnMcBrd/discord-cleverbot/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JstnMcBrd/discord-cleverbot.git"
+	},
 	"license": "UNLICENSED",
 	"author": "Justin McBride",
 	"type": "module",
