@@ -1,7 +1,7 @@
 # discord-cleverbot
 
 ## Cleverbot API
-[![API Status](https://github.com/IntriguingTiles/cleverbot-free/actions/workflows/api.yml/badge.svg)](https://github.com/IntriguingTiles/cleverbot-free/actions/workflows/api.yml)
+[![API status](https://img.shields.io/github/actions/workflow/status/IntriguingTiles/cleverbot-free/api.yml?logo=github&label=API%20status)](https://github.com/IntriguingTiles/cleverbot-free/actions/workflows/api.yml)
 
 ## About
 
