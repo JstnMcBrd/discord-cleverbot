@@ -11,7 +11,7 @@ import type { ActivityOptions, Client } from 'discord.js';
 import { error, info } from './logger.js';
 
 /** How often to update the activity (in seconds). */
-const activityUpdateFrequency = 5 * 60;
+const activityUpdateFrequency = 1 * 60 * 60;
 
 /** The activity the bot should use. */
 const activityOptions: ActivityOptions = {
