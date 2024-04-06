@@ -60,16 +60,12 @@ export function start(client: Client<true>): void {
  * @throws If the activity does not update correctly
  */
 function setActivity(client: Client<true>): void {
-	const { activities } = client.user.setActivity(activityOptions);
-	const activity = activities.at(0);
+	const updatedPresence = client.user.setActivity(activityOptions);
 
 	// Double check to see if it worked
 	// FIXME this currently always returns true, but discord.js doesn't have a better way to check
-	if (!activity
-		|| activity.name !== activityOptions.name
-		|| activity.type !== activityOptions.type
-		|| activity.url !== activityOptions.url) {
 	// https://github.com/JstnMcBrd/discord-cleverbot/issues/3
+	if (!client.user.presence.equals(updatedPresence)) {
 		throw new Error('User presence did not update correctly.');
 	}
 }
