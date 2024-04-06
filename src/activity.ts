@@ -1,7 +1,8 @@
 /**
  * This manager takes care of keeping the client user's activity regularly updated.
  *
- * This is necessary because after being set, the user's activity eventually expire.
+ * This is necessary because after being set, the user's activity eventually expires.
+ * https://github.com/JstnMcBrd/discord-cleverbot/issues/42
  */
 
 import { ActivityType } from 'discord.js';
@@ -10,7 +11,7 @@ import type { ActivityOptions, Client } from 'discord.js';
 import { error, info } from './logger.js';
 
 /** How often to update the activity (in seconds). */
-const activityUpdateFrequency = 5 * 60;
+const activityUpdateFrequency = 1 * 60 * 60;
 
 /** The activity the bot should use. */
 const activityOptions: ActivityOptions = {
@@ -21,7 +22,7 @@ const activityOptions: ActivityOptions = {
 
 /**
  * // FIXME wait until Discord supports custom statuses for bots.
- * https://github.com/discord/discord-api-docs/issues/1160#issuecomment-546549516
+ * https://github.com/JstnMcBrd/discord-cleverbot/issues/13
  */
 // const activityOptions: ActivityOptions = {
 // 	name: 'Custom Status',
@@ -39,18 +40,21 @@ const activityOptions: ActivityOptions = {
  * @param client The current logged-in client
  */
 export function start(client: Client<true>): void {
-	info('Updating activity...');
+	function update() {
+		info('Updating activity...');
 
-	try {
-		setActivity(client);
-	}
-	catch (err) {
-		error(err);
+		try {
+			setActivity(client);
+		}
+		catch (err) {
+			error(err);
+		}
 	}
 
-	setTimeout(() => {
-		start(client);
-	}, activityUpdateFrequency * 1000);
+	// Do now
+	update();
+	// Then repeat
+	setInterval(update, activityUpdateFrequency * 1000);
 }
 
 /**
@@ -59,15 +63,12 @@ export function start(client: Client<true>): void {
  * @throws If the activity does not update correctly
  */
 function setActivity(client: Client<true>): void {
-	const { activities } = client.user.setActivity(activityOptions);
-	const activity = activities.at(0);
+	const updatedPresence = client.user.setActivity(activityOptions);
 
 	// Double check to see if it worked
 	// FIXME this currently always returns true, but discord.js doesn't have a better way to check
-	if (!activity
-		|| activity.name !== activityOptions.name
-		|| activity.type !== activityOptions.type
-		|| activity.url !== activityOptions.url) {
+	// https://github.com/JstnMcBrd/discord-cleverbot/issues/3
+	if (!client.user.presence.equals(updatedPresence)) {
 		throw new Error('User presence did not update correctly.');
 	}
 }

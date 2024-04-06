@@ -30,11 +30,11 @@
 		"@colors/colors": "^1.6.0",
 		"cleverbot-free": "^2.0.2",
 		"discord.js": "^14.14.1",
-		"dotenv": "^16.4.3"
+		"dotenv": "^16.4.5"
 	},
 	"devDependencies": {
 		"@jstnmcbrd/eslint-config": "^1.0.0",
 		"eslint": "^8.56.0",
-		"typescript": "^5.3.3"
+		"typescript": "^5.4.4"
 	}
 }
