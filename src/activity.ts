@@ -2,6 +2,7 @@
  * This manager takes care of keeping the client user's activity regularly updated.
  *
  * This is necessary because after being set, the user's activity eventually expire.
+ * https://github.com/JstnMcBrd/discord-cleverbot/issues/42
  */
 
 import { ActivityType } from 'discord.js';
@@ -21,7 +22,7 @@ const activityOptions: ActivityOptions = {
 
 /**
  * // FIXME wait until Discord supports custom statuses for bots.
- * https://github.com/discord/discord-api-docs/issues/1160#issuecomment-546549516
+ * https://github.com/JstnMcBrd/discord-cleverbot/issues/13
  */
 // const activityOptions: ActivityOptions = {
 // 	name: 'Custom Status',
@@ -68,6 +69,7 @@ function setActivity(client: Client<true>): void {
 		|| activity.name !== activityOptions.name
 		|| activity.type !== activityOptions.type
 		|| activity.url !== activityOptions.url) {
+	// https://github.com/JstnMcBrd/discord-cleverbot/issues/3
 		throw new Error('User presence did not update correctly.');
 	}
 }
