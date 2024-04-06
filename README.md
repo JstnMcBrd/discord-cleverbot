@@ -11,7 +11,7 @@ The project was started in December 2017 and has been completely rewritten sever
 
 ## Licensing
 
-Without a specific license, this code is the direct intellectual property of the original developer. It may not be used, modified, or shared without explicit permission.
+Without a specific license, this code is the direct intellectual property of the original developer. It may not be used, copied, modified, or shared without explicit permission.
 Please see [GitHub's guide on licensing](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) and [choosealicense.com](https://choosealicense.com/no-permission/).
 
 For legal reasons, if you choose to contribute to this project, you agree to give up your copyright and hand over full rights to your contribution. However, you will still be attributed for your work on GitHub. Thank you!
