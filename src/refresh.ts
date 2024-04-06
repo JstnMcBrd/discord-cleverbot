@@ -21,7 +21,7 @@ const refreshFrequency = 1 * 60 * 60;
  * @param client The current logged-in client
  */
 export async function refresh(client: Client<true>): Promise<void> {
-	async function update() {
+	async function update(): Promise<void> {
 		info('Refreshing...');
 
 		// Validate the whitelist

@@ -50,7 +50,7 @@ export function getCommandHandler(name: string): CommandHandler | undefined {
  *
  * @param client The current logged-in client
  */
-export async function syncCommands(client: Client<true>) {
+export async function syncCommands(client: Client<true>): Promise<void> {
 	const result = await client.application.commands.fetch();
 
 	const deployedCommands = Array.from(result.values());

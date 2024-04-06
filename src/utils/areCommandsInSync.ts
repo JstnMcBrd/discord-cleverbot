@@ -30,10 +30,20 @@ export function areCommandsInSync(deployedCommands: ApplicationCommand[], localC
 	return true;
 }
 
+interface CommandComparableValues {
+	name: string;
+	description: string;
+	options: {
+		name: string;
+		description: string;
+		type: number;
+	}[];
+}
+
 /**
  * @returns An object of the comparable values between `ApplicationCommand` and `CommandHandler`
  */
-function getCommandComparableValues(command: ApplicationCommand | CommandHandler) {
+function getCommandComparableValues(command: ApplicationCommand | CommandHandler): CommandComparableValues {
 	const options = command instanceof CommandHandler
 		? command.options.map(opt => opt.toJSON())
 		: command.options;

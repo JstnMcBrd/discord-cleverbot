@@ -40,6 +40,6 @@ export function startThinking(channel: Channel): void {
 /**
  * Records that the bot has finished generating a response in the given channel.
  */
-export function stopThinking(channel: Channel) {
+export function stopThinking(channel: Channel): void {
 	thinking.delete(channel.id);
 }
