@@ -49,6 +49,7 @@ export function getCommandHandler(name: string): CommandHandler | undefined {
  * stored locally, and sets the command IDs of each of the command handlers.
  *
  * @param client The current logged-in client
+ * @exits If the deployed commands are outdated
  */
 export async function syncCommands(client: Client<true>): Promise<void> {
 	const result = await client.application.commands.fetch();
@@ -58,7 +59,7 @@ export async function syncCommands(client: Client<true>): Promise<void> {
 
 	if (!areCommandsInSync(deployedCommands, localCommands)) {
 		error('Deployed commands are outdated. Please run the deployment script to update them.');
-		process.exit();
+		process.exit(1);
 	}
 
 	deployedCommands.forEach(command => getCommandHandler(command.name)?.setId(command.id));
