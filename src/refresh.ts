@@ -21,21 +21,25 @@ const refreshFrequency = 1 * 60 * 60;
  * @param client The current logged-in client
  */
 export async function refresh(client: Client<true>): Promise<void> {
-	info('Refreshing...');
+	async function update() {
+		info('Refreshing...');
 
-	// Validate the whitelist
-	await loadWhitelist(client);
+		// Validate the whitelist
+		await loadWhitelist(client);
 
-	// Update context for all whitelisted channels (in parallel)
-	await Promise.all(
-		getWhitelist().map(generateContext),
-	);
+		// Update context for all whitelisted channels (in parallel)
+		await Promise.all(
+			getWhitelist().map(generateContext),
+		);
 
-	// Follow-up on any missed messages
-	resumeConversations();
+		// Follow-up on any missed messages
+		resumeConversations();
+	}
 
-	// Repeat at regular intervals
-	setTimeout(() => void refresh(client), refreshFrequency * 1000);
+	// Do now
+	await update();
+	// Then repeat
+	setInterval(() => void update(), refreshFrequency * 1000);
 }
 
 /**

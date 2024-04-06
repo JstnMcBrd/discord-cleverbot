@@ -1,7 +1,7 @@
 /**
  * This manager takes care of keeping the client user's activity regularly updated.
  *
- * This is necessary because after being set, the user's activity eventually expire.
+ * This is necessary because after being set, the user's activity eventually expires.
  * https://github.com/JstnMcBrd/discord-cleverbot/issues/42
  */
 
@@ -40,18 +40,21 @@ const activityOptions: ActivityOptions = {
  * @param client The current logged-in client
  */
 export function start(client: Client<true>): void {
-	info('Updating activity...');
+	function update() {
+		info('Updating activity...');
 
-	try {
-		setActivity(client);
-	}
-	catch (err) {
-		error(err);
+		try {
+			setActivity(client);
+		}
+		catch (err) {
+			error(err);
+		}
 	}
 
-	setTimeout(() => {
-		start(client);
-	}, activityUpdateFrequency * 1000);
+	// Do now
+	update();
+	// Then repeat
+	setInterval(update, activityUpdateFrequency * 1000);
 }
 
 /**
