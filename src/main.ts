@@ -1,6 +1,7 @@
 /** discord-cleverbot */
 
-import { Client, Partials, GatewayIntentBits } from 'discord.js';
+import { ActivityType, Client, Partials, GatewayIntentBits } from 'discord.js';
+import type { ActivityOptions } from 'discord.js';
 
 import { registerEventHandlers } from './events/index.js';
 import { getToken, load as loadEnv } from './memory/env.js';
@@ -13,8 +14,30 @@ info();
 loadEnv();
 const token = getToken();
 
+/** The activity the bot should use. */
+const activityOptions: ActivityOptions = {
+	name: '/help',
+	type: ActivityType.Listening,
+	url: 'https://www.cleverbot.com/',
+
+	// FIXME wait until Discord supports custom statuses for bots.
+	// https://github.com/JstnMcBrd/discord-cleverbot/issues/13
+	// name: 'Custom Status',
+	// state: 'Use /help',
+	// emoji: {
+	// 	name: 'robot',
+	// },
+	// type: ActivityType.Custom,
+	// url: 'https://www.cleverbot.com/',
+};
+
 // Setup client
 const client = new Client({
+	// Setting the activity in the client constructor resolves the disappearing issue
+	// https://github.com/JstnMcBrd/discord-cleverbot/issues/42
+	presence: {
+		activities: [activityOptions],
+	},
 	partials: [
 		// Necessary to receive DMs
 		// https://discordjs.guide/additional-info/changes-in-v13.html#dm-channels
