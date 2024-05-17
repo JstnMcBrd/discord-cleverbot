@@ -29,7 +29,7 @@
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
 		"cleverbot-free": "^2.0.3",
-		"discord.js": "^14.14.1",
+		"discord.js": "^14.15.2",
 		"dotenv": "^16.4.5"
 	},
 	"devDependencies": {
