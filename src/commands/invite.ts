@@ -19,7 +19,7 @@ export const invite = new CommandHandler()
 			.addComponents(button);
 
 		await interaction.reply({
-			embeds: embed ? [embed] : undefined,
+			...(embed && { embeds: [embed] }),
 			components: [row],
 			ephemeral: true,
 		});
