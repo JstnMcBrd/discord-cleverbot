@@ -11,8 +11,8 @@ export const whitelist = new CommandHandler()
 	.setName('whitelist')
 	.setDescription('Allow me to respond to messages in this channel')
 	.setExecution(async (interaction) => {
-		if (interaction.channel === null) {
-			throw new TypeError('Channel cannot be null.');
+		if (!interaction.channel) {
+			throw new TypeError('Channel must be defined.');
 		}
 
 		let embed: EmbedBuilder;
