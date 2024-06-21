@@ -39,7 +39,7 @@ function createDisabledEmbed(): EmbedBuilder {
  * @param disabled Whether the button should be disabled
  * @returns A button that invites the bot to a new server
  */
-function createInviteButton(user: ClientUser, disabled: boolean): ButtonBuilder {
+function createInviteButton(user: ClientUser, disabled = false): ButtonBuilder {
 	const inviteLink = createInviteLink(user);
 	return new ButtonBuilder()
 		.setLabel('Add to Server')
