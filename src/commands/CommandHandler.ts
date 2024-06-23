@@ -23,7 +23,7 @@ export class CommandHandler extends SlashCommandBuilder {
 	 * @param id The new ID to use
 	 */
 	public setId(id: Snowflake): this {
-		Reflect.set(this, 'id', id);
+		Object.assign(this, { id });
 		return this;
 	}
 
