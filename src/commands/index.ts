@@ -1,3 +1,5 @@
+import { exit } from 'node:process';
+
 import type { Client } from 'discord.js';
 
 import type { CommandHandler } from './CommandHandler.js';
@@ -59,7 +61,7 @@ export async function syncCommands(client: Client<true>): Promise<void> {
 
 	if (!areCommandsInSync(deployedCommands, localCommands)) {
 		error('Deployed commands are outdated. Please run the deployment script to update them.');
-		process.exit(1);
+		exit(1);
 	}
 
 	deployedCommands.forEach(command => getCommandHandler(command.name)?.setId(command.id));
