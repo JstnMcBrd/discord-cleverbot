@@ -23,7 +23,7 @@ export class CommandHandler extends SlashCommandBuilder {
 	 * @param id The new ID to use
 	 */
 	public setId(id: Snowflake): this {
-		Reflect.set(this, 'id', id);
+		Object.assign(this, { id });
 		return this;
 	}
 
@@ -49,7 +49,7 @@ export class CommandHandler extends SlashCommandBuilder {
 				await this.execution(interaction);
 			}
 			catch (err) {
-				error(`Command handler for /${this.name} encountered an error:`);
+				error(`Command handler for ${this.getSlashName()} encountered an error:`);
 				error(err);
 				void replyWithError(interaction, err);
 			}
