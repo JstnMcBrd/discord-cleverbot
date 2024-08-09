@@ -26,26 +26,12 @@ export class EventHandler<K extends keyof ClientEvents = keyof ClientEvents> {
 	}
 
 	/**
-	 * Unnecessary because the name is set in the constructor and defines the generic class type.
-	 * Unsafe because the generic type should never change, so the name should never change.
-	 */
-	// /**
-	//  * Sets the name of the event this handler is for.
-	//  *
-	//  * @param name The name to use
-	//  */
-	// public setName (name: K): this {
-	// 	Reflect.set(this, 'name', name);
-	// 	return this;
-	// }
-
-	/**
 	 * Sets whether this event can only fire once.
 	 *
 	 * @param once Whether this event can only fire once
 	 */
 	public setOnce(once: boolean): this {
-		Reflect.set(this, 'once', once);
+		Object.assign(this, { once });
 		return this;
 	}
 

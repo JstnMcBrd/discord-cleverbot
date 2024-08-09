@@ -80,8 +80,7 @@ export async function generateContext(channel: TextBasedChannel): Promise<void> 
 function isWhitelistCommandReply(message: Message): boolean {
 	return isEmpty(message)
 		&& isFromSelf(message)
-		&& message.interaction !== null
-		&& message.interaction.commandName === whitelist.name;
+		&& message.interaction?.commandName === whitelist.name;
 }
 
 /**

@@ -9,7 +9,7 @@ export const version = getVersion();
 export const githubURL = new URL('https://github.com/JstnMcBrd/discord-cleverbot');
 
 /** When this code was last changed. */
-export const lastUpdated = new Date(2024, 3, 24, 1, 0);
+export const lastUpdated = new Date(2024, 5, 21, 15, 0);
 // Year, month (0-11), day of month, hour (0-23), minutes
 
 /** How fast the bot sends messages (in characters per second). */

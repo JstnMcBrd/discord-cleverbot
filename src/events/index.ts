@@ -9,10 +9,10 @@ import { ready } from './ready.js';
 /** The list of all event handlers. */
 const eventHandlers = new Map<string, EventHandler>();
 
-addEventHandler(error as EventHandler);
-addEventHandler(interactionCreate as EventHandler);
-addEventHandler(messageCreate as EventHandler);
-addEventHandler(ready as EventHandler);
+addEventHandler(error);
+addEventHandler(interactionCreate);
+addEventHandler(messageCreate);
+addEventHandler(ready);
 
 /**
  * Add the given event handler to the list of event handlers.
