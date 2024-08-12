@@ -11,8 +11,8 @@ export const unwhitelist = new CommandHandler()
 	.setName('unwhitelist')
 	.setDescription('Disallow me from responding to messages in this channel')
 	.setExecution(async (interaction) => {
-		if (interaction.channel === null) {
-			throw new TypeError('Channel cannot be null.');
+		if (!interaction.channel) {
+			throw new TypeError('Channel must be defined.');
 		}
 
 		let embed: EmbedBuilder;

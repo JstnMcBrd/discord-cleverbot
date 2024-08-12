@@ -9,7 +9,7 @@ import { getCommandHandlers } from './commands/index.js';
 import { getToken, load as loadEnv } from './memory/env.js';
 import { debug, error, info } from './logger.js';
 
-async function deployCommands(c: Client<true>) {
+async function deployCommands(c: Client<true>): Promise<void> {
 	debug(`\tUser: ${c.user.username} (${c.user.id})`);
 
 	info('Deploying commands...');

@@ -45,7 +45,7 @@ function createHelpEmbed(user: ClientUser): EmbedBuilder {
 		)
 		.setFooter({
 			text: `Version ${version}\nLast Updated`,
-			iconURL: avatarURL ?? undefined,
+			...(avatarURL && { iconURL: avatarURL }),
 		})
 		.setTimestamp(lastUpdated);
 }
