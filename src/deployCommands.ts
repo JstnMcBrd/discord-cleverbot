@@ -9,16 +9,6 @@ import { getCommandHandlers } from './commands/index.js';
 import { getToken } from './memory/env.js';
 import { debug, error, info } from './logger.js';
 
-async function deployCommands(c: Client<true>): Promise<void> {
-	debug(`\tUser: ${c.user.username} (${c.user.id})`);
-
-	info('Deploying commands...');
-	await c.application.commands.set(commandJSONs);
-
-	info('Logging out...');
-	await c.destroy();
-}
-
 // Get the JSON data of the commands
 info('Retrieving commands...');
 const commandHandlers = Array.from(getCommandHandlers().values());
@@ -30,7 +20,15 @@ commandHandlers.forEach((command) => {
 // Setup client
 const client = new Client<false>({ intents: [] });
 client.on('error', error);
-client.once('ready', c => void deployCommands(c));
+client.once('ready', client => void (async function () {
+	debug(`\tUser: ${client.user.username} (${client.user.id})`);
+
+	info('Deploying commands...');
+	await client.application.commands.set(commandJSONs);
+
+	info('Logging out...');
+	await client.destroy();
+})());
 
 // Login
 const token = getToken();
