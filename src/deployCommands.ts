@@ -28,7 +28,7 @@ commandHandlers.forEach((command) => {
 });
 
 // Setup client
-const client = new Client({ intents: [] });
+const client = new Client<false>({ intents: [] });
 client.on('error', error);
 client.once('ready', c => void deployCommands(c));
 
