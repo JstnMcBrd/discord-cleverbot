@@ -24,7 +24,7 @@ function addEventHandler(event: EventHandler): void {
 	const name = event.name;
 
 	if (eventHandlers.has(name)) {
-		throw new TypeError(`Failed to add event handler '${name}' because an event with that name already exists.`);
+		throw new Error(`Failed to add event handler '${name}' because an event with that name already exists.`);
 	}
 	eventHandlers.set(name, event);
 }
