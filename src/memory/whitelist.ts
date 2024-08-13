@@ -61,7 +61,7 @@ export async function load(client: Client<true>): Promise<void> {
 
 	// Validate the file formatting
 	if (!isValidWhitelistFile(json)) {
-		throw new Error(`The whitelist memory file at ${filePath} is not properly formatted.`);
+		throw new TypeError(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 
 	// Fetch and validate channels (in parallel)

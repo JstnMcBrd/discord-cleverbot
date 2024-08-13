@@ -1,4 +1,4 @@
-import type { Client } from 'discord.js';
+import type { Client, ClientEvents } from 'discord.js';
 
 import { error } from './error.js';
 import type { EventHandler } from './EventHandler.js';
@@ -7,7 +7,7 @@ import { messageCreate } from './messageCreate.js';
 import { ready } from './ready.js';
 
 /** The list of all event handlers. */
-const eventHandlers = new Map<string, EventHandler>();
+const eventHandlers = new Map<keyof ClientEvents, EventHandler>();
 
 addEventHandler(error);
 addEventHandler(interactionCreate);
@@ -24,7 +24,7 @@ function addEventHandler(event: EventHandler): void {
 	const name = event.name;
 
 	if (eventHandlers.has(name)) {
-		throw new TypeError(`Failed to add event handler '${name}' because an event with that name already exists.`);
+		throw new Error(`Failed to add event handler '${name}' because an event with that name already exists.`);
 	}
 	eventHandlers.set(name, event);
 }

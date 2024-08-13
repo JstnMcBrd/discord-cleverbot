@@ -25,11 +25,12 @@ addCommandHandler(whitelist);
  * @throws If there is already a handler with the same command name in the list
  */
 function addCommandHandler(command: CommandHandler): void {
-	if (commandHandlers.has(command.name)) {
-		throw new TypeError(`Failed to add command '${command.name}' because a command with that name already exists.`);
-	}
+	const name = command.name;
 
-	commandHandlers.set(command.name, command);
+	if (commandHandlers.has(name)) {
+		throw new Error(`Failed to add command '${name}' because a command with that name already exists.`);
+	}
+	commandHandlers.set(name, command);
 }
 
 /**
