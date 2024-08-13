@@ -4,15 +4,11 @@ import { ActivityType, Client, Partials, GatewayIntentBits } from 'discord.js';
 import type { ActivityOptions } from 'discord.js';
 
 import { registerEventHandlers } from './events/index.js';
-import { getToken, load as loadEnv } from './memory/env.js';
+import { getToken } from './memory/env.js';
 import { info } from './logger.js';
 
 info('discord-cleverbot');
 info();
-
-// Load environment variables
-loadEnv();
-const token = getToken();
 
 /** The activity the bot should use. */
 const activityOptions: ActivityOptions = {
@@ -57,5 +53,6 @@ const client = new Client({
 registerEventHandlers(client);
 
 // Login
+const token = getToken();
 info('Logging in...');
 await client.login(token);

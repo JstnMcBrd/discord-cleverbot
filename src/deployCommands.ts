@@ -6,7 +6,7 @@
 import { Client } from 'discord.js';
 
 import { getCommandHandlers } from './commands/index.js';
-import { getToken, load as loadEnv } from './memory/env.js';
+import { getToken } from './memory/env.js';
 import { debug, error, info } from './logger.js';
 
 async function deployCommands(c: Client<true>): Promise<void> {
@@ -18,10 +18,6 @@ async function deployCommands(c: Client<true>): Promise<void> {
 	info('Logging out...');
 	await c.destroy();
 }
-
-// Load environment variables
-loadEnv();
-const token = getToken();
 
 // Get the JSON data of the commands
 info('Retrieving commands...');
@@ -37,5 +33,6 @@ client.on('error', error);
 client.once('ready', c => void deployCommands(c));
 
 // Login
+const token = getToken();
 info('Logging in...');
 await client.login(token);

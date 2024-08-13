@@ -21,16 +21,15 @@
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
-		"commands": "node dist/deployCommands.js",
+		"commands": "node --env-file=.env dist/deployCommands.js",
 		"lint": "eslint .",
-		"start": "node dist/main.js",
+		"start": "node --env-file=.env dist/main.js",
 		"test": "echo \"No tests\""
 	},
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
 		"cleverbot-free": "^2.0.3",
-		"discord.js": "^14.15.3",
-		"dotenv": "^16.4.5"
+		"discord.js": "^14.15.3"
 	},
 	"devDependencies": {
 		"@jstnmcbrd/eslint-config": "^1.0.0",
