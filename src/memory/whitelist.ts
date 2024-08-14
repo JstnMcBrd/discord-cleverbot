@@ -64,6 +64,9 @@ export async function load(client: Client<true>): Promise<void> {
 		throw new TypeError(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 
+	// Eliminate duplicates
+	const channelIDs = [...new Set(json)];
+
 	// Fetch and validate channels (in parallel)
 	await Promise.all(
 		json.map(
