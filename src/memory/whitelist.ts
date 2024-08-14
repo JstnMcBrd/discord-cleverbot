@@ -68,16 +68,12 @@ export async function load(client: Client<true>): Promise<void> {
 	const channelIDs = [...new Set(json)];
 
 	// Fetch and validate channels (in parallel)
-	await Promise.all(
-		json.map(
-			async (channelID) => {
-				const channel = await fetchAndValidateChannel(channelID, client);
-				if (channel) {
-					whitelist.push(channel);
-				}
-			},
-		),
-	);
+	const channels = (
+		await Promise.all(
+			channelIDs.map(channelID => fetchAndValidateChannel(channelID, client)),
+		)
+	).filter(channel => channel !== undefined);
+	whitelist.push(...channels);
 
 	// Overwrite memory file if there were any invalid channel IDs
 	if (whitelist.length < json.length) {
@@ -99,7 +95,7 @@ function isValidWhitelistFile(json: unknown): json is WhitelistFile {
  * @returns The channel, or undefined if the channel could not be found or is invalid
  * @throws Any unrecognized errors from the Discord API
  */
-async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
+async function fetchAndValidateChannel(channelID: Snowflake, client: Client<true>): Promise<TextBasedChannel | undefined> {
 	// Test access
 	let channel: Channel | null;
 	try {
