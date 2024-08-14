@@ -14,7 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from 'discord.js';
+import { ChannelType } from 'discord.js';
 import type { Channel, Client, Snowflake, TextBasedChannel } from 'discord.js';
 
 /**
@@ -64,17 +64,16 @@ export async function load(client: Client<true>): Promise<void> {
 		throw new TypeError(`The whitelist memory file at ${filePath} is not properly formatted.`);
 	}
 
+	// Eliminate duplicates
+	const channelIDs = [...new Set(json)];
+
 	// Fetch and validate channels (in parallel)
-	await Promise.all(
-		json.map(
-			async (channelID) => {
-				const channel = await fetchAndValidateChannel(channelID, client);
-				if (channel) {
-					whitelist.push(channel);
-				}
-			},
-		),
-	);
+	const channels = (
+		await Promise.all(
+			channelIDs.map(channelID => fetchAndValidateChannel(channelID, client)),
+		)
+	).filter(channel => channel !== undefined);
+	whitelist.push(...channels);
 
 	// Overwrite memory file if there were any invalid channel IDs
 	if (whitelist.length < json.length) {
@@ -96,7 +95,7 @@ function isValidWhitelistFile(json: unknown): json is WhitelistFile {
  * @returns The channel, or undefined if the channel could not be found or is invalid
  * @throws Any unrecognized errors from the Discord API
  */
-async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Promise<TextBasedChannel | undefined> {
+async function fetchAndValidateChannel(channelID: Snowflake, client: Client<true>): Promise<TextBasedChannel | undefined> {
 	// Test access
 	let channel: Channel | null;
 	try {
@@ -142,12 +141,15 @@ async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Pr
  * @returns Whether the given channel is a text-based channel
  */
 function isTextBasedChannel(channel: Channel): channel is TextBasedChannel {
-	return channel instanceof DMChannel
-		|| channel instanceof NewsChannel
-		|| channel instanceof StageChannel
-		|| channel instanceof TextChannel
-		|| channel instanceof ThreadChannel
-		|| channel instanceof VoiceChannel;
+	return channel.type === ChannelType.GuildText
+		|| channel.type === ChannelType.DM
+		|| channel.type === ChannelType.GuildVoice
+		|| channel.type === ChannelType.GroupDM
+		|| channel.type === ChannelType.GuildAnnouncement
+		|| channel.type === ChannelType.AnnouncementThread
+		|| channel.type === ChannelType.PublicThread
+		|| channel.type === ChannelType.PrivateThread
+		|| channel.type === ChannelType.GuildStageVoice;
 }
 
 /**
