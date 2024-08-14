@@ -14,7 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { DMChannel, NewsChannel, StageChannel, TextChannel, ThreadChannel, VoiceChannel } from 'discord.js';
+import { ChannelType } from 'discord.js';
 import type { Channel, Client, Snowflake, TextBasedChannel } from 'discord.js';
 
 /**
@@ -142,12 +142,15 @@ async function fetchAndValidateChannel(channelID: Snowflake, client: Client): Pr
  * @returns Whether the given channel is a text-based channel
  */
 function isTextBasedChannel(channel: Channel): channel is TextBasedChannel {
-	return channel instanceof DMChannel
-		|| channel instanceof NewsChannel
-		|| channel instanceof StageChannel
-		|| channel instanceof TextChannel
-		|| channel instanceof ThreadChannel
-		|| channel instanceof VoiceChannel;
+	return channel.type === ChannelType.GuildText
+		|| channel.type === ChannelType.DM
+		|| channel.type === ChannelType.GuildVoice
+		|| channel.type === ChannelType.GroupDM
+		|| channel.type === ChannelType.GuildAnnouncement
+		|| channel.type === ChannelType.AnnouncementThread
+		|| channel.type === ChannelType.PublicThread
+		|| channel.type === ChannelType.PrivateThread
+		|| channel.type === ChannelType.GuildStageVoice;
 }
 
 /**
