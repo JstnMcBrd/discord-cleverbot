@@ -11,6 +11,7 @@
 		"noImplicitReturns": true,
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedSideEffectImports": true,
 		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
 		// FIXME https://github.com/discordjs/discord.js/issues/10358
