@@ -1,4 +1,5 @@
 import type { ChatInputCommandInteraction } from 'discord.js';
+import { PartialGroupDMChannel } from 'discord.js';
 
 import type { CommandHandler } from '../commands/CommandHandler.js';
 import { EventHandler } from './EventHandler.js';
@@ -34,7 +35,9 @@ function logInteraction(interaction: ChatInputCommandInteraction, command: Comma
 	if (interaction.channel) {
 		debug(`\tChannel: ${
 			interaction.channel.isDMBased()
-				? `@${interaction.channel.recipient?.username ?? 'unknown user'}`
+				? interaction.channel instanceof PartialGroupDMChannel
+					? `@${interaction.channel.recipients.map(r => r.username).join(',')}`
+					: `@${interaction.channel.recipient?.username ?? 'unknown user'}`
 				: `#${interaction.channel.name}`
 		} (${interaction.channelId})`);
 	}

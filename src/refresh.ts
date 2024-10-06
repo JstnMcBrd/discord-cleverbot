@@ -1,4 +1,4 @@
-import type { Client } from 'discord.js';
+import type { Client, Message, OmitPartialGroupDMChannel } from 'discord.js';
 
 import { messageCreate } from './events/messageCreate.js';
 import { isFromSelf } from './utils/messageAnalysis.js';
@@ -62,7 +62,7 @@ function resumeConversations(): void {
 		// If the last message isn't from the bot, then respond to it
 		if (!isFromSelf(lastMessage)) {
 			removeLastMessageFromContext(lastMessage.channel);
-			void messageCreate.execute(lastMessage);
+			void messageCreate.execute(lastMessage as OmitPartialGroupDMChannel<Message>);
 		}
 	});
 }
