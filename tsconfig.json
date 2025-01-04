@@ -14,7 +14,7 @@
 		"noUncheckedSideEffectImports": true,
 		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
-		// FIXME https://github.com/discordjs/discord.js/issues/10358
+		// FIXME https://github.com/discordjs/discord.js/issues/10577
 		"skipLibCheck": true,
 	},
 }
