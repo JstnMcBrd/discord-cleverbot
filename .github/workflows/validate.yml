@@ -8,9 +8,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read # Required for actions/checkout
 
     steps:
       - name: Checkout repository
