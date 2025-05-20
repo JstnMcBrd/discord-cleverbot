@@ -1,5 +1,5 @@
 name: Validate
-# Lints, builds, and tests the project whenever a pull request is opened or merged
+description: Lints, builds, and tests the project whenever a pull request is opened or merged
 
 on:
   pull_request:
