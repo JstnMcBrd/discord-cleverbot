@@ -1,4 +1,4 @@
-name: Validate
+name: CI
 description: Lints, builds, and tests the project whenever a pull request is opened or merged
 
 on:
@@ -12,6 +12,8 @@ permissions: {}
 
 jobs:
   lint:
+    name: Lint
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -34,6 +36,8 @@ jobs:
         run: npm run lint
 
   build:
+    name: Build
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -56,6 +60,8 @@ jobs:
         run: npm run build
 
   test:
+    name: Test
+
     runs-on: ubuntu-latest
 
     permissions:
