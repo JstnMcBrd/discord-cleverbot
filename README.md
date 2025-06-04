@@ -46,3 +46,5 @@ For legal reasons, if you choose to contribute to this project, you agree to giv
 ## Development
 
 [Visual Studio Code](https://code.visualstudio.com/) is the recommended IDE for development. All settings are included as artifacts in the [`.vscode`](./.vscode) folder and will automatically apply. You can use the built-in debugger and set breakpoints to troubleshoot the code.
+
+This project abides by [Semantic Versioning](https://semver.org/) and [Keep A Changelog](https://keepachangelog.com/).
