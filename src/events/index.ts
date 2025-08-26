@@ -1,18 +1,18 @@
 import type { Client, ClientEvents } from 'discord.js';
 
+import { clientReady } from './clientReady.js';
 import { error } from './error.js';
 import type { EventHandler } from './EventHandler.js';
 import { interactionCreate } from './interactionCreate.js';
 import { messageCreate } from './messageCreate.js';
-import { ready } from './ready.js';
 
 /** The list of all event handlers. */
 const eventHandlers = new Map<keyof ClientEvents, EventHandler>();
 
+addEventHandler(clientReady);
 addEventHandler(error);
 addEventHandler(interactionCreate);
 addEventHandler(messageCreate);
-addEventHandler(ready);
 
 /**
  * Add the given event handler to the list of event handlers.

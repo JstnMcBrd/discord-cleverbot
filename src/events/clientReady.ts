@@ -4,7 +4,7 @@ import { debug } from '../logger.js';
 import { syncCommands } from '../commands/index.js';
 
 /** Called once the client successfully logs in. */
-export const ready = new EventHandler('ready')
+export const clientReady = new EventHandler('clientReady')
 	.setOnce(true)
 	.setExecution(async (client) => {
 		debug(`\tUser: ${client.user.username} (${client.user.id})`);
