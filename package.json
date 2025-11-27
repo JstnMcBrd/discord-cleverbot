@@ -32,9 +32,10 @@
 		"discord.js": "^14.25.1"
 	},
 	"devDependencies": {
-		"@jstnmcbrd/eslint-config": "^1.0.0",
+		"@jstnmcbrd/eslint-config": "^2.0.1",
 		"@types/node": "^24.10.0",
-		"eslint": "^8.57.1",
+		"eslint": "^9.39.1",
+		"jiti": "^2.6.1",
 		"typescript": "^5.9.2"
 	},
 	"engines": {
