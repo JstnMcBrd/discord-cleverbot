@@ -21,7 +21,7 @@ const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = 'Response timeout of 10000ms e
 
 /**
  * The error messsage the Cleverbot module throws if it fails after 15 tries.
- * See [cleverbot-free/index.js](../../node_modules/cleverbot-free/index.js).
+ * @see https://github.com/IntriguingTiles/cleverbot-free/blob/master/index.js#L71
  */
 const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = 'Failed to get a response after 15 tries.';
 
@@ -88,8 +88,8 @@ export const messageCreate = new EventHandler('messageCreate')
 			// If Cleverbot goofed, try again
 			if (err instanceof Error
 				&& (err.message === SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE
-				|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
-				|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
+					|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
+					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
 			// If unknown error, respond with error message

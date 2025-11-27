@@ -80,6 +80,8 @@ export async function generateContext(channel: TextBasedChannel): Promise<void> 
 function isWhitelistCommandReply(message: Message): boolean {
 	return isEmpty(message)
 		&& isFromSelf(message)
+		// FIXME Figure out an alternative way to get the command name from the message
+		// eslint-disable-next-line @typescript-eslint/no-deprecated
 		&& message.interaction?.commandName === whitelist.name;
 }
 
