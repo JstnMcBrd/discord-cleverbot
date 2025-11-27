@@ -20,7 +20,7 @@
 	"author": "Justin McBride",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc -p tsconfig.build.json",
 		"commands": "node --env-file=.env dist/deployCommands.js",
 		"lint": "eslint .",
 		"start": "node --env-file=.env dist/main.js",
