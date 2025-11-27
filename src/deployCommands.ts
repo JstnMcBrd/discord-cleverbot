@@ -20,14 +20,14 @@ commandHandlers.forEach((command) => {
 // Setup client
 const client = new Client<false>({ intents: [] });
 client.on('error', error);
-client.once('ready', client => void (async function () {
-	debug(`\tUser: ${client.user.username} (${client.user.id})`);
+client.once('ready', clientReady => void (async function () {
+	debug(`\tUser: ${clientReady.user.username} (${clientReady.user.id})`);
 
 	info('Deploying commands...');
-	await client.application.commands.set(commandJSONs);
+	await clientReady.application.commands.set(commandJSONs);
 
 	info('Logging out...');
-	await client.destroy();
+	await clientReady.destroy();
 })());
 
 // Login

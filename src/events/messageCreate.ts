@@ -88,8 +88,8 @@ export const messageCreate = new EventHandler('messageCreate')
 			// If Cleverbot goofed, try again
 			if (err instanceof Error
 				&& (err.message === SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE
-				|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
-				|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
+					|| err.message === CLEVERBOT_MAX_TRIES_ERROR_MESSAGE
+					|| err.message === EMPTY_STRING_ERROR_MESSAGE)) {
 				void messageCreate.execute(message);
 			}
 			// If unknown error, respond with error message
