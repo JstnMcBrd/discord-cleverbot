@@ -65,5 +65,7 @@ export async function syncCommands(client: Client<true>): Promise<void> {
 		exit(1);
 	}
 
-	deployedCommands.forEach(command => getCommandHandler(command.name)?.setId(command.id));
+	for (const command of deployedCommands) {
+		getCommandHandler(command.name)?.setId(command.id);
+	}
 }

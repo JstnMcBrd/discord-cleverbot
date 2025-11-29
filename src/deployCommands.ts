@@ -13,9 +13,9 @@ import { debug, error, info } from './logger.js';
 info('Retrieving commands...');
 const commandHandlers = Array.from(getCommandHandlers().values());
 const commandJSONs = commandHandlers.map(command => command.toJSON());
-commandHandlers.forEach((command) => {
+for (const command of commandHandlers) {
 	debug(`\t${command.getSlashName()}`);
-});
+}
 
 // Setup client
 const client = new Client<false>({ intents: [] });

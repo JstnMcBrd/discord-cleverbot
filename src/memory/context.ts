@@ -38,23 +38,18 @@ export async function generateContext(channel: TextBasedChannel): Promise<void> 
 
 	const messages = await channel.messages.fetch({ limit: maxContextLength });
 
-	let done = false;
-	messages.forEach((message) => {
+	for (const message of messages.values()) {
 		// Do not generate context from before the channel was whitelisted
-		if (done) {
-			return;
-		}
 		if (isWhitelistCommandReply(message)) {
-			done = true;
-			return;
+			break;
 		}
 
 		// Skip empty messages and ignored messages
 		if (isEmpty(message)) {
-			return;
+			continue;
 		}
 		if (isMarkedAsIgnore(message)) {
-			return;
+			continue;
 		}
 
 		// If there are 2 messages from other users in a row, or 2 messages from the bot in a row,
@@ -69,7 +64,7 @@ export async function generateContext(channel: TextBasedChannel): Promise<void> 
 		// and doesn't skip other valid messages.
 
 		newContext.unshift(message);
-	});
+	}
 
 	context.set(channel.id, newContext);
 }
