@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
 - Update runtime to Node 24 ([#67](https://github.com/JstnMcBrd/discord-cleverbot/pull/67), [#133](https://github.com/JstnMcBrd/discord-cleverbot/pull/133))
 - Use `clientReady` event instead of `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
+- Use for-of loops instead of forEach method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
 
 ### Added
 

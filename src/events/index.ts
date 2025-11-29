@@ -42,12 +42,12 @@ export function getEventHandlers(): ReadonlyMap<string, EventHandler> {
  * @param client The client to register with
  */
 export function registerEventHandlers(client: Client): void {
-	getEventHandlers().forEach((event) => {
+	for (const event of getEventHandlers().values()) {
 		if (event.once) {
 			client.once(event.name, (...args) => void event.execute(...args));
 		}
 		else {
 			client.on(event.name, (...args) => void event.execute(...args));
 		}
-	});
+	}
 }

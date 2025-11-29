@@ -46,23 +46,26 @@ export async function refresh(client: Client<true>): Promise<void> {
  * Searchs for unread messages in whitelisted channels and responds to them.
  */
 function resumeConversations(): void {
-	getWhitelist().forEach((channel) => {
+	for (const channel of getWhitelist()) {
 		// Get the context
 		const context = getContext(channel);
 		if (!context) {
-			return;
+			continue;
 		}
 
 		// Get the last message
 		const lastMessage = context.at(context.length - 1);
 		if (!lastMessage) {
-			return;
+			continue;
 		}
 
-		// If the last message isn't from the bot, then respond to it
-		if (!isFromSelf(lastMessage)) {
-			removeLastMessageFromContext(lastMessage.channel);
-			void messageCreate.execute(lastMessage as OmitPartialGroupDMChannel<Message>);
+		// Check who it is from
+		if (isFromSelf(lastMessage)) {
+			continue;
 		}
-	});
+
+		// If the last message is from another user, respond to it
+		removeLastMessageFromContext(lastMessage.channel);
+		void messageCreate.execute(lastMessage as OmitPartialGroupDMChannel<Message>);
+	}
 }
