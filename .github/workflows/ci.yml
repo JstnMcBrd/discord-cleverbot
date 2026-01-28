@@ -1,5 +1,5 @@
 name: CI
-description: Lints, builds, and tests the project whenever a pull request is opened or merged
+# Lints, builds, and tests the project whenever a pull request is opened or merged
 
 on:
   pull_request:
