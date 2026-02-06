@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, codeBlock, EmbedBuilder } from 'discord.js';
 import type { ChatInputCommandInteraction, Message } from 'discord.js';
 
 import { embedColors, githubURL } from '../parameters.js';
@@ -39,7 +39,7 @@ function createErrorEmbed(stringifiedError: string): EmbedBuilder {
 		.setTitle('Error')
 		.setDescription('I encountered an error while trying to respond. Please report this to my developer.')
 		.setFields(
-			{ name: 'Message', value: `\`\`${stringifiedError}\`\`` },
+			{ name: 'Message', value: codeBlock(stringifiedError) },
 		);
 }
 

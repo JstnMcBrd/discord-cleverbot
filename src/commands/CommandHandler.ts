@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, chatInputApplicationCommandMention } from 'discord.js';
+import { chatInputApplicationCommandMention, inlineCode, SlashCommandBuilder } from 'discord.js';
 import type { ChatInputCommandInteraction, Snowflake } from 'discord.js';
 
 import { replyWithError } from '../utils/replyWithError.js';
@@ -71,7 +71,7 @@ export class CommandHandler extends SlashCommandBuilder {
 	 * @returns The simple `/name` string with Discord markdown formatting to appear as code
 	 */
 	public getMarkdownSlashName(): string {
-		return `\`${this.getSlashName()}\``;
+		return inlineCode(this.getSlashName());
 	}
 
 	/**
