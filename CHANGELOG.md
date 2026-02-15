@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `ws` vulnerability ([#50](https://github.com/JstnMcBrd/discord-cleverbot/pull/50))
 - Filter out duplicate channel IDs from whitelist ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
 - Fix `form-data` vulnerability ([#111](https://github.com/JstnMcBrd/discord-cleverbot/pull/111))
+- Fix `qs` vulnerability ([#156](https://github.com/JstnMcBrd/discord-cleverbot/pull/156))
 
 ## [5.1.0] - 2024-02-13
 
