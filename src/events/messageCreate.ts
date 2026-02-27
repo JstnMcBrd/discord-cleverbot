@@ -1,6 +1,6 @@
 import cleverbot from 'cleverbot-free';
 import type { Message, TextBasedChannel } from 'discord.js';
-import { PartialGroupDMChannel } from 'discord.js';
+import { Events, PartialGroupDMChannel } from 'discord.js';
 
 import { EventHandler } from './EventHandler.js';
 import { formatPrompt } from '../utils/formatPrompt.js';
@@ -26,7 +26,7 @@ const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = 'Response timeout of 10000ms e
 const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = 'Failed to get a response after 15 tries.';
 
 /** Called whenever the client observes a new message. */
-export const messageCreate = new EventHandler('messageCreate')
+export const messageCreate = new EventHandler(Events.MessageCreate)
 	.setOnce(false)
 	.setExecution(async (message) => {
 		// Ignore certain messages

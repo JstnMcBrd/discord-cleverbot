@@ -3,7 +3,7 @@
  * Only needs to be run when commands are updated.
  */
 
-import { Client } from 'discord.js';
+import { Client, Events } from 'discord.js';
 
 import { getCommandHandlers } from './commands/index.js';
 import { getToken } from './memory/env.js';
@@ -19,8 +19,8 @@ for (const command of commandHandlers) {
 
 // Setup client
 const client = new Client<false>({ intents: [] });
-client.on('error', error);
-client.once('ready', clientReady => void (async function () {
+client.on(Events.Error, error);
+client.once(Events.ClientReady, clientReady => void (async function () {
 	debug(`\tUser: ${clientReady.user.username} (${clientReady.user.id})`);
 
 	info('Deploying commands...');
