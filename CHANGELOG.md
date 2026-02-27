@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `clientReady` event instead of `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
 - Use for-of loops instead of forEach method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
 - Format error embeds as code blocks ([#153](https://github.com/JstnMcBrd/discord-cleverbot/pull/153))
+- Use `Events` enum for event handler names ([#160](https://github.com/JstnMcBrd/discord-cleverbot/pull/160))
 
 ### Added
 
