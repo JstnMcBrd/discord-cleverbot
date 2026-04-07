@@ -29,7 +29,7 @@
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
 		"cleverbot-free": "^2.0.4",
-		"discord.js": "^14.25.1"
+		"discord.js": "^14.26.2"
 	},
 	"devDependencies": {
 		"@jstnmcbrd/eslint-config": "^2.0.1",
