@@ -21,7 +21,7 @@ export const help = new CommandHandler()
 		await interaction.reply({
 			embeds: [embed],
 			components: [row],
-			ephemeral: true,
+			flags: ['Ephemeral'],
 		});
 	});
 

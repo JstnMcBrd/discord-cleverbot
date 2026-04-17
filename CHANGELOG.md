@@ -20,12 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Classify channels using `channel.type` instead of class instances ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
 - Support `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
 - Update runtime to Node.js 24 ([#67](https://github.com/JstnMcBrd/discord-cleverbot/pull/67), [#133](https://github.com/JstnMcBrd/discord-cleverbot/pull/133))
-- Use `clientReady` event instead of `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
+- Use `clientReady` event instead of deprecated `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
 - Use for-of loops instead of forEach method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
 - Format error embeds as code blocks ([#153](https://github.com/JstnMcBrd/discord-cleverbot/pull/153))
 - Use `Events` enum for event handler names ([#160](https://github.com/JstnMcBrd/discord-cleverbot/pull/160))
 - Clean up README ([#179](https://github.com/JstnMcBrd/discord-cleverbot/pull/179))
 - Run TypeScript natively with Node.js ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
+- Use ephemeral flag instead of deprecated response option ([#181](https://github.com/JstnMcBrd/discord-cleverbot/pull/181))
 
 ### Added
 
