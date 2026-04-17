@@ -20,7 +20,6 @@
 	"author": "Justin McBride",
 	"type": "module",
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json",
 		"commands": "node --env-file=.env dist/deployCommands.js",
 		"lint": "eslint --flag unstable_native_nodejs_ts_config",
 		"start": "node --env-file=.env dist/main.js",
