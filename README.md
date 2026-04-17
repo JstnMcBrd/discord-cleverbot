@@ -1,11 +1,10 @@
 # discord-cleverbot
 
 [![API Status](https://img.shields.io/github/actions/workflow/status/IntriguingTiles/cleverbot-free/api.yml?logo=github&label=API%20Status)](https://github.com/IntriguingTiles/cleverbot-free/actions/workflows/api.yml)
-[![CI](https://img.shields.io/github/actions/workflow/status/JstnMcBrd/discord-cleverbot/ci.yml?logo=github&label=CI)](https://github.com/JstnMcBrd/discord-cleverbot/actions/workflows/ci.yml)
 
 ## About
 
-`discord-cleverbot` is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/) and relies on the [Node](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
+`discord-cleverbot` is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/), runs with [Node.js](https://nodejs.org/), and relies on the npm module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
 
 The project was started in December 2017 and has been completely rewritten several times to improve functionality, efficiency, modernity, and simplicity.
 
@@ -25,7 +24,7 @@ For legal reasons, if you choose to contribute to this project, you agree to giv
 
 ### Setting up the code
 
-- You will need an environment with [Node](https://nodejs.org/en/download) installed (or use the Dev Container - see the [Development](#development) section below).
+- You will need an environment with [Node.js](https://nodejs.org/en/download) installed.
 - Run `git clone https://github.com/JstnMcBrd/discord-cleverbot.git` to clone the repo.
 - Create a new file called `.env` and add your access token, using [`.env.example`](./.env.example) as an example.
 

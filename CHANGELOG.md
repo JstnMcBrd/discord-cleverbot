@@ -14,16 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exit with error code if commands are out-of-sync ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Set user activity on Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Use `Object.assign` instead of `Reflect.set` ([#49](https://github.com/JstnMcBrd/discord-cleverbot/pull/49))
-- Use native Node `.env` file support instead of `dotenv` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
-- Add Node version requirement of `>=20.6.0` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
+- Use native Node.js `.env` file support instead of `dotenv` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
+- Add Node.js version requirement of `>=20.6.0` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
 - Change error subtypes to better fit their intended meaning ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
 - Classify channels using `channel.type` instead of class instances ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
 - Support `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
-- Update runtime to Node 24 ([#67](https://github.com/JstnMcBrd/discord-cleverbot/pull/67), [#133](https://github.com/JstnMcBrd/discord-cleverbot/pull/133))
+- Update runtime to Node.js 24 ([#67](https://github.com/JstnMcBrd/discord-cleverbot/pull/67), [#133](https://github.com/JstnMcBrd/discord-cleverbot/pull/133))
 - Use `clientReady` event instead of `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
 - Use for-of loops instead of forEach method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
 - Format error embeds as code blocks ([#153](https://github.com/JstnMcBrd/discord-cleverbot/pull/153))
 - Use `Events` enum for event handler names ([#160](https://github.com/JstnMcBrd/discord-cleverbot/pull/160))
+- Clean up README ([#179](https://github.com/JstnMcBrd/discord-cleverbot/pull/179))
 
 ### Added
 
@@ -46,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update runtime to Node 20 ([#32](https://github.com/JstnMcBrd/discord-cleverbot/pull/32))
+- Update runtime to Node.js 20 ([#32](https://github.com/JstnMcBrd/discord-cleverbot/pull/32))
 - Reformat code with new `eslint` config ([#33](https://github.com/JstnMcBrd/discord-cleverbot/pull/33), [#34](https://github.com/JstnMcBrd/discord-cleverbot/pull/34), [#36](https://github.com/JstnMcBrd/discord-cleverbot/pull/36))
 
 ### Added
@@ -103,7 +104,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use command mentions for all embeds that mention commands ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
 - Use environment variables for sensitive tokens instead of `config.json` ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
 - Bump `cleverbot-free` from v1 to v2 to improve error handling ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
-- Refactor `package.json` to follow best practices for a NodeJS project ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
+- Refactor `package.json` to follow best practices for a Node.js project ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
 - Update documentation in README for complete refactor ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
 - Improve README to be more concise ([#19](https://github.com/JstnMcBrd/discord-cleverbot/pull/19))
 
