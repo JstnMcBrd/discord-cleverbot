@@ -1,10 +1,10 @@
 import { EmbedBuilder, channelMention } from 'discord.js';
 
-import { CommandHandler } from './CommandHandler.js';
-import { unwhitelist } from './unwhitelist.js';
-import { generateContext } from '../memory/context.js';
-import { addChannel } from '../memory/whitelist.js';
-import { embedColors } from '../parameters.js';
+import { CommandHandler } from './CommandHandler.ts';
+import { unwhitelist } from './unwhitelist.ts';
+import { generateContext } from '../memory/context.ts';
+import { addChannel } from '../memory/whitelist.ts';
+import { embedColors } from '../parameters.ts';
 
 /** A command that adds a channel to the whitelist. */
 export const whitelist = new CommandHandler()

@@ -5,8 +5,8 @@
 
 import type { Channel, Message, Snowflake, TextBasedChannel } from 'discord.js';
 
-import { whitelist } from '../commands/whitelist.js';
-import { isEmpty, isFromSelf, isMarkedAsIgnore } from '../utils/messageAnalysis.js';
+import { whitelist } from '../commands/whitelist.ts';
+import { isEmpty, isFromSelf, isMarkedAsIgnore } from '../utils/messageAnalysis.ts';
 
 /** Keeps track of the past conversation for each channel. Maps channelID to lists of messages. */
 const context = new Map<Snowflake, Message[]>();

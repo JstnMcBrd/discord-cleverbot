@@ -3,9 +3,9 @@
 import { ActivityType, Client, Partials, GatewayIntentBits } from 'discord.js';
 import type { ActivityOptions } from 'discord.js';
 
-import { registerEventHandlers } from './events/index.js';
-import { getToken } from './memory/env.js';
-import { info } from './logger.js';
+import { registerEventHandlers } from './events/index.ts';
+import { getToken } from './memory/env.ts';
+import { info } from './logger.ts';
 
 info('discord-cleverbot');
 info();

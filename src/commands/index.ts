@@ -2,13 +2,13 @@ import { exit } from 'node:process';
 
 import type { Client } from 'discord.js';
 
-import type { CommandHandler } from './CommandHandler.js';
-import { help } from './help.js';
-import { invite } from './invite.js';
-import { unwhitelist } from './unwhitelist.js';
-import { whitelist } from './whitelist.js';
-import { error } from '../logger.js';
-import { areCommandsInSync } from '../utils/areCommandsInSync.js';
+import type { CommandHandler } from './CommandHandler.ts';
+import { help } from './help.ts';
+import { invite } from './invite.ts';
+import { unwhitelist } from './unwhitelist.ts';
+import { whitelist } from './whitelist.ts';
+import { error } from '../logger.ts';
+import { areCommandsInSync } from '../utils/areCommandsInSync.ts';
 
 /** The list of all command handlers. */
 const commandHandlers = new Map<string, CommandHandler>();

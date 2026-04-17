@@ -5,9 +5,9 @@
 
 import { Client, Events } from 'discord.js';
 
-import { getCommandHandlers } from './commands/index.js';
-import { getToken } from './memory/env.js';
-import { debug, error, info } from './logger.js';
+import { getCommandHandlers } from './commands/index.ts';
+import { getToken } from './memory/env.ts';
+import { debug, error, info } from './logger.ts';
 
 // Get the JSON data of the commands
 info('Retrieving commands...');

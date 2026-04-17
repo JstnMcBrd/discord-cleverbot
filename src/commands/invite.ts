@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 import type { ClientUser } from 'discord.js';
 
-import { CommandHandler } from './CommandHandler.js';
-import { embedColors } from '../parameters.js';
+import { CommandHandler } from './CommandHandler.ts';
+import { embedColors } from '../parameters.ts';
 
 /** A command that allows the user to invite the bot to a new server. */
 export const invite = new CommandHandler()

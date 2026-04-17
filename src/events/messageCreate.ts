@@ -2,16 +2,16 @@ import cleverbot from 'cleverbot-free';
 import type { Message, TextBasedChannel } from 'discord.js';
 import { Events, PartialGroupDMChannel } from 'discord.js';
 
-import { EventHandler } from './EventHandler.js';
-import { formatPrompt } from '../utils/formatPrompt.js';
-import { doesMentionSelf, isMarkedAsIgnore, isFromSelf, isEmpty } from '../utils/messageAnalysis.js';
-import { replyWithError } from '../utils/replyWithError.js';
-import { sleep } from '../utils/sleep.js';
-import { addToContext, getContext } from '../memory/context.js';
-import { isThinking, startThinking, stopThinking } from '../memory/thinking.js';
-import { hasChannel as isWhitelisted } from '../memory/whitelist.js';
-import { typingSpeed } from '../parameters.js';
-import { debug, error, info } from '../logger.js';
+import { EventHandler } from './EventHandler.ts';
+import { formatPrompt } from '../utils/formatPrompt.ts';
+import { doesMentionSelf, isMarkedAsIgnore, isFromSelf, isEmpty } from '../utils/messageAnalysis.ts';
+import { replyWithError } from '../utils/replyWithError.ts';
+import { sleep } from '../utils/sleep.ts';
+import { addToContext, getContext } from '../memory/context.ts';
+import { isThinking, startThinking, stopThinking } from '../memory/thinking.ts';
+import { hasChannel as isWhitelisted } from '../memory/whitelist.ts';
+import { typingSpeed } from '../parameters.ts';
+import { debug, error, info } from '../logger.ts';
 
 /** The error message to throw if the Cleverbot module returns an empty string. */
 const EMPTY_STRING_ERROR_MESSAGE = 'Cleverbot returned an empty string';

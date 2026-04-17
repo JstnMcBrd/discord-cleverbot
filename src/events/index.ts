@@ -1,10 +1,10 @@
 import type { Client, ClientEvents } from 'discord.js';
 
-import { clientReady } from './clientReady.js';
-import { error } from './error.js';
-import type { EventHandler } from './EventHandler.js';
-import { interactionCreate } from './interactionCreate.js';
-import { messageCreate } from './messageCreate.js';
+import { clientReady } from './clientReady.ts';
+import { error } from './error.ts';
+import type { EventHandler } from './EventHandler.ts';
+import { interactionCreate } from './interactionCreate.ts';
+import { messageCreate } from './messageCreate.ts';
 
 /** The list of all event handlers. */
 const eventHandlers = new Map<keyof ClientEvents, EventHandler>();

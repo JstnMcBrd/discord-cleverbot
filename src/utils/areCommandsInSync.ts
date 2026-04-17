@@ -2,7 +2,7 @@ import { isDeepStrictEqual } from 'node:util';
 
 import type { ApplicationCommand } from 'discord.js';
 
-import { CommandHandler } from '../commands/CommandHandler.js';
+import { CommandHandler } from '../commands/CommandHandler.ts';
 
 /**
  * @param deployedCommands A list of commands currently deployed, pulled from the Discord API

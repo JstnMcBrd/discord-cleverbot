@@ -1,10 +1,10 @@
 import type { Client, Message, OmitPartialGroupDMChannel } from 'discord.js';
 
-import { messageCreate } from './events/messageCreate.js';
-import { isFromSelf } from './utils/messageAnalysis.js';
-import { generateContext, getContext, removeLastMessageFromContext } from './memory/context.js';
-import { load as loadWhitelist, getWhitelist } from './memory/whitelist.js';
-import { info } from './logger.js';
+import { messageCreate } from './events/messageCreate.ts';
+import { isFromSelf } from './utils/messageAnalysis.ts';
+import { generateContext, getContext, removeLastMessageFromContext } from './memory/context.ts';
+import { load as loadWhitelist, getWhitelist } from './memory/whitelist.ts';
+import { info } from './logger.ts';
 
 /** How often to refresh (in seconds). */
 const refreshFrequency = 1 * 60 * 60;

@@ -1,10 +1,10 @@
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { Events, PartialGroupDMChannel } from 'discord.js';
 
-import type { CommandHandler } from '../commands/CommandHandler.js';
-import { EventHandler } from './EventHandler.js';
-import { getCommandHandler } from '../commands/index.js';
-import { debug, info } from '../logger.js';
+import type { CommandHandler } from '../commands/CommandHandler.ts';
+import { EventHandler } from './EventHandler.ts';
+import { getCommandHandler } from '../commands/index.ts';
+import { debug, info } from '../logger.ts';
 
 /** Called whenever the client receives an interaction (usually a slash command). */
 export const interactionCreate = new EventHandler(Events.InteractionCreate)

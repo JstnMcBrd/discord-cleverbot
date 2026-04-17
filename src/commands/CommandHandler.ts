@@ -1,8 +1,8 @@
 import { chatInputApplicationCommandMention, inlineCode, SlashCommandBuilder } from 'discord.js';
 import type { ChatInputCommandInteraction, Snowflake } from 'discord.js';
 
-import { replyWithError } from '../utils/replyWithError.js';
-import { error } from '../logger.js';
+import { replyWithError } from '../utils/replyWithError.ts';
+import { error } from '../logger.ts';
 
 /**
  * An add-on to the `SlashCommandBuilder` class from discord.js that adds a command execution
