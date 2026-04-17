@@ -1,6 +1,6 @@
 import type { ClientEvents } from 'discord.js';
 
-import { error } from '../logger.js';
+import { error } from '../logger.ts';
 
 /**
  * Mimics the `SlashCommandBuilder` class from discord.js and the `CommandHandler` class to

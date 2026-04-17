@@ -1,10 +1,10 @@
 import { EmbedBuilder, channelMention } from 'discord.js';
 
-import { CommandHandler } from './CommandHandler.js';
-import { whitelist } from './whitelist.js';
-import { deleteContext } from '../memory/context.js';
-import { removeChannel } from '../memory/whitelist.js';
-import { embedColors } from '../parameters.js';
+import { CommandHandler } from './CommandHandler.ts';
+import { whitelist } from './whitelist.ts';
+import { deleteContext } from '../memory/context.ts';
+import { removeChannel } from '../memory/whitelist.ts';
+import { embedColors } from '../parameters.ts';
 
 /** A command that removes a channel from the whitelist. */
 export const unwhitelist = new CommandHandler()

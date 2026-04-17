@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, codeBlock, EmbedBuilder } from 'discord.js';
 import type { ChatInputCommandInteraction, Message } from 'discord.js';
 
-import { embedColors, githubURL } from '../parameters.js';
-import { error } from '../logger.js';
+import { embedColors, githubURL } from '../parameters.ts';
+import { error } from '../logger.ts';
 
 /**
  * Replies to a Discord message or interaction with an error message.

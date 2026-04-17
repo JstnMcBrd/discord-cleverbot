@@ -1,5 +1,4 @@
 node_modules
-dist
 memory/*
 !memory/example-user-id
 .env

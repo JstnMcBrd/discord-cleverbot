@@ -1,11 +1,11 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, userMention } from 'discord.js';
 import type { ClientUser } from 'discord.js';
 
-import { CommandHandler } from './CommandHandler.js';
-import { invite } from './invite.js';
-import { whitelist } from './whitelist.js';
-import { unwhitelist } from './unwhitelist.js';
-import { embedColors, githubURL, lastUpdated, version } from '../parameters.js';
+import { CommandHandler } from './CommandHandler.ts';
+import { invite } from './invite.ts';
+import { whitelist } from './whitelist.ts';
+import { unwhitelist } from './unwhitelist.ts';
+import { embedColors, githubURL, lastUpdated, version } from '../parameters.ts';
 
 /** A command that gives the user a simple guide about the bot. */
 export const help = new CommandHandler()
