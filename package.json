@@ -20,9 +20,9 @@
 	"author": "Justin McBride",
 	"type": "module",
 	"scripts": {
-		"commands": "node --env-file=.env dist/deployCommands.js",
+		"commands": "node --env-file=.env src/deployCommands.ts",
+		"start": "node --env-file=.env src/main.ts",
 		"lint": "eslint --flag unstable_native_nodejs_ts_config",
-		"start": "node --env-file=.env dist/main.js",
 		"type-check": "tsc --noEmit",
 		"test": "echo \"No tests\""
 	},

@@ -11,7 +11,7 @@
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"program": "${workspaceFolder}/dist/main.js",
+			"program": "${workspaceFolder}/src/main.ts",
 			"envFile": "${workspaceFolder}/.env",
 		},
 	],

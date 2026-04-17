@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Format error embeds as code blocks ([#153](https://github.com/JstnMcBrd/discord-cleverbot/pull/153))
 - Use `Events` enum for event handler names ([#160](https://github.com/JstnMcBrd/discord-cleverbot/pull/160))
 - Clean up README ([#179](https://github.com/JstnMcBrd/discord-cleverbot/pull/179))
+- Run TypeScript natively with Node.js ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
 
 ### Added
 
