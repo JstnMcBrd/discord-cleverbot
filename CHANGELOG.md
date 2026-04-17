@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set user activity on Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Use `Object.assign` instead of `Reflect.set` ([#49](https://github.com/JstnMcBrd/discord-cleverbot/pull/49))
 - Use native Node.js `.env` file support instead of `dotenv` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
-- Add Node.js version requirement of `>=20.6.0` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
+- Add Node.js version requirement of `^22.18.0 || ^24.0.0` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51), [#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
 - Change error subtypes to better fit their intended meaning ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
 - Classify channels using `channel.type` instead of class instances ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
 - Support `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
