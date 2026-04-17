@@ -4,7 +4,7 @@
 
 ## About
 
-`discord-cleverbot` is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/) and relies on the [Node](https://nodejs.org/) module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
+`discord-cleverbot` is a [Discord](https://discord.com/) bot that allows users to interact with the [Cleverbot chat bot](https://www.cleverbot.com/) on Discord. It is developed in [TypeScript](https://www.typescriptlang.org/), runs with [Node.js](https://nodejs.org/), and relies on the npm module of [cleverbot-free](https://www.npmjs.com/package/cleverbot-free).
 
 The project was started in December 2017 and has been completely rewritten several times to improve functionality, efficiency, modernity, and simplicity.
 
