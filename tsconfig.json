@@ -15,5 +15,6 @@
 
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
+		"erasableSyntaxOnly": true,
 	},
 }
