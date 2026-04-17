@@ -21,7 +21,7 @@ export const invite = new CommandHandler()
 		await interaction.reply({
 			...(embed && { embeds: [embed] }),
 			components: [row],
-			ephemeral: true,
+			flags: ['Ephemeral'],
 		});
 	});
 

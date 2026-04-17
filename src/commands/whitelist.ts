@@ -28,7 +28,7 @@ export const whitelist = new CommandHandler()
 		}
 		await interaction.reply({
 			embeds: [embed],
-			ephemeral,
+			flags: ephemeral ? ['Ephemeral'] : [],
 		});
 	});
 
