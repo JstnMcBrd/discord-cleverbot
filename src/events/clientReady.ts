@@ -3,9 +3,9 @@ import { exit } from 'node:process';
 import { Events } from 'discord.js';
 
 import { EventHandler } from './EventHandler.ts';
-import { refresh } from '../refresh.ts';
-import { syncCommands } from '../commands/index.ts';
 import { debug, error, info } from '../logger.ts';
+import { refresh } from '../refresh.ts';
+import { syncCommands } from '../syncCommands.ts';
 
 /** Called once the client successfully logs in. */
 export const clientReady = new EventHandler(Events.ClientReady)

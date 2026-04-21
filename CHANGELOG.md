@@ -10,17 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Use [shields.io](https://shields.io/) for badges in README ([#41](https://github.com/JstnMcBrd/discord-cleverbot/pull/41))
-- Use `setInterval` instead of `setTimeout` for scheduled tasks like user activity and refreshing ([#43](https://github.com/JstnMcBrd/discord-cleverbot/pull/43))
-- Set user activity on Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
+- Use `setInterval` instead of `setTimeout` for scheduled tasks ([#43](https://github.com/JstnMcBrd/discord-cleverbot/pull/43))
 - Use `Object.assign` instead of `Reflect.set` ([#49](https://github.com/JstnMcBrd/discord-cleverbot/pull/49))
 - Use native Node.js `.env` file support instead of `dotenv` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
 - Add Node.js version requirement of `^22.18.0 || ^24.0.0` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51), [#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
 - Change error subtypes to better fit their intended meaning ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
 - Classify channels using `channel.type` instead of class instances ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
-- Support `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
 - Update runtime to Node.js 24 ([#67](https://github.com/JstnMcBrd/discord-cleverbot/pull/67), [#133](https://github.com/JstnMcBrd/discord-cleverbot/pull/133))
 - Use `clientReady` event instead of deprecated `ready` ([#118](https://github.com/JstnMcBrd/discord-cleverbot/pull/118))
-- Use for-of loops instead of forEach method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
+- Use for-of loops instead of `forEach` method ([#143](https://github.com/JstnMcBrd/discord-cleverbot/pull/143))
 - Format error embeds as code blocks ([#153](https://github.com/JstnMcBrd/discord-cleverbot/pull/153))
 - Use `Events` enum for event handler names ([#160](https://github.com/JstnMcBrd/discord-cleverbot/pull/160))
 - Clean up README ([#179](https://github.com/JstnMcBrd/discord-cleverbot/pull/179))
@@ -30,15 +28,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add contributing agreement to README ([#44](https://github.com/JstnMcBrd/discord-cleverbot/pull/44))
+- Add user activity to Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
+- Add support for `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
 - Add a `CHANGELOG.md` file ([#142](https://github.com/JstnMcBrd/discord-cleverbot/pull/142))
+- Add automatic command redeployment ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
 
 ### Removed
 
-- Remove user activity manager that set user activity on a regular schedule ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
+- Remove user activity manager ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Remove build step ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
+- Remove `deployCommands` script ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
 
 ### Fixed
 
+- Fix user activity disappearance ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Fix `undici` vulnerabilities ([#47](https://github.com/JstnMcBrd/discord-cleverbot/pull/47))
 - Fix `ws` vulnerability ([#50](https://github.com/JstnMcBrd/discord-cleverbot/pull/50))
 - Filter out duplicate channel IDs from whitelist ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))

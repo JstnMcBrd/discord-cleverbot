@@ -31,7 +31,6 @@ For legal reasons, if you choose to contribute to this project, you agree to giv
 ### Running the code
 
 - In the top directory, run `npm install` to download all necessary packages.
-- Run `npm run commands` to register slash commands with Discord.
 - Run `npm start` to start the bot.
 
 ### Interacting with the bot
