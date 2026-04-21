@@ -20,7 +20,7 @@ const EMPTY_STRING_ERROR_MESSAGE = 'Cleverbot returned an empty string';
 const SUPERAGENT_RESPONSE_TIMEOUT_ERROR_MESSAGE = 'Response timeout of 10000ms exceeded';
 
 /**
- * The error messsage the Cleverbot module throws if it fails after 15 tries.
+ * The error message the Cleverbot module throws if it fails after 15 tries.
  * @see https://github.com/IntriguingTiles/cleverbot-free/blob/master/index.js#L71
  */
 const CLEVERBOT_MAX_TRIES_ERROR_MESSAGE = 'Failed to get a response after 15 tries.';

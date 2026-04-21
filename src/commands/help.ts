@@ -35,7 +35,7 @@ function createHelpEmbed(user: ClientUser): EmbedBuilder {
 	return new EmbedBuilder()
 		.setColor(embedColors.info)
 		.setTitle('User Guide')
-		.setDescription(`Hello! I am ${mention}, a chat bot for Discord. I respond to your messages using artifical intelligence from the [Cleverbot](https://www.cleverbot.com/) API.`)
+		.setDescription(`Hello! I am ${mention}, a chat bot for Discord. I respond to your messages using artificial intelligence from the [Cleverbot](https://www.cleverbot.com/) API.`)
 		.setFields(
 			{ name: 'Whitelisting', value: `By default, I will not respond to any messages in any channels to avoid spam. Use the ${whitelist.getMention()} command in a channel to allow me to talk there. After that, I will respond to every message sent in that channel.` },
 			{ name: 'Unwhitelisting', value: `If you would like me to stop responding to messages in a whitelisted channel, use the ${unwhitelist.getMention()} command there. After that, I won't respond to any messages until you whitelist the channel again.` },

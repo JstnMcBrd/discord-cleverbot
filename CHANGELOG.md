@@ -31,13 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add user activity to Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Add support for `PartialGroupDMChannel` ([#64](https://github.com/JstnMcBrd/discord-cleverbot/pull/64))
 - Add a `CHANGELOG.md` file ([#142](https://github.com/JstnMcBrd/discord-cleverbot/pull/142))
-- Add automatic command redeployment ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
+- Add automatic command redeployment ([#183](https://github.com/JstnMcBrd/discord-cleverbot/pull/183))
 
 ### Removed
 
 - Remove user activity manager ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Remove build step ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
-- Remove `deployCommands` script ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
+- Remove `deployCommands` script ([#183](https://github.com/JstnMcBrd/discord-cleverbot/pull/183))
 
 ### Fixed
 
@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `form-data` vulnerability ([#111](https://github.com/JstnMcBrd/discord-cleverbot/pull/111))
 - Fix `qs` vulnerability ([#156](https://github.com/JstnMcBrd/discord-cleverbot/pull/156))
 - Abort on `clientReady` errors to avoid bad state ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
+- Fix typos ([#184](https://github.com/JstnMcBrd/discord-cleverbot/pull/184))
 
 ## [5.1.0] - 2024-02-13
 

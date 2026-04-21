@@ -1,3 +1,4 @@
+import * as console from 'node:console';
 import { inspect } from 'node:util';
 
 import colors from '@colors/colors/safe.js';
