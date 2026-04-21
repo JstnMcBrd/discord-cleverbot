@@ -1,11 +1,8 @@
-import type { Client } from 'discord.js';
-
 import type { CommandHandler } from './CommandHandler.ts';
 import { help } from './help.ts';
 import { invite } from './invite.ts';
 import { unwhitelist } from './unwhitelist.ts';
 import { whitelist } from './whitelist.ts';
-import { areCommandsInSync } from '../utils/areCommandsInSync.ts';
 
 /** The list of all command handlers. */
 const commandHandlers = new Map<string, CommandHandler>();
@@ -42,26 +39,4 @@ export function getCommandHandlers(): ReadonlyMap<string, CommandHandler> {
  */
 export function getCommandHandler(name: string): CommandHandler | undefined {
 	return commandHandlers.get(name);
-}
-
-/**
- * Fetches deployed commands from the client application and verifies they match the commands
- * stored locally, and sets the command IDs of each of the command handlers.
- *
- * @param client The current logged-in client
- * @exits If the deployed commands are outdated
- */
-export async function syncCommands(client: Client<true>): Promise<void> {
-	const result = await client.application.commands.fetch();
-
-	const deployedCommands = Array.from(result.values());
-	const localCommands = Array.from(getCommandHandlers().values());
-
-	if (!areCommandsInSync(deployedCommands, localCommands)) {
-		throw new Error('Deployed commands are outdated');
-	}
-
-	for (const command of deployedCommands) {
-		getCommandHandler(command.name)?.setId(command.id);
-	}
 }

@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add contributing agreement to README ([#44](https://github.com/JstnMcBrd/discord-cleverbot/pull/44))
 - Add a `CHANGELOG.md` file ([#142](https://github.com/JstnMcBrd/discord-cleverbot/pull/142))
+- Add automatic command redeployment ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
 
 ### Removed
 
