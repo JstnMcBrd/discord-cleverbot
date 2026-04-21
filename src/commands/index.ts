@@ -1,5 +1,3 @@
-import { exit } from 'node:process';
-
 import type { Client } from 'discord.js';
 
 import type { CommandHandler } from './CommandHandler.ts';
@@ -7,7 +5,6 @@ import { help } from './help.ts';
 import { invite } from './invite.ts';
 import { unwhitelist } from './unwhitelist.ts';
 import { whitelist } from './whitelist.ts';
-import { error } from '../logger.ts';
 import { areCommandsInSync } from '../utils/areCommandsInSync.ts';
 
 /** The list of all command handlers. */
@@ -61,8 +58,7 @@ export async function syncCommands(client: Client<true>): Promise<void> {
 	const localCommands = Array.from(getCommandHandlers().values());
 
 	if (!areCommandsInSync(deployedCommands, localCommands)) {
-		error('Deployed commands are outdated. Please run the deployment script to update them.');
-		exit(1);
+		throw new Error('Deployed commands are outdated');
 	}
 
 	for (const command of deployedCommands) {

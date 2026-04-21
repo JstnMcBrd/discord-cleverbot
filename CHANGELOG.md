@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use [shields.io](https://shields.io/) for badges in README ([#41](https://github.com/JstnMcBrd/discord-cleverbot/pull/41))
 - Use `setInterval` instead of `setTimeout` for scheduled tasks like user activity and refreshing ([#43](https://github.com/JstnMcBrd/discord-cleverbot/pull/43))
-- Exit with error code if commands are out-of-sync ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Set user activity on Client initialization ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Use `Object.assign` instead of `Reflect.set` ([#49](https://github.com/JstnMcBrd/discord-cleverbot/pull/49))
 - Use native Node.js `.env` file support instead of `dotenv` ([#51](https://github.com/JstnMcBrd/discord-cleverbot/pull/51))
@@ -45,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filter out duplicate channel IDs from whitelist ([#52](https://github.com/JstnMcBrd/discord-cleverbot/pull/52))
 - Fix `form-data` vulnerability ([#111](https://github.com/JstnMcBrd/discord-cleverbot/pull/111))
 - Fix `qs` vulnerability ([#156](https://github.com/JstnMcBrd/discord-cleverbot/pull/156))
+- Abort on `clientReady` errors to avoid bad state ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
 
 ## [5.1.0] - 2024-02-13
 
