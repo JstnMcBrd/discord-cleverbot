@@ -34,7 +34,7 @@
 		"@jstnmcbrd/eslint-config": "^2.0.1",
 		"@types/node": "^24.10.1",
 		"eslint": "^9.39.1",
-		"typescript": "^5.9.3"
+		"typescript": "^6.0.3"
 	},
 	"engines": {
 		"node": "^22.18.0 || >=24"
