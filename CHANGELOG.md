@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove user activity manager that set user activity on a regular schedule ([#45](https://github.com/JstnMcBrd/discord-cleverbot/pull/45))
 - Remove build step ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
+- Remove `deployCommands` script ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
 
 ### Fixed
 
