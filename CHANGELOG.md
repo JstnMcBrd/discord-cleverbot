@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `form-data` vulnerability ([#111](https://github.com/JstnMcBrd/discord-cleverbot/pull/111))
 - Fix `qs` vulnerability ([#156](https://github.com/JstnMcBrd/discord-cleverbot/pull/156))
 - Abort on `clientReady` errors to avoid bad state ([#182](https://github.com/JstnMcBrd/discord-cleverbot/pull/182))
+- Fix typos ([#184](https://github.com/JstnMcBrd/discord-cleverbot/pull/184))
 
 ## [5.1.0] - 2024-02-13
 
