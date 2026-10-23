@@ -31,12 +31,12 @@
 		"discord.js": "^14.27.0"
 	},
 	"devDependencies": {
-		"@jstnmcbrd/eslint-config": "^2.0.1",
+		"@jstnmcbrd/eslint-config": "^3.0.0",
 		"@types/node": "^24.10.1",
-		"eslint": "^9.39.1",
+		"eslint": "^10.13.0",
 		"typescript": "^5.9.3"
 	},
 	"engines": {
-		"node": "^22.18.0 || >=24"
+		"node": "^22.18.0 || >=24.0.0"
 	}
 }
