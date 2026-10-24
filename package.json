@@ -20,9 +20,9 @@
 	"author": "Justin McBride",
 	"type": "module",
 	"scripts": {
-		"start": "node --env-file=.env src/main.ts",
+		"check": "tsc --noEmit",
 		"lint": "eslint --flag unstable_native_nodejs_ts_config",
-		"type-check": "tsc --noEmit",
+		"start": "node --env-file=.env src/main.ts",
 		"test": "echo \"No tests\""
 	},
 	"dependencies": {
