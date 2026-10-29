@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean up README ([#179](https://github.com/JstnMcBrd/discord-cleverbot/pull/179))
 - Run TypeScript natively with Node.js ([#180](https://github.com/JstnMcBrd/discord-cleverbot/pull/180))
 - Use ephemeral flag instead of deprecated response option ([#181](https://github.com/JstnMcBrd/discord-cleverbot/pull/181))
+- Update runtime to Node.js 26 ([#244](https://github.com/JstnMcBrd/discord-cleverbot/pull/244))
 
 ### Added
 
