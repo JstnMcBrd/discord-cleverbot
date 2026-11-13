@@ -26,7 +26,7 @@
 		"test": "echo \"No tests\""
 	},
 	"dependencies": {
-		"@colors/colors": "^1.6.0",
+		"@colors/colors": "^1.6.1",
 		"cleverbot-free": "^2.0.4",
 		"discord.js": "^14.27.0"
 	},
